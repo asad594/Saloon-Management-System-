@@ -1,5 +1,7 @@
 <div align="center">
 
+  <img src="../banner.png" alt="Salon Management System Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
+
   # 💇‍♀️ Salon Management System 👑
   
   **An Executive Luxury Database Management System & Full-Stack Web Application**
