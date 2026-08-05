@@ -15,15 +15,21 @@ namespace SalonManagementSystem.Controllers
 
         public IActionResult Index()
         {
+            EnsureDatabaseSeeded();
             return View();
         }
 
         [HttpPost]
         public IActionResult Index(Login l)
         {
-            if (string.IsNullOrWhiteSpace(l.UserRole) || string.IsNullOrWhiteSpace(l.UserPassword))
+            EnsureDatabaseSeeded();
+
+            string inputUser = !string.IsNullOrWhiteSpace(l.UserName) ? l.UserName.Trim() : (l.UserRole ?? string.Empty).Trim();
+            string inputPass = l.UserPassword?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(inputUser) || string.IsNullOrWhiteSpace(inputPass))
             {
-                ViewBag.Error = "Please select role and enter password.";
+                ViewBag.Error = "Please enter username and password.";
                 return View(l);
             }
 
@@ -32,34 +38,93 @@ namespace SalonManagementSystem.Controllers
                 conn.Open();
 
                 SqlCommand cmd = new SqlCommand(@"
-                    SELECT TOP 1 UserID, UserRole
+                    SELECT TOP 1 UserID, UserRole, ISNULL(UserName, UserRole) AS UserName
                     FROM users
-                    WHERE UserRole = @role AND UserPassword = @password", conn);
-                cmd.Parameters.AddWithValue("@role", l.UserRole);
-                cmd.Parameters.AddWithValue("@password", l.UserPassword);
+                    WHERE (UserName = @input OR UserRole = @input) AND UserPassword = @password", conn);
+                cmd.Parameters.AddWithValue("@input", inputUser);
+                cmd.Parameters.AddWithValue("@password", inputPass);
 
                 using var reader = cmd.ExecuteReader();
                 if (!reader.Read())
                 {
-                    ViewBag.Error = "Invalid login!";
+                    ViewBag.Error = "Invalid username or password!";
                     return View(l);
                 }
 
                 int userId = Convert.ToInt32(reader["UserID"]);
-                string role = reader["UserRole"].ToString() ?? string.Empty;
+                string role = reader["UserRole"].ToString() ?? "Staff";
+                string userName = reader["UserName"].ToString() ?? inputUser;
                 reader.Close();
 
                 HttpContext.Session.SetInt32("UserID", userId);
                 HttpContext.Session.SetString("Role", role);
+                HttpContext.Session.SetString("UserName", userName);
                 HttpContext.Session.SetString("LoginTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 TryLogActivity(conn, userId, role, "LOGIN");
-                TempData["SuccessMessage"] = "Login Successful! Welcome back.";
+                TempData["SuccessMessage"] = $"Login Successful! Welcome, {userName}.";
 
                 return role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
                     ? RedirectToAction("Home", "Admin")
                     : RedirectToAction("Home", "Staff");
             }
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(RegisterViewModel m)
+        {
+            if (string.IsNullOrWhiteSpace(m.UserName) || string.IsNullOrWhiteSpace(m.Password) || string.IsNullOrWhiteSpace(m.FullName))
+            {
+                ViewBag.Error = "Please fill in all required fields.";
+                return View(m);
+            }
+
+            EnsureDatabaseSeeded();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                // Check if username already exists
+                SqlCommand checkCmd = new SqlCommand("SELECT COUNT(*) FROM users WHERE UserName = @uname OR UserRole = @uname", conn);
+                checkCmd.Parameters.AddWithValue("@uname", m.UserName.Trim());
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (count > 0)
+                {
+                    ViewBag.Error = "Username is already taken. Please choose another username.";
+                    return View(m);
+                }
+
+                // Insert into users table as Staff/User role
+                SqlCommand userCmd = new SqlCommand(@"
+                    INSERT INTO users (UserName, UserRole, UserPassword)
+                    OUTPUT INSERTED.UserID
+                    VALUES (@uname, 'Staff', @pass)", conn);
+                userCmd.Parameters.AddWithValue("@uname", m.UserName.Trim());
+                userCmd.Parameters.AddWithValue("@pass", m.Password.Trim());
+
+                int newUserId = Convert.ToInt32(userCmd.ExecuteScalar());
+
+                // Insert corresponding staff details
+                SqlCommand staffCmd = new SqlCommand(@"
+                    INSERT INTO staff (UsId, StaffName, StaffPhone, StaffEmail, StaffAddress, JoiningDate, StaffSalary, StaffSpecialilty, StaffStatus)
+                    VALUES (@usId, @name, @phone, @email, 'Karachi', GETDATE(), 30000, 'Beauty Specialist', 1)", conn);
+                staffCmd.Parameters.AddWithValue("@usId", newUserId);
+                staffCmd.Parameters.AddWithValue("@name", m.FullName.Trim());
+                staffCmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(m.Phone) ? "03000000000" : m.Phone.Trim());
+                staffCmd.Parameters.AddWithValue("@email", string.IsNullOrWhiteSpace(m.Email) ? m.UserName.Trim() + "@mail.com" : m.Email.Trim());
+                staffCmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Registration Successful! You can now log in with your credentials.";
+            return RedirectToAction("Index");
         }
 
         public IActionResult Logout()
@@ -78,6 +143,47 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("Index");
         }
 
+        private void EnsureDatabaseSeeded()
+        {
+            try
+            {
+                using SqlConnection conn = new SqlConnection(_connection);
+                conn.Open();
+
+                // Add UserName column if missing
+                SqlCommand alterCmd = new SqlCommand(@"
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('users') AND name = 'UserName')
+                    BEGIN
+                        ALTER TABLE users ADD UserName VARCHAR(50) NULL;
+                    END", conn);
+                alterCmd.ExecuteNonQuery();
+
+                // Seed Admin (admin / admin123)
+                SqlCommand seedAdminCmd = new SqlCommand(@"
+                    IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'admin' OR UserRole = 'Admin')
+                    BEGIN
+                        INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('admin', 'Admin', 'admin123');
+                    END
+                    ELSE
+                    BEGIN
+                        UPDATE users SET UserName = 'admin', UserPassword = 'admin123' WHERE UserRole = 'Admin';
+                    END", conn);
+                seedAdminCmd.ExecuteNonQuery();
+
+                // Seed User (user / user123)
+                SqlCommand seedUserCmd = new SqlCommand(@"
+                    IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'user' OR (UserRole = 'Staff' AND UserName IS NOT NULL))
+                    BEGIN
+                        INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('user', 'Staff', 'user123');
+                    END", conn);
+                seedUserCmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                // Ignore seeding errors if DB connection is temporary unavailable
+            }
+        }
+
         private static void TryLogActivity(SqlConnection conn, int? userId, string role, string action)
         {
             try
@@ -93,7 +199,7 @@ namespace SalonManagementSystem.Controllers
             }
             catch
             {
-                // Login/logout should still work even if activity logging table is missing.
+                // Ignore activity log errors
             }
         }
     }

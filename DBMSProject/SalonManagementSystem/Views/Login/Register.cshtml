@@ -1,4 +1,4 @@
-@model SalonManagementSystem.Models.Login
+@model SalonManagementSystem.Models.RegisterViewModel
 @{
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
 }
@@ -17,7 +17,7 @@
             position: relative;
         }
 
-        /* ── Left Side: Login Form Panel (50% Width) ── */
+        /* ── Left Side: Register Form Panel (50% Width) ── */
         .login-form-panel {
             width: 50%;
             height: 100vh;
@@ -46,7 +46,7 @@
 
         .login-form-content {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             position: relative;
             z-index: 2;
         }
@@ -56,25 +56,25 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .brand-logo-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             background: linear-gradient(135deg, #d4af37 0%, #0d9488 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #ffffff;
             box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
         }
 
         .brand-logo-text {
             font-family: 'Playfair Display', serif;
-            font-size: 1.85rem;
+            font-size: 1.7rem;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: -0.01em;
@@ -87,29 +87,35 @@
         /* Titles */
         .login-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             line-height: 1.2;
         }
 
         .login-subtitle {
-            font-size: 0.88rem;
+            font-size: 0.84rem;
             color: var(--text-body);
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
-        /* ── Input Fields ── */
+        /* Input Grid for Registration */
+        .form-grid-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
         .form-field-group {
-            margin-bottom: 22px;
+            margin-bottom: 16px;
         }
 
         .field-label {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: #e2e8f0;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: block;
         }
 
@@ -119,12 +125,12 @@
 
         .form-control-custom {
             width: 100%;
-            padding: 16px 48px 16px 48px;
+            padding: 13px 16px 13px 44px;
             background: rgba(255, 255, 255, 0.04);
             border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
+            border-radius: 12px;
             color: #ffffff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
             transition: all 0.3s ease;
         }
@@ -137,76 +143,23 @@
 
         .field-icon-left {
             position: absolute;
-            left: 18px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: #d4af37;
-            font-size: 1rem;
+            font-size: 0.95rem;
             pointer-events: none;
         }
 
-        .field-icon-right-btn {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-body);
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 4px;
-            transition: color 0.2s ease;
-        }
-
-        .field-icon-right-btn:hover {
-            color: #d4af37;
-        }
-
-        /* Remember & Forgot Password */
-        .form-utility-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-            font-size: 0.82rem;
-        }
-
-        .remember-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-body);
-            cursor: pointer;
-        }
-
-        .remember-checkbox input {
-            accent-color: #d4af37;
-            width: 16px;
-            height: 16px;
-        }
-
-        .forgot-link {
-            color: #d4af37;
-            text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.2s ease;
-        }
-
-        .forgot-link:hover {
-            opacity: 0.8;
-            text-decoration: underline;
-        }
-
-        /* ── Submit Button (Teal-to-Gold Gradient like Screenshot) ── */
+        /* ── Submit Button ── */
         .btn-gradient-submit {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             background: linear-gradient(90deg, #0d9488 0%, #14b8a6 40%, #d4af37 100%);
             border: none;
             border-radius: 50px;
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.02em;
             cursor: pointer;
@@ -216,8 +169,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            position: relative;
-            overflow: hidden;
+            margin-top: 8px;
         }
 
         .btn-gradient-submit:hover {
@@ -225,15 +177,11 @@
             box-shadow: 0 16px 36px rgba(212, 175, 55, 0.45);
         }
 
-        .btn-gradient-submit:active {
-            transform: translateY(0);
-        }
-
-        /* Register Footer Link */
+        /* Footer Link */
         .register-footer-text {
-            margin-top: 24px;
+            margin-top: 18px;
             text-align: center;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: var(--text-body);
         }
 
@@ -242,46 +190,10 @@
             font-weight: 700;
             text-decoration: none;
             margin-left: 4px;
-            transition: opacity 0.2s ease;
         }
 
         .register-footer-text a:hover {
             text-decoration: underline;
-            opacity: 0.9;
-        }
-
-        /* One-Click Quick Pills */
-        .quick-pills-row {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .demo-pill-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 50px;
-            padding: 6px 14px;
-            font-size: 0.76rem;
-            font-weight: 600;
-            color: var(--text-body);
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .demo-pill-btn:hover {
-            background: rgba(212, 175, 55, 0.15);
-            color: #ffffff;
-            transform: translateY(-2px);
-        }
-
-        .demo-pill-btn i {
-            color: #d4af37;
         }
 
         /* Error Banner */
@@ -289,13 +201,13 @@
             background: rgba(244, 63, 94, 0.15);
             border: 1px solid rgba(244, 63, 94, 0.4);
             border-radius: 12px;
-            padding: 12px 16px;
+            padding: 10px 14px;
             color: #fca5a5;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             animation: shake 0.4s ease;
         }
 
@@ -320,7 +232,6 @@
             overflow: hidden;
         }
 
-        /* Dark Vignette Overlay */
         .salon-showcase-panel::before {
             content: '';
             position: absolute;
@@ -329,7 +240,6 @@
             z-index: 1;
         }
 
-        /* Overlay Headline */
         .showcase-top-headline {
             position: relative;
             z-index: 2;
@@ -346,7 +256,6 @@
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
         }
 
-        /* Floating Feature Badges Overlaid over Salon Image */
         .floating-badges-container {
             position: relative;
             z-index: 2;
@@ -370,9 +279,6 @@
             animation: floatBadge 4s ease-in-out infinite alternate;
         }
 
-        .floating-badge-item:nth-child(2) { animation-delay: -1.5s; }
-        .floating-badge-item:nth-child(3) { animation-delay: -3s; }
-
         @@keyframes floatBadge {
             0% { transform: translateY(0); }
             100% { transform: translateY(-10px); }
@@ -388,7 +294,6 @@
             justify-content: center;
             color: #ffffff;
             font-size: 0.9rem;
-            box-shadow: 0 0 15px rgba(20, 184, 166, 0.6);
         }
 
         .badge-text-title {
@@ -397,7 +302,6 @@
             color: #ffffff;
         }
 
-        /* Sparkle Canvas Overlay */
         #sparkle-canvas {
             position: absolute;
             inset: 0;
@@ -405,25 +309,16 @@
             pointer-events: none;
         }
 
-        /* Responsive Breakpoint for Mobile Screens */
         @@media (max-width: 900px) {
-            .login-split-container {
-                flex-direction: column;
-            }
-            .salon-showcase-panel {
-                display: none;
-            }
-            .login-form-panel {
-                width: 100%;
-                border-right: none;
-            }
+            .salon-showcase-panel { display: none; }
+            .login-form-panel { width: 100%; border-right: none; }
         }
     </style>
 }
 
 <div class="login-split-container">
 
-    <!-- ── Left Side: Single Unified Login Form ── -->
+    <!-- ── Left Side: Registration Form ── -->
     <div class="login-form-panel">
         <div class="login-form-content">
 
@@ -436,8 +331,8 @@
             </div>
 
             <!-- Welcome Title -->
-            <h1 class="login-title">Welcome to GlamourSync</h1>
-            <p class="login-subtitle">Login to your Management Portal</p>
+            <h1 class="login-title">Create Account</h1>
+            <p class="login-subtitle">Join GlamourSync Beauty Management</p>
 
             <!-- Error Alert -->
             @if (!string.IsNullOrEmpty(ViewBag.Error as string))
@@ -448,76 +343,84 @@
                 </div>
             }
 
-            <!-- Single Unified Login Form -->
-            <form method="post" id="loginForm" novalidate>
+            <!-- Registration Form -->
+            <form method="post" id="registerForm">
 
-                <!-- Username Input -->
+                <!-- Full Name -->
                 <div class="form-field-group">
-                    <label class="field-label" for="usernameInput">Username</label>
+                    <label class="field-label" for="fullNameInput">Full Name</label>
                     <div class="field-input-wrapper">
-                        <input type="text" id="usernameInput" name="UserName" class="form-control-custom"
-                               value="@Model?.UserName" placeholder="Enter your username..." required />
-                        <i class="fa-solid fa-user field-icon-left"></i>
+                        <input type="text" id="fullNameInput" name="FullName" class="form-control-custom"
+                               value="@Model?.FullName" placeholder="Enter your full name..." required />
+                        <i class="fa-solid fa-id-card field-icon-left"></i>
                     </div>
                 </div>
 
-                <!-- Password Input -->
+                <!-- Username & Phone in 2 Columns -->
+                <div class="form-grid-two-col">
+                    <div class="form-field-group">
+                        <label class="field-label" for="regUsernameInput">Username</label>
+                        <div class="field-input-wrapper">
+                            <input type="text" id="regUsernameInput" name="UserName" class="form-control-custom"
+                                   value="@Model?.UserName" placeholder="Username..." required />
+                            <i class="fa-solid fa-user field-icon-left"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="field-label" for="phoneInput">Phone Number</label>
+                        <div class="field-input-wrapper">
+                            <input type="tel" id="phoneInput" name="Phone" class="form-control-custom"
+                                   value="@Model?.Phone" placeholder="03001234567" />
+                            <i class="fa-solid fa-phone field-icon-left"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email -->
                 <div class="form-field-group">
-                    <label class="field-label" for="passwordInput">Password</label>
+                    <label class="field-label" for="emailInput">Email Address</label>
                     <div class="field-input-wrapper">
-                        <input type="password" id="passwordInput" name="UserPassword" class="form-control-custom"
-                               placeholder="Enter your password..." required autocomplete="current-password" />
+                        <input type="email" id="emailInput" name="Email" class="form-control-custom"
+                               value="@Model?.Email" placeholder="name@example.com" />
+                        <i class="fa-solid fa-envelope field-icon-left"></i>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-field-group">
+                    <label class="field-label" for="regPasswordInput">Password</label>
+                    <div class="field-input-wrapper">
+                        <input type="password" id="regPasswordInput" name="Password" class="form-control-custom"
+                               placeholder="Choose a strong password..." required />
                         <i class="fa-solid fa-lock field-icon-left"></i>
-                        <button type="button" class="field-icon-right-btn" id="togglePwBtn" title="Show/Hide password">
-                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
-                        </button>
                     </div>
-                </div>
-
-                <!-- Remember & Forgot Password -->
-                <div class="form-utility-row">
-                    <label class="remember-checkbox">
-                        <input type="checkbox" checked /> Remember Me
-                    </label>
-                    <a href="#" class="forgot-link" onclick="Swal.fire({icon:'info', title:'Password Reset', text:'Please contact system administrator to reset credentials.', background:'#131924', color:'#fff', iconColor:'#d4af37'}); return false;">Forgot Password?</a>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn-gradient-submit" id="submitBtn">
-                    <span id="btnText">Log In</span>
-                    <i class="fa-solid fa-arrow-right" id="btnIcon"></i>
+                <button type="submit" class="btn-gradient-submit" id="regSubmitBtn">
+                    <span id="regBtnText">Create User Account</span>
+                    <i class="fa-solid fa-user-plus" id="regBtnIcon"></i>
                 </button>
 
             </form>
 
-            <!-- Register Navigation Link -->
+            <!-- Navigation back to Login -->
             <div class="register-footer-text">
-                Don't have an account? <a href="/Login/Register">Register Here</a>
-            </div>
-
-            <!-- Quick Demo Credentials Pills -->
-            <div class="quick-pills-row">
-                <button type="button" class="demo-pill-btn" onclick="quickFill('admin', 'admin123')">
-                    <i class="fa-solid fa-crown"></i> Admin (admin / admin123)
-                </button>
-                <button type="button" class="demo-pill-btn" onclick="quickFill('user', 'user123')">
-                    <i class="fa-solid fa-user"></i> User (user / user123)
-                </button>
+                Already have an account? <a href="/Login/Index">Log In Here</a>
             </div>
 
         </div>
     </div>
 
-    <!-- ── Right Side: Luxury Women's Salon Showcase ── -->
+    <!-- ── Right Side: Women's Luxury Salon Showcase ── -->
     <div class="salon-showcase-panel">
         <canvas id="sparkle-canvas"></canvas>
 
-        <!-- Top Headline -->
         <div class="showcase-top-headline">
             <div class="showcase-heading-text">MANAGE . GROW . SHINE.</div>
         </div>
 
-        <!-- Floating Feature Badges Overlaid over Salon Image -->
         <div class="floating-badges-container">
             <div class="floating-badge-item">
                 <div class="badge-circle-icon">
@@ -545,42 +448,15 @@
 </div>
 
 <script>
-    // ── Password Visibility Toggle ──
-    const pwInput = document.getElementById('passwordInput');
-    const togglePwBtn = document.getElementById('togglePwBtn');
-    const eyeIcon = document.getElementById('eyeIcon');
-    const userInput = document.getElementById('usernameInput');
+    const regForm = document.getElementById('registerForm');
+    const regSubmitBtn = document.getElementById('regSubmitBtn');
 
-    togglePwBtn.addEventListener('click', () => {
-        const isPw = pwInput.type === 'password';
-        pwInput.type = isPw ? 'text' : 'password';
-        eyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    regForm.addEventListener('submit', () => {
+        document.getElementById('regBtnText').textContent = 'Creating Account...';
+        document.getElementById('regBtnIcon').className = 'fa-solid fa-circle-notch fa-spin';
+        regSubmitBtn.style.opacity = '0.85';
     });
 
-    // ── Quick Autofill Function ──
-    function quickFill(user, pass) {
-        userInput.value = user;
-        pwInput.value = pass;
-        userInput.focus();
-    }
-
-    // ── Loading state on Submit ──
-    const submitBtn = document.getElementById('submitBtn');
-    const loginForm = document.getElementById('loginForm');
-
-    loginForm.addEventListener('submit', (e) => {
-        if (!userInput.value.trim() || !pwInput.value.trim()) {
-            e.preventDefault();
-            if (!userInput.value.trim()) userInput.focus();
-            else pwInput.focus();
-            return;
-        }
-        document.getElementById('btnText').textContent = 'Logging in...';
-        document.getElementById('btnIcon').className = 'fa-solid fa-circle-notch fa-spin';
-        submitBtn.style.opacity = '0.85';
-    });
-
-    // ── Sparkle Particle Effects on Right Panel ──
     const canvas = document.getElementById('sparkle-canvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
