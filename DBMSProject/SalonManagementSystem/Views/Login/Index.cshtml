@@ -1,0 +1,399 @@
+@model SalonManagementSystem.Models.Login
+@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+
+<style>
+    /* ── Role selector cards ── */
+    .role-label-text {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .role-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .role-card {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .role-card input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0; height: 0;
+    }
+
+    .role-card-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 18px 12px;
+        border: 1.5px solid var(--glass-border);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.04);
+        transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .role-card-inner:hover {
+        border-color: rgba(233,30,140,0.45);
+        background: rgba(233,30,140,0.08);
+        transform: translateY(-2px);
+    }
+
+    .role-card input[type="radio"]:checked + .role-card-inner {
+        border-color: var(--pink);
+        background: linear-gradient(135deg, rgba(233,30,140,0.18), rgba(212,175,55,0.1));
+        box-shadow: 0 0 0 3px rgba(233,30,140,0.2), 0 8px 24px rgba(233,30,140,0.2);
+        transform: translateY(-3px);
+    }
+
+    .role-card-icon {
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .role-card input[type="radio"]:checked + .role-card-inner .role-card-icon {
+        transform: scale(1.15);
+    }
+
+    .role-card-icon.admin-icon { background: linear-gradient(135deg,#e91e8c,#d4af37); }
+    .role-card-icon.staff-icon { background: linear-gradient(135deg,#6a11cb,#2575fc); }
+
+    .role-card-name {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-light);
+        letter-spacing: 0.04em;
+    }
+
+    .role-card-desc {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-align: center;
+        line-height: 1.3;
+    }
+
+    /* ── Floating label input ── */
+    .input-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        position: absolute;
+        top: 50%; left: 18px;
+        transform: translateY(-50%);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        pointer-events: none;
+        transition: all 0.25s ease;
+        background: transparent;
+        padding: 0 4px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 16px 52px 16px 18px;
+        background: rgba(255,255,255,0.05);
+        border: 1.5px solid var(--glass-border);
+        border-radius: 14px;
+        color: var(--text-light);
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        transition: all 0.3s ease;
+        -webkit-text-fill-color: var(--text-light);
+    }
+
+    .input-group input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 100px rgba(29,5,51,0.9) inset !important;
+        -webkit-text-fill-color: var(--text-light) !important;
+    }
+
+    .input-group input:focus {
+        border-color: var(--pink);
+        background: rgba(233,30,140,0.07);
+        box-shadow: 0 0 0 3px rgba(233,30,140,0.15);
+    }
+
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+        top: 0;
+        font-size: 0.7rem;
+        color: var(--pink);
+        background: var(--purple-dark);
+        padding: 0 6px;
+    }
+
+    /* ── Password eye toggle ── */
+    .toggle-pw {
+        position: absolute;
+        right: 16px; top: 50%;
+        transform: translateY(-50%);
+        background: none; border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px;
+        line-height: 0;
+        transition: color 0.2s;
+        z-index: 2;
+    }
+    .toggle-pw:hover { color: var(--pink); }
+    .toggle-pw svg { width: 20px; height: 20px; fill: currentColor; }
+
+    /* ── Submit button ── */
+    .btn-login {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #e91e8c 0%, #d4af37 100%);
+        border: none;
+        border-radius: 14px;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 28px rgba(233,30,140,0.35);
+        margin-top: 4px;
+    }
+
+    .btn-login::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 40px rgba(233,30,140,0.5);
+    }
+    .btn-login:hover::before { opacity: 1; }
+    .btn-login:active { transform: translateY(0); }
+
+    /* Loading state */
+    .btn-login.loading .btn-text { opacity: 0; }
+    .btn-login.loading .btn-spinner { opacity: 1; }
+
+    .btn-text { transition: opacity 0.2s; }
+
+    .btn-spinner {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.2s;
+    }
+
+    .spinner-ring {
+        width: 22px; height: 22px;
+        border: 2.5px solid rgba(255,255,255,0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error message ── */
+    .error-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,107,138,0.12);
+        border: 1px solid rgba(255,107,138,0.3);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        animation: shake 0.4s ease;
+    }
+
+    @@keyframes shake {
+        0%,100% { transform: translateX(0); }
+        20%      { transform: translateX(-6px); }
+        40%      { transform: translateX(6px); }
+        60%      { transform: translateX(-4px); }
+        80%      { transform: translateX(4px); }
+    }
+
+    .error-icon { font-size: 16px; flex-shrink: 0; }
+
+    .error-text {
+        font-size: 0.8rem;
+        color: var(--error-red);
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    /* ── Footer hint ── */
+    .login-footer {
+        margin-top: 24px;
+        text-align: center;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .login-footer .cred {
+        display: inline-block;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 2px 10px;
+        font-size: 0.68rem;
+        font-family: 'Courier New', monospace;
+        color: var(--gold);
+        margin: 2px 3px;
+        letter-spacing: 0.04em;
+    }
+</style>
+
+<form method="post" id="loginForm" novalidate>
+
+    @* Role Selection *@
+    <span class="role-label-text">Select your role</span>
+    <div class="role-cards">
+        <label class="role-card">
+            <input type="radio" name="UserRole" value="Admin"
+                   id="roleAdmin"
+                   @(ViewBag.Error == null ? "checked" : (Model?.UserRole == "Admin" ? "checked" : "")) />
+            <div class="role-card-inner">
+                <div class="role-card-icon admin-icon">👑</div>
+                <div class="role-card-name">Admin</div>
+                <div class="role-card-desc">Full system access</div>
+            </div>
+        </label>
+        <label class="role-card">
+            <input type="radio" name="UserRole" value="Staff"
+                   id="roleStaff"
+                   @(Model?.UserRole == "Staff" ? "checked" : "") />
+            <div class="role-card-inner">
+                <div class="role-card-icon staff-icon">✂️</div>
+                <div class="role-card-name">Staff</div>
+                <div class="role-card-desc">Appointments & clients</div>
+            </div>
+        </label>
+    </div>
+
+    @* Error Message *@
+    @if (!string.IsNullOrEmpty(ViewBag.Error as string))
+    {
+        <div class="error-box">
+            <span class="error-icon">⚠️</span>
+            <div class="error-text">@ViewBag.Error</div>
+        </div>
+    }
+
+    @* Password Field *@
+    <div class="input-group">
+        <input type="password"
+               id="passwordInput"
+               name="UserPassword"
+               placeholder=" "
+               value=""
+               autocomplete="current-password"
+               required />
+        <label for="passwordInput">Password</label>
+        <button type="button" class="toggle-pw" id="togglePw" title="Show/Hide password">
+            <!-- Eye icon -->
+            <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        </button>
+    </div>
+
+    @* Submit *@
+    <button type="submit" class="btn-login" id="loginBtn">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-spinner"><span class="spinner-ring"></span></span>
+    </button>
+
+</form>
+
+<div class="login-footer">
+    Demo credentials &nbsp;|&nbsp;
+    Admin: <span class="cred">Admin / 123</span>
+    &nbsp;&nbsp;Staff: <span class="cred">Staff / 987</span>
+</div>
+
+<script>
+    // ── Password toggle ──
+    const pwInput   = document.getElementById('passwordInput');
+    const toggleBtn = document.getElementById('togglePw');
+    const eyeIcon   = document.getElementById('eyeIcon');
+
+    const eyeOpenPath   = "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z";
+    const eyeClosedPath = "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z";
+
+    let pwVisible = false;
+    toggleBtn.addEventListener('click', () => {
+        pwVisible = !pwVisible;
+        pwInput.type = pwVisible ? 'text' : 'password';
+        eyeIcon.querySelector('path').setAttribute('d', pwVisible ? eyeClosedPath : eyeOpenPath);
+    });
+
+    // ── Loading state on submit ──
+    const form     = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+
+    form.addEventListener('submit', (e) => {
+        const pw = pwInput.value.trim();
+        if (!pw) { e.preventDefault(); pwInput.focus(); return; }
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+    });
+
+    // ── Ripple effect on button ──
+    loginBtn.addEventListener('click', function (e) {
+        const rect = loginBtn.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.style.cssText = `
+            position:absolute;
+            border-radius:50%;
+            background:rgba(255,255,255,0.25);
+            width:10px; height:10px;
+            left:${e.clientX - rect.left - 5}px;
+            top:${e.clientY - rect.top - 5}px;
+            animation: ripple-anim 0.5s ease-out forwards;
+            pointer-events:none;
+        `;
+        loginBtn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 500);
+    });
+
+    // ── Role card keyboard nav ──
+    document.querySelectorAll('.role-card input').forEach(r => {
+        r.addEventListener('change', () => {
+            // subtle page-shake feel
+            document.querySelector('.login-card').style.transition = 'transform 0.15s';
+            document.querySelector('.login-card').style.transform = 'scale(1.012)';
+            setTimeout(() => {
+                document.querySelector('.login-card').style.transform = '';
+            }, 150);
+        });
+    });
+</script>
+
+<style>
+@@keyframes ripple-anim {
+    to { transform: scale(35); opacity: 0; }
+}
+</style>

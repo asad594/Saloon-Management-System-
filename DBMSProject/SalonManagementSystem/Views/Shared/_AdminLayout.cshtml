@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI';
+            background: #f4f6f9;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            position: fixed;
+            background: linear-gradient(180deg, #1d2b64, #f43f5e);
+            padding-top: 20px;
+            color: white;
+        }
+
+            .sidebar h2 {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .sidebar a {
+                display: block;
+                padding: 14px 20px;
+                color: white;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+                .sidebar a:hover {
+                    background: rgba(255,255,255,0.2);
+                }
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 20px;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+        }
+
+            .card h2 {
+                margin: 0;
+            }
+
+        .c1 {
+            background: #1d2b64;
+        }
+
+        .c2 {
+            background: #f43f5e;
+        }
+
+        .c3 {
+            background: #22c55e;
+        }
+
+        .c4 {
+            background: #7c3aed;
+        }
+
+
+        .form-box {
+            max-width: 500px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+            .form-box h2 {
+                margin-bottom: 20px;
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            background: #1d2b64;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+            .btn:hover {
+                background: #f43f5e;
+            }
+
+        .table-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            table th, table td {
+                padding: 12px;
+                border-bottom: 1px solid #ddd;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Salon Admin</h2>
+
+        <a href="/Admin/Home">Dashboard</a>
+        <a href="/Admin/AddService">Add Service</a>
+        <a href="/Admin/AddStaff">Add Staff</a>
+        <a href="/Admin/AddBrand">Add Brand</a>
+        <a href="/Admin/AddProduct">Add Products</a>
+        <a href="/Admin/UpdateStaff">Update Staff</a>
+        <a href="/Admin/UpdateService">Update Service</a>
+        <a href="/Admin/ActivityLogs">Activity Logs</a>
+        
+
+        <!-- LOGOUT BUTTON -->
+        <a href="/Login/Logout" style="position:absolute; bottom:20px; width:100%; background:#00000030;">
+            Logout
+        </a>
+    </div>
+
+    <div class="main">
+        @RenderBody()
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '@TempData["SuccessMessage"]',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            </text>
+        }
+    </script>
+</body>
+</html>

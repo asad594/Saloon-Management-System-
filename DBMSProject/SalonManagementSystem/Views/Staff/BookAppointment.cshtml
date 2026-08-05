@@ -1,0 +1,55 @@
+@model SalonManagementSystem.Models.AppointmentViewModel
+@{
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+}
+
+<div style="max-width:600px; margin:auto; background:white; padding:30px; border-radius:15px;">
+
+    <h2>Book Appointment</h2>
+
+    <form method="post">
+
+        <input asp-for="ClientName" placeholder="Client Name" class="form-control" required />
+        <input asp-for="ClientPhone" placeholder="Phone" class="form-control" required />
+
+        <input asp-for="AppDate" type="date" class="form-control" required />
+        <input asp-for="AppTime" type="time" class="form-control" required />
+
+        <!-- ✅ STAFF DROPDOWN -->
+        <label>Booked For</label>
+        <select asp-for="BookedForId" asp-items="Model.StaffList" class="form-control" required>
+            <option value="">Select Staff</option>
+        </select>
+
+        <label>Booked By</label>
+        <select asp-for="BookedById" asp-items="Model.StaffList" class="form-control" required>
+            <option value="">Select Staff</option>
+        </select>
+
+        <!-- ✅ SERVICE DROPDOWN -->
+        <select asp-for="SelectedServiceId" asp-items="Model.Services"
+                class="form-control" id="serviceSelect" required>
+            <option value="">Select Service</option>
+        </select>
+
+        <h4 style="margin-top:15px;">
+            Total: <span id="total">0</span>
+        </h4>
+
+        <button type="submit">Save & Generate Bill</button>
+
+    </form>
+
+</div>
+<script>
+    document.getElementById("serviceSelect").addEventListener("change", function () {
+
+        var serviceId = this.value;
+
+        fetch('/Staff/GetServicePrice?serviceId=' + serviceId)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("total").innerText = data;
+            });
+    });
+</script>

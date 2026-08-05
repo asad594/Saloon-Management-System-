@@ -1,0 +1,49 @@
+@using SalonManagementSystem.Models
+@model object
+@{
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+}
+
+@if (Model is BillViewModel bill)
+{
+    <div style="max-width:700px; margin:auto; background:white; padding:30px; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,.12);">
+        <h2>Bill Generated Successfully</h2>
+        <hr />
+        <p><strong>Client:</strong> @bill.ClientName</p>
+        <p><strong>Phone:</strong> @bill.Phone</p>
+        <p><strong>Staff:</strong> @bill.StaffName</p>
+        <p><strong>Service:</strong> @bill.ServiceName</p>
+        <p><strong>Date:</strong> @bill.AppDate.ToString("yyyy-MM-dd")</p>
+        <p><strong>Time:</strong> @bill.AppTime</p>
+        <h3>Total: Rs. @bill.Total</h3>
+        <a class="btn" href="/Staff/BookAppointment">Book Another Appointment</a>
+    </div>
+}
+else if (Model is List<SalonService> services)
+{
+    <div style="max-width:800px; margin:auto; background:white; padding:30px; border-radius:15px;">
+        <h2>Available Services</h2>
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding:10px; border-bottom:1px solid #ddd;">Service</th>
+                    <th style="text-align:left; padding:10px; border-bottom:1px solid #ddd;">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var service in services)
+            {
+                <tr>
+                    <td style="padding:10px; border-bottom:1px solid #eee;">@service.ServiceName</td>
+                    <td style="padding:10px; border-bottom:1px solid #eee;">Rs. @service.ServicePrice</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <p style="margin-top:20px;">To generate a bill, use <strong>Book Appointment</strong> and select a service.</p>
+    </div>
+}
+else
+{
+    <div style="background:white; padding:30px; border-radius:15px;">No bill data available.</div>
+}

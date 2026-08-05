@@ -1,0 +1,189 @@
+﻿@model List<SalonManagementSystem.Models.AttendanceViewModel>
+
+@{
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <!-- Reuse login page styles here -->
+    <style>
+        .attendance-wrapper{
+            width: auto;
+        }
+        .staff-drop{
+            width: 300px;
+            height: 35px;
+            border-radius: 20px;
+            padding-left: 10px;
+            margin-top: 20px;
+        }
+        .time-drop{
+            margin-top:10px;
+            width: 300px;
+            height: 35px;
+            border-radius: 20px;
+            padding-left: 10px;
+        }
+        .attendence-labels{
+            margin: 10px;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .attendance-form{
+            border: 1px black solid;
+            padding-left: 30px;
+            padding-right: 15px;
+            border-radius: 10px;
+        }
+
+        .btn-attendance{
+            width: 450px;
+            height: 40px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            border-radius: 25px;
+            background: #1d2b64;
+            color: #ffffff
+        }
+
+        .btn-attendance:hover{
+                background: #09174f;
+                color: #ffffff
+        }
+
+        tr, th {
+            border-radius: 5px;
+            border: 1px black solid;
+            width: 200px;
+        }
+
+        .attendance-table{
+            width: 850px;
+            height: auto;
+            border: 1px black solid;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .attendance-card{
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="">
+
+    <!-- FORM CARD -->
+    <div class="attendance-card">
+        <h2 class="title">Mark Attendance</h2>
+
+        <form method="post" asp-action="MarkAttendance" class="attendance-form">
+
+            <div class="form-group" class="attendance-card ">
+                <label class="attendence-labels">Staff Member</label>
+                    <select name="SelectedStaffId" class="form-control staff-drop">
+                        @if (ViewBag.StaffList != null)
+                    {
+                        foreach (var s in ViewBag.StaffList)
+                        {
+                            <option value="@s.Value">@s.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                    <label class="attendence-labels">Action</label>
+                    <select name="Type" class="form-control time-drop">
+                        <option value="CheckIn">Arrival</option>
+                        <option value="CheckOut">Departure</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-attendance">
+                Mark Attendance
+            </button>
+
+        </form>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="attendance-table-card">
+        <h3>Today's Attendance</h3>
+
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Staff</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.StaffName</td>
+                            <td>@item.CheckIn</td>
+                            <td>@(item.CheckOut == null ? "-" : item.CheckOut)</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" style="text-align:center; padding:20px;">
+                            No attendance marked today
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+            <h3 style="margin-top:40px;">Attendance Chart</h3>
+
+            <canvas id="attendanceChart" height="100"></canvas>
+    </div>
+
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        fetch('/Staff/GetAttendanceChart')
+            .then(response => response.json())
+            .then(data => {
+
+                const labels = data.map(x => x.date);
+                const values = data.map(x => x.total);
+
+                const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Attendance Count',
+                            data: values,
+                            borderWidth: 2,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+
+            });
+    </script>
+
+</body>
+</html>

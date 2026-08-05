@@ -1,0 +1,134 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+
+
+
+/* WRAPPER */
+.attendance-wrapper {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* CARD STYLE */
+.attendance-card {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    max-width: 500px;
+}
+
+    /* TITLE */
+    .attendance-card .title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+/* FORM LAYOUT */
+.attendance-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* INPUT GROUP */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 6px;
+        color: #555;
+    }
+
+/* DROPDOWN STYLE */
+.form-control {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+    .form-control:focus {
+        border-color: #6c5ce7;
+        outline: none;
+        box-shadow: 0 0 5px rgba(108, 92, 231, 0.3);
+    }
+
+/* BUTTON */
+.btn-attendance {
+    margin-top: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .btn-attendance:hover { 
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(108,92,231,0.3);
+    }
+
+/* TABLE CARD */
+.attendance-table-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* TABLE */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+    .attendance-table th {
+        background: #6c5ce7;
+        color: white;
+        padding: 12px;
+        text-align: left;
+    }
+
+    .attendance-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* ROW HOVER */
+    .attendance-table tr:hover {
+        background: #f8f9ff;
+    }

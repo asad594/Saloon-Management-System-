@@ -1,0 +1,57 @@
+@{
+    Layout = null;
+    var currentPage = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Dashboard</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: linear-gradient(135deg, #f8cdda, #1d2b64); min-height: 100vh; }
+        .sidebar { width: 230px; min-height: 100vh; background: linear-gradient(180deg, #1d2b64, #0f172a); color: white; padding-top: 20px; position: fixed; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; }
+        .sidebar a { display: block; padding: 12px 20px; margin: 8px; border-radius: 10px; text-decoration: none; color: white; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: #f8cdda; color: black !important; }
+        .main { margin-left: 230px; padding: 30px; width: calc(100% - 230px); }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+        .card { padding: 25px; border-radius: 15px; color: white; font-size: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0; font-size: 28px; }
+        .card p { margin: 5px 0 0; }
+        .blue { background: #1d2b64; } .pink { background: #f43f5e; } .orange { background: #f97316; }
+        .green { background: #22c55e; } .purple { background: #7c3aed; } .teal { background: #0ea5e9; }
+        .form-control { display: block; width: 100%; box-sizing: border-box; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; }
+        button, .btn { background: #1d2b64; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; text-decoration: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Salon</h2>
+        <a href="/Staff/Home" class="@(currentPage == "Home" ? "active" : "")">Home</a>
+        <a href="/Staff/BookAppointment" class="@(currentPage == "BookAppointment" ? "active" : "")">Book Appointment</a>
+        <a href="/Staff/GenerateBill" class="@(currentPage == "GenerateBill" ? "active" : "")">Generate Bill</a>
+        <a href="/Staff/Attendance" class="@(currentPage == "Attendance" ? "active" : "")">Attendance</a>
+        <a href="/Login/Logout">Logout</a>
+    </div>
+    <main class="main">
+        @RenderBody()
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '@TempData["SuccessMessage"]',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            </text>
+        }
+    </script>
+</body>
+</html>

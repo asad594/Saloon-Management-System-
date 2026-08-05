@@ -1,0 +1,30 @@
+@model List<dynamic>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="table-box">
+    <h2>Update Staff</h2>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.name</td>
+                <td>@(s.status == 1 ? "Active" : "Inactive")</td>
+
+                <td>
+                    <a class="btn" href="/Admin/ChangeStaffStatus?id=@s.id&status=1">Activate</a>
+                    <a class="btn" href="/Admin/ChangeStaffStatus?id=@s.id&status=2">Deactivate</a>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

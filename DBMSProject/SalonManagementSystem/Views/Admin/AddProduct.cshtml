@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="form-box">
+    <h2>Add Product</h2>
+
+    <form method="post">
+
+        <input name="name" class="form-control" placeholder="Product Name" required />
+
+        <select name="brandId" class="form-control">
+            <option>Select Brand</option>
+            @foreach (var b in ViewBag.Brands)
+            {
+                <option value="@b.Value">@b.Text</option>
+            }
+        </select>
+
+        <input name="qty" class="form-control" placeholder="Quantity" required />
+        <input name="cost" class="form-control" placeholder="Cost Price" required />
+        <input name="sell" class="form-control" placeholder="Selling Price" required />
+
+        <button class="btn">Add Product</button>
+
+    </form>
+</div>

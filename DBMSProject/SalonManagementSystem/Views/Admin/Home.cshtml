@@ -1,0 +1,54 @@
+﻿@model DashboardModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Dashboard</h2>
+
+<div class="card-container">
+    <div class="card c1">
+        <h2>@Model.TodaySales</h2>
+        <p>Today's Sales</p>
+    </div>
+
+    <div class="card c2">
+        <h2>@Model.TodayAppointments</h2>
+        <p>Appointments</p>
+    </div>
+
+    <div class="card c3">
+        <h2>@Model.StaffAvailable</h2>
+        <p>Staff Available</p>
+    </div>
+</div>
+
+<hr />
+
+<h3>Weekly Sales</h3>
+<canvas id="weeklyChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    fetch('/Admin/GetWeeklySales')
+    .then(res => res.json())
+    .then(data => {
+
+        const labels = data.map(x => x.day);
+        const values = data.map(x => x.total);
+
+        new Chart(document.getElementById('weeklyChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales',
+                    data: values,
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            }
+        });
+
+    });
+</script>

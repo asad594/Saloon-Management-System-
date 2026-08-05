@@ -1,0 +1,73 @@
+﻿@model SalonManagementSystem.Models.DashboardModel
+@{
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+}
+
+<h2>Dashboard</h2>
+<h1>TEST PAGE</h1>
+<div class="cards">
+
+    <div class="card blue">
+        <h3>@Model.TodayAppointments</h3>
+        <p>Today's Appointments</p>
+    </div>
+
+    <div class="card pink">
+        <h3>@Model.TotalAppointments</h3>
+        <p>Total Scheduled</p>
+    </div>
+
+    <div class="card orange">
+        <h3>@Model.TodaySales</h3>
+        <p>Today's Sales</p>
+    </div>
+
+    <div class="card green">
+        <h3>@Model.StaffAvailable</h3>
+        <p>Staff Available</p>
+    </div>
+
+    <div class="card purple">
+        <h3>@Model.StaffUnavailable</h3>
+        <p>Staff Not Available</p>
+    </div>
+
+    <div class="card teal">
+        <h3>@Model.TotalServices</h3>
+        <p>Total Services</p>
+    </div>
+
+
+    
+</div>
+<div>
+    <h3 style="margin-top:40px;">Today's Appointments Chart</h3>
+    <canvas id="appointmentChart" height="100"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    fetch('/Staff/GetTodayAppointmentsChart')
+    .then(res => res.json())
+    .then(data => {
+
+        const labels = data.map(x => x.time);
+        const values = data.map(x => x.total);
+
+        const ctx = document.getElementById('appointmentChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Appointments Today',
+                    data: values,
+                    borderWidth: 1
+                }]
+            }
+        });
+
+    });
+</script>
