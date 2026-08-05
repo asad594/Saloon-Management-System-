@@ -611,5 +611,92 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("Home");
         }
 
+        // ── MANAGE ADMIN ACCOUNTS ──
+        public IActionResult ManageAdmins()
+        {
+            List<dynamic> list = new List<dynamic>();
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT UserID, ISNULL(UserName, UserRole) AS UserName, UserRole FROM users WHERE UserRole = 'Admin'", conn);
+                SqlDataReader r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    list.Add(new
+                    {
+                        id = r["UserID"],
+                        username = r["UserName"],
+                        role = r["UserRole"]
+                    });
+                }
+            }
+            return View(list);
+        }
+
+        [HttpPost]
+        public IActionResult AddAdmin(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                TempData["SuccessMessage"] = "Please fill in username and password.";
+                return RedirectToAction("ManageAdmins");
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand checkCmd = new SqlCommand("SELECT COUNT(*) FROM users WHERE UserName = @u OR UserRole = @u", conn);
+                checkCmd.Parameters.AddWithValue("@u", username.Trim());
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (count > 0)
+                {
+                    TempData["SuccessMessage"] = "Username already exists. Please choose a different username.";
+                    return RedirectToAction("ManageAdmins");
+                }
+
+                SqlCommand cmd = new SqlCommand(@"
+                    INSERT INTO users (UserName, UserRole, UserPassword)
+                    VALUES (@u, 'Admin', @p)", conn);
+                cmd.Parameters.AddWithValue("@u", username.Trim());
+                cmd.Parameters.AddWithValue("@p", password.Trim());
+                cmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = $"New Admin '{username.Trim()}' created successfully!";
+            return RedirectToAction("ManageAdmins");
+        }
+
+        public IActionResult DeleteAdmin(int id)
+        {
+            int? currentUserId = HttpContext.Session.GetInt32("UserID");
+            if (currentUserId == id)
+            {
+                TempData["SuccessMessage"] = "You cannot delete your own active Admin account!";
+                return RedirectToAction("ManageAdmins");
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand countCmd = new SqlCommand("SELECT COUNT(*) FROM users WHERE UserRole = 'Admin'", conn);
+                int totalAdmins = Convert.ToInt32(countCmd.ExecuteScalar());
+                if (totalAdmins <= 1)
+                {
+                    TempData["SuccessMessage"] = "Cannot delete the last remaining Admin account!";
+                    return RedirectToAction("ManageAdmins");
+                }
+
+                SqlCommand cmd = new SqlCommand("DELETE FROM users WHERE UserID=@id AND UserRole='Admin'", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Admin account removed.";
+            return RedirectToAction("ManageAdmins");
+        }
+
     }
 }

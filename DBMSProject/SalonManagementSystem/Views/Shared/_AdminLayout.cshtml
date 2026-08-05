@@ -349,6 +349,9 @@
                     <a href="/Admin/ManageClients" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageClients" ? "active" : "")">
                         <i class="fa-solid fa-user-group"></i> Manage Clients
                     </a>
+                    <a href="/Admin/ManageAdmins" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageAdmins" ? "active" : "")">
+                        <i class="fa-solid fa-crown"></i> Manage Admins
+                    </a>
                     <a href="/Admin/ActivityLogs" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ActivityLogs" ? "active" : "")">
                         <i class="fa-solid fa-clipboard-list"></i> Activity Logs
                     </a>
