@@ -380,10 +380,23 @@ namespace SalonManagementSystem.Controllers
             {
                 conn.Open();
 
+                SqlCommand ensureColCmd = new SqlCommand(@"
+                    IF OBJECT_ID('dbo.UserActivityLog', 'U') IS NOT NULL AND NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('UserActivityLog') AND name = 'LogMessage')
+                    BEGIN
+                        ALTER TABLE UserActivityLog ADD LogMessage VARCHAR(255) NULL;
+                    END", conn);
+                ensureColCmd.ExecuteNonQuery();
+
                 SqlCommand cmd = new SqlCommand(@"
-                    SELECT LogId, UserId, UserRole, ActionType, LogMessage, LogTimestamp 
+                    SELECT 
+                        LogId, 
+                        UserId, 
+                        ISNULL(UserRole, 'User') AS UserRole, 
+                        ISNULL(ActionType, 'SYSTEM') AS ActionType, 
+                        ISNULL(LogMessage, ActionType) AS LogMessage, 
+                        ActionTime 
                     FROM UserActivityLog 
-                    ORDER BY LogTimestamp DESC", conn);
+                    ORDER BY LogId DESC", conn);
                 
                 SqlDataReader r = cmd.ExecuteReader();
 
@@ -392,11 +405,11 @@ namespace SalonManagementSystem.Controllers
                     logs.Add(new
                     {
                         id = r["LogId"],
-                        userId = r["UserId"],
+                        userId = r["UserId"] == DBNull.Value ? "System" : r["UserId"],
                         role = r["UserRole"],
                         action = r["ActionType"],
                         message = r["LogMessage"],
-                        time = r["LogTimestamp"]
+                        time = r["ActionTime"] != DBNull.Value ? Convert.ToDateTime(r["ActionTime"]).ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                     });
                 }
             }
