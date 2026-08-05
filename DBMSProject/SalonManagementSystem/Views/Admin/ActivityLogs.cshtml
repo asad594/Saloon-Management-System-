@@ -3,59 +3,167 @@
     Layout = "_AdminLayout";
 }
 
-<div class="table-box">
-    <h2>System Activity Logs (Database Triggers)</h2>
-    <p>This table displays actions logged by SQL Triggers and the application.</p>
+@section Styles {
+    <style>
+        .table-card-container {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        }
 
-    <table>
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .table-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .table-title-group p {
+            font-size: 0.84rem;
+            color: var(--text-body);
+        }
+
+        .custom-data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .custom-data-table th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .custom-data-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .custom-data-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .custom-data-table td {
+            padding: 14px 18px;
+            color: #ffffff;
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        .custom-data-table td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 600;
+        }
+
+        .custom-data-table td:last-child {
+            border-radius: 0 12px 12px 0;
+            color: var(--text-body);
+        }
+
+        .action-badge-login {
+            background: rgba(13, 148, 136, 0.2);
+            border: 1px solid #14b8a6;
+            color: #2dd4bf;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-badge-logout {
+            background: rgba(244, 63, 94, 0.2);
+            border: 1px solid #f43f5e;
+            color: #fca5a5;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trigger-msg {
+            color: #d4af37;
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="table-card-container">
+    <div class="table-card-header">
+        <div class="table-title-group">
+            <h2>System Activity & Trigger Audit Logs</h2>
+            <p>Real-time security logs captured by SQL Triggers and System Auth</p>
+        </div>
+    </div>
+
+    <table class="custom-data-table">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Log ID</th>
                 <th>User ID</th>
                 <th>Role</th>
-                <th>Action Type</th>
-                <th>Status Message (From Trigger)</th>
+                <th>Action Event</th>
+                <th>Trigger Status Message</th>
                 <th>Timestamp</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var log in Model)
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var log in Model)
+                {
+                    <tr>
+                        <td>#@log.id</td>
+                        <td>@(log.userId ?? "N/A")</td>
+                        <td>
+                            <span style="color:#ffffff; font-weight:600;">@log.role</span>
+                        </td>
+                        <td>
+                            @if (log.action == "LOGIN")
+                            {
+                                <span class="action-badge-login"><i class="fa-solid fa-right-to-bracket"></i> LOGIN</span>
+                            }
+                            else
+                            {
+                                <span class="action-badge-logout"><i class="fa-solid fa-right-from-bracket"></i> LOGOUT</span>
+                            }
+                        </td>
+                        <td class="trigger-msg">
+                            <i class="fa-solid fa-bolt"></i> @log.message
+                        </td>
+                        <td>@log.time</td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@log.id</td>
-                    <td>@log.userId</td>
-                    <td>@log.role</td>
-                    <td>
-                        <span style="padding: 4px 8px; border-radius: 4px; background: @(log.action == "LOGIN" ? "#e1f5fe" : "#fff3e0"); color: @(log.action == "LOGIN" ? "#0288d1" : "#ef6c00"); font-weight: bold;">
-                            @log.action
-                        </span>
+                    <td colspan="6" style="text-align:center; color:var(--text-body); padding:30px;">
+                        No activity logs recorded yet.
                     </td>
-                    <td style="color: #2e7d32; font-weight: 500;">
-                        <i class="fas fa-bolt"></i> @log.message
-                    </td>
-                    <td>@log.time</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-
-<style>
-    .table-box {
-        animation: fadeIn 0.5s ease-out;
-    }
-
-    @@keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    table th {
-        background: #f8f9fa;
-        text-align: left;
-    }
-
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-</style>

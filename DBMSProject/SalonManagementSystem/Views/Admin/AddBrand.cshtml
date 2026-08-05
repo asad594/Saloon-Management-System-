@@ -1,15 +1,159 @@
-﻿@{
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-<div class="form-box">
-    <h2>Add Brand</h2>
+
+@section Styles {
+    <style>
+        .form-card-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 36px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .form-card-container::before {
+            content: '';
+            position: absolute;
+            top: 16px; left: 16px; bottom: 16px; right: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .form-header-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #d4af37, #0d9488);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .form-header-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .form-header-text p {
+            font-size: 0.82rem;
+            color: var(--text-body);
+        }
+
+        .form-group-custom {
+            margin-bottom: 20px;
+        }
+
+        .form-label-custom {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input-wrapper input:focus {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4af37;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit-gold {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #0d9488 0%, #14b8a6 40%, #d4af37 100%);
+            border: none;
+            border-radius: 50px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            box-shadow: 0 10px 28px rgba(13, 148, 136, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-submit-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px rgba(212, 175, 55, 0.45);
+        }
+    </style>
+}
+
+<div class="form-card-container">
+    <div class="form-header">
+        <div class="form-header-icon">
+            <i class="fa-solid fa-tags"></i>
+        </div>
+        <div class="form-header-text">
+            <h2>Add New Brand</h2>
+            <p>Register a product brand vendor</p>
+        </div>
+    </div>
 
     <form method="post">
+        <div class="form-group-custom">
+            <label class="form-label-custom">Brand Name</label>
+            <div class="form-input-wrapper">
+                <input name="name" placeholder="e.g. L'Oreal Paris" required />
+                <i class="fa-solid fa-building"></i>
+            </div>
+        </div>
 
-        <input name="name" class="form-control" placeholder="Brand Name" required />
-        <input name="contact" class="form-control" placeholder="Contact" required />
+        <div class="form-group-custom">
+            <label class="form-label-custom">Contact Info / Supplier Phone</label>
+            <div class="form-input-wrapper">
+                <input name="contact" placeholder="e.g. 03001111111" required />
+                <i class="fa-solid fa-phone"></i>
+            </div>
+        </div>
 
-        <button class="btn">Add Brand</button>
-
+        <button class="btn-submit-gold">
+            <span>Add Brand Vendor</span>
+            <i class="fa-solid fa-plus"></i>
+        </button>
     </form>
 </div>

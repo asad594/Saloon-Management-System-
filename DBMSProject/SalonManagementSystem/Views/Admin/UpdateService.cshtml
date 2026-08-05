@@ -3,28 +3,207 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="table-box">
-    <h2>Update Services</h2>
-
-    <table>
-        <tr>
-            <th>Service</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-
-        @foreach (var s in Model)
-        {
-            <tr>
-                <td>@s.name</td>
-                <td>@(s.status == 1 ? "Active" : "Inactive")</td>
-
-                <td>
-                    <a class="btn" href="/Admin/ChangeServiceStatus?id=@s.id&status=1">Activate</a>
-                    <a class="btn" href="/Admin/ChangeServiceStatus?id=@s.id&status=2">Deactivate</a>
-                </td>
-            </tr>
+@section Styles {
+    <style>
+        .table-card-container {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
         }
 
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .table-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .table-title-group p {
+            font-size: 0.84rem;
+            color: var(--text-body);
+        }
+
+        .custom-data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .custom-data-table th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .custom-data-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .custom-data-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .custom-data-table td {
+            padding: 16px 20px;
+            color: #ffffff;
+            font-size: 0.92rem;
+            vertical-align: middle;
+        }
+
+        .custom-data-table td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 600;
+        }
+
+        .custom-data-table td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .status-pill-active {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #4ade80;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pill-inactive {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            color: #fca5a5;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-act-teal {
+            background: rgba(13, 148, 136, 0.2);
+            border: 1px solid #14b8a6;
+            color: #2dd4bf;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-act-teal:hover {
+            background: #0d9488;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.4);
+        }
+
+        .btn-act-rose {
+            background: rgba(244, 63, 94, 0.2);
+            border: 1px solid #f43f5e;
+            color: #fca5a5;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 6px;
+        }
+
+        .btn-act-rose:hover {
+            background: #f43f5e;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
+        }
+    </style>
+}
+
+<div class="table-card-container">
+    <div class="table-card-header">
+        <div class="table-title-group">
+            <h2>Service Catalog Management</h2>
+            <p>Activate or deactivate service catalog items for client booking</p>
+        </div>
+        <a href="/Admin/AddService" class="btn-act-teal">
+            <i class="fa-solid fa-plus"></i> Add Service
+        </a>
+    </div>
+
+    <table class="custom-data-table">
+        <thead>
+            <tr>
+                <th>Service Offering Name</th>
+                <th>Current Status</th>
+                <th>Status Toggle Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var s in Model)
+                {
+                    <tr>
+                        <td>
+                            <i class="fa-solid fa-scissors" style="color:#d4af37; margin-right:8px;"></i>
+                            @s.name
+                        </td>
+                        <td>
+                            @if (s.status == 1)
+                            {
+                                <span class="status-pill-active"><i class="fa-solid fa-circle"></i> Active</span>
+                            }
+                            else
+                            {
+                                <span class="status-pill-inactive"><i class="fa-solid fa-circle"></i> Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn-act-teal" href="/Admin/ChangeServiceStatus?id=@s.id&status=1">
+                                <i class="fa-solid fa-check"></i> Activate
+                            </a>
+                            <a class="btn-act-rose" href="/Admin/ChangeServiceStatus?id=@s.id&status=2">
+                                <i class="fa-solid fa-ban"></i> Deactivate
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" style="text-align:center; color:var(--text-body); padding:30px;">
+                        No services found.
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
 </div>

@@ -1,157 +1,407 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Panel</title>
-
-    <link rel="stylesheet" href="~/css/site.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Studio &mdash; Salon Management System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI';
-            background: #f4f6f9;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep-dark: #0b0e14;
+            --bg-card-dark: #131924;
+            --bg-sidebar: #0f141d;
+            --teal-primary: #0d9488;
+            --teal-glow: #14b8a6;
+            --teal-light: #2dd4bf;
+            --gold-accent: #d4af37;
+            --gold-light: #fef08a;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --border-teal: rgba(13, 148, 136, 0.25);
+            --text-heading: #ffffff;
+            --text-body: #94a3b8;
+            --text-muted: #64748b;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep-dark);
+            color: var(--text-heading);
+            overflow-x: hidden;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100vw;
+        }
+
+        /* ── Sidebar Styling ── */
         .sidebar {
-            width: 240px;
-            height: 100vh;
+            width: 270px;
+            min-width: 270px;
+            background: linear-gradient(180deg, #131924 0%, #0b0e14 100%);
+            border-right: 1px solid var(--border-gold);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             position: fixed;
-            background: linear-gradient(180deg, #1d2b64, #f43f5e);
-            padding-top: 20px;
-            color: white;
+            top: 0; bottom: 0; left: 0;
+            z-index: 100;
+            padding: 24px 16px;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
         }
 
-            .sidebar h2 {
-                text-align: center;
-                margin-bottom: 30px;
-            }
-
-            .sidebar a {
-                display: block;
-                padding: 14px 20px;
-                color: white;
-                text-decoration: none;
-                transition: 0.3s;
-            }
-
-                .sidebar a:hover {
-                    background: rgba(255,255,255,0.2);
-                }
-
-        .main {
-            margin-left: 240px;
-            padding: 30px;
+        /* Brand Logo in Sidebar */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px 24px 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            margin-bottom: 16px;
         }
 
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(4,1fr);
+        .sidebar-brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4af37 0%, #0d9488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
+        }
+
+        .sidebar-brand-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .sidebar-brand-text span {
+            color: #d4af37;
+            display: block;
+            font-size: 0.72rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Navigation List */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.25s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item i {
+            font-size: 1rem;
+            width: 22px;
+            text-align: center;
+            color: #d4af37;
+            transition: transform 0.25s ease;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            background: rgba(212, 175, 55, 0.08);
+            border-color: rgba(212, 175, 55, 0.2);
+            transform: translateX(4px);
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.15);
+            color: #2dd4bf;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(13, 148, 136, 0.15) 100%);
+            border-color: #d4af37;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-item.active i {
+            color: #d4af37;
+        }
+
+        /* Logout Button Footer */
+        .sidebar-footer {
+            padding-top: 16px;
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px;
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            border-radius: 12px;
+            color: #fca5a5;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #f43f5e;
+            color: #ffffff;
+            border-color: #f43f5e;
+            box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
+        }
+
+        /* ── Main Content Area ── */
+        .main-content {
+            margin-left: 270px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Header Bar */
+        .top-header {
+            height: 72px;
+            background: rgba(19, 25, 36, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-gold);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .header-title-area h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-title-area p {
+            font-size: 0.78rem;
+            color: var(--text-body);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
             gap: 20px;
         }
 
-        .card {
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
+        .status-badge {
+            background: rgba(13, 148, 136, 0.15);
+            border: 1px solid rgba(13, 148, 136, 0.4);
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #2dd4bf;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-            .card h2 {
-                margin: 0;
-            }
-
-        .c1 {
-            background: #1d2b64;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2dd4bf;
+            box-shadow: 0 0 10px #2dd4bf;
+            animation: pulse 2s infinite;
         }
 
-        .c2 {
-            background: #f43f5e;
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
 
-        .c3 {
-            background: #22c55e;
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-gold);
+            border-radius: 50px;
+            padding: 6px 16px 6px 8px;
         }
 
-        .c4 {
-            background: #7c3aed;
+        .avatar-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #0d9488);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b0e14;
+            font-size: 0.9rem;
+            font-weight: 800;
         }
 
-
-        .form-box {
-            max-width: 500px;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .user-profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
-            .form-box h2 {
-                margin-bottom: 20px;
-            }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+        .user-profile-name {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #ffffff;
         }
 
-        .btn {
-            background: #1d2b64;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .user-profile-role {
+            font-size: 0.68rem;
+            color: var(--gold-accent);
+            font-weight: 600;
         }
 
-            .btn:hover {
-                background: #f43f5e;
-            }
-
-        .table-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
+        /* Content Body Wrapper */
+        .page-body {
+            padding: 36px;
+            flex: 1;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-            table th, table td {
-                padding: 12px;
-                border-bottom: 1px solid #ddd;
-            }
     </style>
+    @RenderSection("Styles", required: false)
 </head>
-
 <body>
 
-    <div class="sidebar">
-        <h2>Salon Admin</h2>
+    <div class="admin-wrapper">
 
-        <a href="/Admin/Home">Dashboard</a>
-        <a href="/Admin/AddService">Add Service</a>
-        <a href="/Admin/AddStaff">Add Staff</a>
-        <a href="/Admin/AddBrand">Add Brand</a>
-        <a href="/Admin/AddProduct">Add Products</a>
-        <a href="/Admin/UpdateStaff">Update Staff</a>
-        <a href="/Admin/UpdateService">Update Service</a>
-        <a href="/Admin/ActivityLogs">Activity Logs</a>
-        
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar">
+            <div>
+                <!-- Brand Header -->
+                <div class="sidebar-brand">
+                    <div class="sidebar-brand-icon">
+                        <i class="fa-solid fa-scissors"></i>
+                    </div>
+                    <div class="sidebar-brand-text">
+                        Salon Admin
+                        <span>Management System</span>
+                    </div>
+                </div>
 
-        <!-- LOGOUT BUTTON -->
-        <a href="/Login/Logout" style="position:absolute; bottom:20px; width:100%; background:#00000030;">
-            Logout
-        </a>
+                <!-- Navigation List -->
+                <nav class="nav-menu">
+                    <a href="/Admin/Home" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Home" ? "active" : "")">
+                        <i class="fa-solid fa-chart-pie"></i> Dashboard
+                    </a>
+                    <a href="/Admin/AddService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Add Service
+                    </a>
+                    <a href="/Admin/AddStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
+                        <i class="fa-solid fa-user-plus"></i> Add Staff
+                    </a>
+                    <a href="/Admin/AddBrand" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddBrand" ? "active" : "")">
+                        <i class="fa-solid fa-tags"></i> Add Brand
+                    </a>
+                    <a href="/Admin/AddProduct" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddProduct" ? "active" : "")">
+                        <i class="fa-solid fa-box-open"></i> Add Product
+                    </a>
+                    <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" ? "active" : "")">
+                        <i class="fa-solid fa-user-pen"></i> Update Staff
+                    </a>
+                    <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" ? "active" : "")">
+                        <i class="fa-solid fa-pen-to-square"></i> Update Service
+                    </a>
+                    <a href="/Admin/ActivityLogs" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ActivityLogs" ? "active" : "")">
+                        <i class="fa-solid fa-clipboard-list"></i> Activity Logs
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <a href="/Login/Logout" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout Portal
+                </a>
+            </div>
+        </aside>
+
+        <!-- ── Main Content Area ── -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="header-title-area">
+                    <h2>Admin Management Studio</h2>
+                    <p>Salon Management System &bull; Live Control Center</p>
+                </div>
+
+                <div class="header-actions">
+                    <div class="status-badge">
+                        <div class="status-dot"></div>
+                        <span>Database Online</span>
+                    </div>
+
+                    <div class="user-profile-badge">
+                        <div class="avatar-circle">
+                            <i class="fa-solid fa-crown"></i>
+                        </div>
+                        <div class="user-profile-info">
+                            <span class="user-profile-name">@(Context.Session.GetString("UserName") ?? "Admin")</span>
+                            <span class="user-profile-role">Executive Administrator</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Body -->
+            <div class="page-body">
+                @RenderBody()
+            </div>
+        </main>
+
     </div>
 
-    <div class="main">
-        @RenderBody()
-    </div>
-
+    <!-- SweetAlert2 Toast Notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         @if (TempData["SuccessMessage"] != null)
@@ -161,11 +411,15 @@
                 icon: 'success',
                 title: 'Success!',
                 text: '@TempData["SuccessMessage"]',
-                timer: 3000,
-                showConfirmButton: false
+                timer: 2500,
+                showConfirmButton: false,
+                background: '#131924',
+                color: '#ffffff',
+                iconColor: '#d4af37'
             });
             </text>
         }
     </script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
