@@ -3,245 +3,198 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Salon Management System &mdash; Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <title>Salon Management System &mdash; Enterprise Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <!-- FontAwesome icons for rich UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --pink-light: #f8a4c8;
-            --pink:       #e91e8c;
-            --gold:       #d4af37;
-            --purple-dark:#1a0533;
-            --purple-mid: #2d1a4a;
-            --glass-bg:   rgba(255,255,255,0.07);
-            --glass-border:rgba(255,255,255,0.15);
-            --text-light: #f0e6ff;
-            --text-muted: #b8a8d4;
-            --error-red:  #ff6b8a;
+            --brand-primary: #ec4899;
+            --brand-primary-glow: rgba(236, 72, 153, 0.4);
+            --brand-secondary: #8b5cf6;
+            --brand-gold: #f59e0b;
+            --bg-dark: #090514;
+            --bg-card: rgba(18, 12, 38, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-border-hover: rgba(236, 72, 153, 0.35);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --error-red: #f43f5e;
+            --success-green: #10b981;
         }
 
         html, body {
             height: 100%;
             min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
         }
 
-        /* ── Animated gradient background ── */
         body {
-            background: linear-gradient(135deg, #0f0221 0%, #1a0533 30%, #2d1a4a 60%, #0d1117 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            min-height: 100vh;
         }
 
-        /* ── Floating orbs ── */
-        .orb {
+        /* ── Ambient Background Lighting ── */
+        .ambient-mesh {
             position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .ambient-orb {
+            position: absolute;
             border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.35;
-            animation: float-orb 12s ease-in-out infinite;
+            filter: blur(100px);
+            opacity: 0.45;
+            animation: floatOrb 18s ease-in-out infinite alternate;
+        }
+
+        .orb-pink {
+            width: 550px; height: 550px;
+            background: radial-gradient(circle, #db2777 0%, transparent 70%);
+            top: -15%; left: -10%;
+        }
+
+        .orb-purple {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+            bottom: -20%; right: -10%;
+            animation-delay: -6s;
+        }
+
+        .orb-gold {
+            width: 450px; height: 450px;
+            background: radial-gradient(circle, #d97706 0%, transparent 70%);
+            top: 35%; right: 25%;
+            animation-delay: -12s;
+            opacity: 0.25;
+        }
+
+        @@keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, 30px) scale(1.1); }
+            100% { transform: translate(-30px, -20px) scale(0.95); }
+        }
+
+        /* Canvas particles */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
             pointer-events: none;
         }
-        .orb-1 { width:500px; height:500px; background:radial-gradient(circle,#e91e8c,transparent); top:-150px; left:-100px; animation-delay:0s; }
-        .orb-2 { width:400px; height:400px; background:radial-gradient(circle,#d4af37,transparent); bottom:-100px; right:-80px; animation-delay:4s; }
-        .orb-3 { width:300px; height:300px; background:radial-gradient(circle,#6a11cb,transparent); top:40%; left:60%; animation-delay:8s; }
 
-        @keyframes float-orb {
-            0%,100% { transform: translate(0,0) scale(1); }
-            33%      { transform: translate(30px,-30px) scale(1.08); }
-            66%      { transform: translate(-20px,20px) scale(0.95); }
+        /* Grid overlay */
+        .grid-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
         }
 
-        /* ── Animated particle canvas ── */
-        #particles-canvas {
-            position: fixed; inset: 0;
-            pointer-events: none; z-index: 0;
-        }
-
-        /* ── Animated grid lines ── */
-        .grid-overlay {
-            position: fixed; inset: 0;
-            background-image:
-                linear-gradient(rgba(232,30,140,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(232,30,140,0.05) 1px, transparent 1px);
-            background-size: 60px 60px;
-            animation: grid-drift 20s linear infinite;
-            pointer-events: none; z-index: 0;
-        }
-        @keyframes grid-drift {
-            0%   { transform: translateY(0); }
-            100% { transform: translateY(60px); }
-        }
-
-        /* ── Main card ── */
-        .login-wrapper {
-            position: relative; z-index: 10;
-            display: flex;
-            min-height: 100vh;
+        /* ── Main Container Wrapper ── */
+        .login-page-container {
+            position: relative;
+            z-index: 10;
             width: 100%;
+            max-width: 1120px;
+            margin: 24px auto;
+            padding: 0 20px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
 
-        .login-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 52px 48px 44px;
-            width: 100%; max-width: 440px;
-            box-shadow:
-                0 32px 80px rgba(0,0,0,0.6),
-                0 0 0 1px rgba(255,255,255,0.04) inset,
-                0 1px 0 rgba(255,255,255,0.1) inset;
-            animation: card-in 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
-        }
-
-        @keyframes card-in {
-            from { opacity:0; transform:translateY(40px) scale(0.94); }
-            to   { opacity:1; transform:translateY(0) scale(1); }
-        }
-
-        /* ── Logo / Brand ── */
-        .brand-section {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-
-        .brand-icon {
-            width: 72px; height: 72px;
-            background: linear-gradient(135deg, #e91e8c, #d4af37);
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center; justify-content: center;
-            margin-bottom: 18px;
-            box-shadow: 0 8px 32px rgba(233,30,140,0.4);
-            animation: icon-pulse 3s ease-in-out infinite;
-        }
-        @keyframes icon-pulse {
-            0%,100% { box-shadow: 0 8px 32px rgba(233,30,140,0.4); }
-            50%     { box-shadow: 0 8px 48px rgba(233,30,140,0.7); }
-        }
-        .brand-icon svg { width:36px; height:36px; fill:#fff; }
-
-        .brand-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem; font-weight: 700;
-            color: var(--text-light);
-            letter-spacing: -0.02em;
-            line-height: 1.15;
-        }
-        .brand-tagline {
-            font-size: 0.78rem; font-weight: 400;
-            color: var(--text-muted);
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            margin-top: 4px;
-        }
-
-        /* ── Decorative divider ── */
-        .divider {
-            display: flex; align-items: center; gap: 12px;
-            margin-bottom: 32px;
-        }
-        .divider-line { flex: 1; height: 1px; background: var(--glass-border); }
-        .divider-text {
-            font-size: 0.7rem; letter-spacing: 0.12em; color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        /* Page content */
         @RenderSection("Styles", required: false)
     </style>
 </head>
 <body>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="grid-overlay"></div>
+    <div class="ambient-mesh">
+        <div class="ambient-orb orb-pink"></div>
+        <div class="ambient-orb orb-purple"></div>
+        <div class="ambient-orb orb-gold"></div>
+    </div>
+    <div class="grid-pattern"></div>
     <canvas id="particles-canvas"></canvas>
 
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="brand-section">
-                <div class="brand-icon">
-                    <!-- Scissors / salon icon -->
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3h-3z"/>
-                    </svg>
-                </div>
-                <div class="brand-name">Salon Pro</div>
-                <div class="brand-tagline">Management System</div>
-            </div>
-
-            <div class="divider">
-                <div class="divider-line"></div>
-                <div class="divider-text">Sign In</div>
-                <div class="divider-line"></div>
-            </div>
-
-            @RenderBody()
-        </div>
+    <div class="login-page-container">
+        @RenderBody()
     </div>
 
+    <!-- Particle System Script -->
     <script>
-        // ── Particle system ──
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        let W, H;
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
 
-        function resize() {
-            W = canvas.width  = window.innerWidth;
+        window.addEventListener('resize', () => {
+            W = canvas.width = window.innerWidth;
             H = canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
+            initParticles();
+        });
 
-        function randomRange(a, b) { return a + Math.random() * (b - a); }
-
-        function createParticles() {
+        let particles = [];
+        function initParticles() {
             particles = [];
-            const count = Math.floor(W * H / 14000);
+            const count = Math.min(Math.floor((W * H) / 18000), 70);
             for (let i = 0; i < count; i++) {
                 particles.push({
-                    x: randomRange(0, W), y: randomRange(0, H),
-                    r: randomRange(0.8, 2.5),
-                    dx: randomRange(-0.3, 0.3), dy: randomRange(-0.5, -0.1),
-                    alpha: randomRange(0.3, 0.9),
-                    color: Math.random() > 0.5 ? '#e91e8c' : '#d4af37'
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    radius: Math.random() * 2 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    alpha: Math.random() * 0.6 + 0.2,
+                    color: Math.random() > 0.4 ? '#ec4899' : '#8b5cf6'
                 });
             }
         }
-        createParticles();
+        initParticles();
 
-        function animate() {
+        function drawParticles() {
             ctx.clearRect(0, 0, W, H);
-            for (const p of particles) {
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
                 ctx.fill();
-                ctx.globalAlpha = 1;
 
-                p.x += p.dx; p.y += p.dy;
-                p.alpha -= 0.001;
-                if (p.y < -10 || p.alpha <= 0) {
-                    p.x = randomRange(0, W); p.y = H + 10;
-                    p.alpha = randomRange(0.3, 0.9);
-                }
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0) p.x = W;
+                if (p.x > W) p.x = 0;
+                if (p.y < 0) p.y = H;
+                if (p.y > H) p.y = 0;
             }
-            requestAnimationFrame(animate);
+            requestAnimationFrame(drawParticles);
         }
-        animate();
+        drawParticles();
     </script>
+
+    <!-- SweetAlert2 integration -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         @if (TempData["SuccessMessage"] != null)
@@ -249,17 +202,19 @@
             <text>
             Swal.fire({
                 icon: 'success',
-                title: 'Success!',
+                title: 'Welcome Back!',
                 text: '@TempData["SuccessMessage"]',
-                timer: 3000,
+                timer: 2500,
                 showConfirmButton: false,
-                background: 'rgba(29, 5, 51, 0.95)',
-                color: '#f0e6ff',
-                iconColor: '#e91e8c',
-                backdrop: `rgba(233, 30, 140, 0.1)`
+                background: 'rgba(18, 12, 38, 0.95)',
+                color: '#f8fafc',
+                iconColor: '#ec4899',
+                customClass: {
+                    popup: 'glass-swal'
+                }
             });
             </text>
         }
     </script>
 </body>
-</html>
+</html>
