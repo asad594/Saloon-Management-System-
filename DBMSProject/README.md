@@ -1,8 +1,8 @@
 <div align="center">
 
-  <img src="../banner.png" alt="Salon Management System Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
+  <img src="../banner.png" alt="StylOnyx Luxury Beauty Studio Banner" width="100%" style="border-radius: 16px; margin-bottom: 24px;" />
 
-  # 💇‍♀️ Salon Management System 👑
+  # 💇‍♀️ StylOnyx &mdash; Luxury Beauty Studio 👑
   
   **An Executive Luxury Database Management System & Full-Stack Web Application**
 
@@ -12,7 +12,7 @@
   [![Bootstrap](https://img.shields.io/badge/Theme-Slate%20Gold%20Teal-d4af37?style=for-the-badge)](https://github.com/)
 
   <p align="center">
-    <i>A state-of-the-art enterprise salon management portal built for beauty salons, spa parlors, and wellness centers. Featuring executive analytics, multi-admin management, appointment booking, inventory tracking, and real-time security audit logs.</i>
+    <i>StylOnyx is a state-of-the-art enterprise salon management portal built for high-end beauty salons, spa parlors, and wellness centers. Featuring executive analytics, multi-admin management, appointment booking, inventory tracking, and real-time security audit logs.</i>
   </p>
 
 </div>
