@@ -495,16 +495,6 @@
                 Don't have an account? <a href="/Login/Register">Register Here</a>
             </div>
 
-            <!-- Quick Demo Credentials Pills -->
-            <div class="quick-pills-row">
-                <button type="button" class="demo-pill-btn" onclick="quickFill('admin', 'admin123')">
-                    <i class="fa-solid fa-crown"></i> Admin (admin / admin123)
-                </button>
-                <button type="button" class="demo-pill-btn" onclick="quickFill('user', 'user123')">
-                    <i class="fa-solid fa-user"></i> User (user / user123)
-                </button>
-            </div>
-
         </div>
     </div>
 
@@ -556,13 +546,6 @@
         pwInput.type = isPw ? 'text' : 'password';
         eyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
     });
-
-    // ── Quick Autofill Function ──
-    function quickFill(user, pass) {
-        userInput.value = user;
-        pwInput.value = pass;
-        userInput.focus();
-    }
 
     // ── Loading state on Submit ──
     const submitBtn = document.getElementById('submitBtn');
