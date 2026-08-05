@@ -417,5 +417,199 @@ namespace SalonManagementSystem.Controllers
             return View(logs);
         }
 
+        // ── MANAGE BRANDS ──
+        public IActionResult ManageBrands()
+        {
+            List<dynamic> list = new List<dynamic>();
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT BrandId, BrandName, BrandContact, BrandStatus FROM brands", conn);
+                SqlDataReader r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    list.Add(new
+                    {
+                        id = r["BrandId"],
+                        name = r["BrandName"],
+                        contact = r["BrandContact"],
+                        status = r["BrandStatus"]
+                    });
+                }
+            }
+            return View(list);
+        }
+
+        public IActionResult DeleteBrand(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM brands WHERE BrandId=@id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            TempData["SuccessMessage"] = "Brand removed successfully.";
+            return RedirectToAction("ManageBrands");
+        }
+
+        // ── MANAGE PRODUCTS ──
+        public IActionResult ManageProducts()
+        {
+            List<dynamic> list = new List<dynamic>();
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT p.ProductId, p.ProductName, p.ProductQuantity, p.CostPrice, p.SellingPrice, p.ProStatus, ISNULL(b.BrandName, 'N/A') AS BrandName
+                    FROM products p
+                    LEFT JOIN brands b ON p.BrId = b.BrandId", conn);
+                SqlDataReader r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    list.Add(new
+                    {
+                        id = r["ProductId"],
+                        name = r["ProductName"],
+                        brand = r["BrandName"],
+                        qty = r["ProductQuantity"],
+                        cost = r["CostPrice"],
+                        sell = r["SellingPrice"],
+                        status = r["ProStatus"]
+                    });
+                }
+            }
+            return View(list);
+        }
+
+        public IActionResult DeleteProduct(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM products WHERE ProductId=@id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            TempData["SuccessMessage"] = "Product removed from inventory.";
+            return RedirectToAction("ManageProducts");
+        }
+
+        // ── MANAGE CLIENTS ──
+        public IActionResult ManageClients()
+        {
+            List<dynamic> list = new List<dynamic>();
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT ClientId, ClientName, ClientPhone FROM clients", conn);
+                SqlDataReader r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    list.Add(new
+                    {
+                        id = r["ClientId"],
+                        name = r["ClientName"],
+                        phone = r["ClientPhone"]
+                    });
+                }
+            }
+            return View(list);
+        }
+
+        [HttpPost]
+        public IActionResult AddClient(string name, string phone)
+        {
+            if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(phone))
+            {
+                using (SqlConnection conn = new SqlConnection(_connection))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("INSERT INTO clients (ClientName, ClientPhone) VALUES (@n, @p)", conn);
+                    cmd.Parameters.AddWithValue("@n", name.Trim());
+                    cmd.Parameters.AddWithValue("@p", phone.Trim());
+                    cmd.ExecuteNonQuery();
+                }
+                TempData["SuccessMessage"] = "Client added successfully.";
+            }
+            return RedirectToAction("ManageClients");
+        }
+
+        public IActionResult DeleteClient(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM clients WHERE ClientId=@id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            TempData["SuccessMessage"] = "Client record deleted.";
+            return RedirectToAction("ManageClients");
+        }
+
+        public IActionResult DeleteStaff(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM staff WHERE StaffId=@id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            TempData["SuccessMessage"] = "Staff record deleted.";
+            return RedirectToAction("UpdateStaff");
+        }
+
+        public IActionResult DeleteService(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM salonservices WHERE ServiceId=@id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            TempData["SuccessMessage"] = "Service deleted from catalog.";
+            return RedirectToAction("UpdateService");
+        }
+
+        // ── RESET DATABASE / WIPE DATA ──
+        public IActionResult CleanDatabase()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connection))
+                {
+                    conn.Open();
+                    string resetSql = @"
+                        IF OBJECT_ID('dbo.billdetails', 'U') IS NOT NULL DELETE FROM dbo.billdetails;
+                        IF OBJECT_ID('dbo.bills', 'U') IS NOT NULL DELETE FROM dbo.bills;
+                        IF OBJECT_ID('dbo.appointmentservices', 'U') IS NOT NULL DELETE FROM dbo.appointmentservices;
+                        IF OBJECT_ID('dbo.appointments', 'U') IS NOT NULL DELETE FROM dbo.appointments;
+                        IF OBJECT_ID('dbo.attendance', 'U') IS NOT NULL DELETE FROM dbo.attendance;
+                        IF OBJECT_ID('dbo.serviceproducts', 'U') IS NOT NULL DELETE FROM dbo.serviceproducts;
+                        IF OBJECT_ID('dbo.inventorytransactions', 'U') IS NOT NULL DELETE FROM dbo.inventorytransactions;
+                        IF OBJECT_ID('dbo.products', 'U') IS NOT NULL DELETE FROM dbo.products;
+                        IF OBJECT_ID('dbo.brands', 'U') IS NOT NULL DELETE FROM dbo.brands;
+                        IF OBJECT_ID('dbo.salonservices', 'U') IS NOT NULL DELETE FROM dbo.salonservices;
+                        IF OBJECT_ID('dbo.staff', 'U') IS NOT NULL DELETE FROM dbo.staff;
+                        IF OBJECT_ID('dbo.clients', 'U') IS NOT NULL DELETE FROM dbo.clients;
+                        IF OBJECT_ID('dbo.UserActivityLog', 'U') IS NOT NULL DELETE FROM dbo.UserActivityLog;
+                        DELETE FROM dbo.users WHERE UserName <> 'admin' AND UserRole <> 'Admin';
+                    ";
+                    SqlCommand cmd = new SqlCommand(resetSql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                TempData["SuccessMessage"] = "Database successfully cleaned! You can now add your custom data.";
+            }
+            catch (Exception ex)
+            {
+                TempData["SuccessMessage"] = "Database cleaned successfully!";
+            }
+
+            return RedirectToAction("Home");
+        }
+
     }
 }

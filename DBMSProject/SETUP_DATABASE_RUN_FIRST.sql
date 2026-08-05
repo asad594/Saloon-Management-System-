@@ -1,6 +1,6 @@
 /*
-  SalonManagementSystem database setup
-  Run this file once in SQL Server Management Studio before starting the website.
+  SalonManagementSystem Clean Database Setup
+  Run this file once in SQL Server Management Studio to initialize a fresh, clean database.
 */
 
 IF DB_ID('salonmanagementsystem') IS NULL
@@ -32,6 +32,7 @@ GO
 
 CREATE TABLE users(
     UserID INT IDENTITY(1,1) PRIMARY KEY,
+    UserName VARCHAR(50) NOT NULL,
     UserRole VARCHAR(50) NOT NULL,
     UserPassword VARCHAR(50) NOT NULL
 );
@@ -59,12 +60,12 @@ CREATE TABLE staff(
     StaffPhone VARCHAR(50) NOT NULL,
     StaffEmail VARCHAR(50),
     StaffAddress VARCHAR(100),
-    JoiningDate DATE,
+    JoiningDate DATE DEFAULT GETDATE(),
     StaffSalary DECIMAL(10,2),
     StaffSpecialilty VARCHAR(50),
     StaffStatus INT NOT NULL,
     FOREIGN KEY(StaffStatus) REFERENCES activestatus(StatusId),
-    FOREIGN KEY(UsId) REFERENCES users(UserID)
+    FOREIGN KEY(UsId) REFERENCES users(UserID) ON DELETE CASCADE
 );
 
 CREATE TABLE salonservices(
@@ -85,7 +86,7 @@ CREATE TABLE appointments(
     AppStatus INT NOT NULL,
     App_Booked_By INT NOT NULL,
     FOREIGN KEY(AppStatus) REFERENCES activestatus(StatusId),
-    FOREIGN KEY(CId) REFERENCES clients(ClientId),
+    FOREIGN KEY(CId) REFERENCES clients(ClientId) ON DELETE CASCADE,
     FOREIGN KEY(App_Booked_For) REFERENCES staff(StaffId),
     FOREIGN KEY(App_Booked_By) REFERENCES staff(StaffId)
 );
@@ -98,7 +99,7 @@ CREATE TABLE bills(
     TotalAmount DECIMAL(10,2),
     PayId INT NOT NULL,
     FOREIGN KEY(PayId) REFERENCES paymentmethods(methodId),
-    FOREIGN KEY(ClId) REFERENCES clients(ClientId),
+    FOREIGN KEY(ClId) REFERENCES clients(ClientId) ON DELETE CASCADE,
     FOREIGN KEY(AppointId) REFERENCES appointments(AppId)
 );
 
@@ -107,7 +108,7 @@ CREATE TABLE billdetails(
     BId INT NOT NULL,
     ServId INT NOT NULL,
     BDPrice DECIMAL(10,2),
-    FOREIGN KEY(BId) REFERENCES bills(BillId),
+    FOREIGN KEY(BId) REFERENCES bills(BillId) ON DELETE CASCADE,
     FOREIGN KEY(ServId) REFERENCES salonservices(ServiceId)
 );
 
@@ -128,7 +129,7 @@ CREATE TABLE products(
     SellingPrice DECIMAL(10,2),
     ProStatus INT NOT NULL,
     FOREIGN KEY(ProStatus) REFERENCES activestatus(StatusId),
-    FOREIGN KEY(BrId) REFERENCES brands(BrandId)
+    FOREIGN KEY(BrId) REFERENCES brands(BrandId) ON DELETE CASCADE
 );
 
 CREATE TABLE inventorytransactions(
@@ -137,7 +138,7 @@ CREATE TABLE inventorytransactions(
     TransactionType VARCHAR(50) NOT NULL,
     InventoryQuantity INT,
     InventoryDate DATE DEFAULT GETDATE(),
-    FOREIGN KEY(ProId) REFERENCES products(ProductId)
+    FOREIGN KEY(ProId) REFERENCES products(ProductId) ON DELETE CASCADE
 );
 
 CREATE TABLE serviceproducts(
@@ -145,8 +146,8 @@ CREATE TABLE serviceproducts(
     SerId INT NOT NULL,
     PId INT NOT NULL,
     SPQuantityUsed INT,
-    FOREIGN KEY(SerId) REFERENCES salonservices(ServiceId),
-    FOREIGN KEY(PId) REFERENCES products(ProductId)
+    FOREIGN KEY(SerId) REFERENCES salonservices(ServiceId) ON DELETE CASCADE,
+    FOREIGN KEY(PId) REFERENCES products(ProductId) ON DELETE CASCADE
 );
 
 CREATE TABLE appointmentservices(
@@ -154,7 +155,7 @@ CREATE TABLE appointmentservices(
     ApId INT NOT NULL,
     SeId INT NOT NULL,
     FOREIGN KEY(SeId) REFERENCES salonservices(ServiceId),
-    FOREIGN KEY(ApId) REFERENCES appointments(AppId)
+    FOREIGN KEY(ApId) REFERENCES appointments(AppId) ON DELETE CASCADE
 );
 
 CREATE TABLE attendance(
@@ -162,7 +163,7 @@ CREATE TABLE attendance(
     StaffId INT NOT NULL,
     CheckIn DATETIME,
     CheckOut DATETIME,
-    FOREIGN KEY (StaffId) REFERENCES staff(StaffId)
+    FOREIGN KEY (StaffId) REFERENCES staff(StaffId) ON DELETE CASCADE
 );
 
 CREATE TABLE UserActivityLog(
@@ -170,49 +171,18 @@ CREATE TABLE UserActivityLog(
     UserId INT NULL,
     UserRole VARCHAR(50),
     ActionType VARCHAR(50),
+    LogMessage VARCHAR(255) NULL,
     ActionTime DATETIME DEFAULT GETDATE()
 );
 GO
 
+/* ── Essential System Lookup Seeds ── */
 INSERT INTO activestatus (StatusType) VALUES ('Active'),('Inactive'),('Scheduled'),('Completed'),('Cancelled'),('On-Leave');
 INSERT INTO paymentmethods (methodType) VALUES ('Cash'),('Card'),('Easypaisa'),('JazzCash'),('Bank Transfer');
-INSERT INTO users (UserRole, UserPassword) VALUES ('Admin','123'),('Staff','987');
 
-INSERT INTO clients (ClientName, ClientPhone) VALUES
-('Ali Khan','03001234567'),('Sara Ahmed','03111234567'),('Usman Tariq','03221234567'),('Ayesha Noor','03331234567'),('Bilal Sheikh','03441234567');
-
-INSERT INTO staff(UsId, StaffName, StaffPhone, StaffEmail, StaffAddress, JoiningDate, StaffSalary, StaffSpecialilty, StaffStatus) VALUES
-(1,'Asad','03000000001','asad@mail.com','Karachi','2023-01-01',30000,'Hair',1),
-(1,'Nida','03000000002','nida@mail.com','Karachi','2023-02-01',32000,'Makeup',1),
-(2,'Aliya','03000000003','aliya@mail.com','Karachi','2023-03-01',28000,'Nails',1),
-(2,'Usman','03000000004','usman@mail.com','Karachi','2023-04-01',35000,'Hair',2),
-(2,'Hira','03000000005','hira@mail.com','Karachi','2023-05-01',30000,'Facial',1);
-
-INSERT INTO salonservices (ServiceName, ServicePrice, ServiceTime, ServiceStatus) VALUES
-('Hair Cut',500,'00:30:00',1),('Facial',1500,'01:00:00',1),('Manicure',800,'00:45:00',1),
-('Pedicure',900,'00:45:00',2),('Hair Color',2500,'02:00:00',1),('Makeup',3000,'01:30:00',1);
-
-INSERT INTO appointments(CId, App_Booked_For, AppTime, AppDate, AppStatus, App_Booked_By) VALUES
-(1,1,'10:00',CAST(GETDATE() AS DATE),3,2),(2,2,'11:00',CAST(GETDATE() AS DATE),3,3),(3,3,'12:00',CAST(GETDATE() AS DATE),4,4);
-
-INSERT INTO bills(AppointId, ClId, BillDate, TotalAmount, PayId) VALUES
-(1,1,GETDATE(),500,1),(NULL,2,GETDATE(),1500,2),(NULL,3,GETDATE(),800,3);
-
-INSERT INTO billdetails (BId, ServId, BDPrice) VALUES (1,1,500),(2,2,1500),(3,3,800);
-
-INSERT INTO brands (BrandName, BrandContact, BrandStatus) VALUES
-('LOreal','03001111111',1),('Garnier','03002222222',1),('Dove','03003333333',1);
-
-INSERT INTO products(ProductName, BrId, ProductQuantity, CostPrice, SellingPrice, ProStatus) VALUES
-('Shampoo',1,50,300,500,1),('Conditioner',2,40,250,450,1),('Face Wash',3,60,200,350,1);
-
-INSERT INTO inventorytransactions(ProId, TransactionType, InventoryQuantity, InventoryDate) VALUES
-(1,'IN',20,GETDATE()),(2,'OUT',5,GETDATE()),(3,'IN',15,GETDATE());
-
-INSERT INTO serviceproducts (SerId, PId, SPQuantityUsed) VALUES (1,1,2),(2,2,1),(3,3,1);
-INSERT INTO appointmentservices (ApId, SeId) VALUES (1,1),(2,2),(3,3);
+/* ── Seed Default Executive Admin Account ── */
+INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('admin', 'Admin', 'admin123');
 GO
 
--- Login credentials:
--- Admin / 123
--- Staff / 987
+-- Database is clean and ready for custom entries!
+-- Login: admin / admin123

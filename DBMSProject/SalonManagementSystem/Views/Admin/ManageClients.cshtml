@@ -1,0 +1,305 @@
+@model List<dynamic>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .page-grid-layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 28px;
+        }
+
+        .form-card-container {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            height: fit-content;
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .form-header-icon {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4af37, #0d9488);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .form-header-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: #ffffff;
+        }
+
+        .form-group-custom {
+            margin-bottom: 18px;
+        }
+
+        .form-label-custom {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input-wrapper input {
+            width: 100%;
+            padding: 13px 16px 13px 42px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input-wrapper input:focus {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4af37;
+            font-size: 0.9rem;
+        }
+
+        .btn-submit-gold {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #0d9488 0%, #14b8a6 40%, #d4af37 100%);
+            border: none;
+            border-radius: 50px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            box-shadow: 0 10px 24px rgba(13, 148, 136, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-submit-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(212, 175, 55, 0.45);
+        }
+
+        .table-card-container {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .table-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .table-title-group p {
+            font-size: 0.82rem;
+            color: var(--text-body);
+            margin-bottom: 20px;
+        }
+
+        .custom-data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .custom-data-table th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .custom-data-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .custom-data-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .custom-data-table td {
+            padding: 14px 18px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .custom-data-table td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 600;
+        }
+
+        .custom-data-table td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .btn-act-rose {
+            background: rgba(244, 63, 94, 0.2);
+            border: 1px solid #f43f5e;
+            color: #fca5a5;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-act-rose:hover {
+            background: #f43f5e;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
+        }
+    </style>
+}
+
+<div class="page-grid-layout">
+    <!-- Add Client Form -->
+    <div class="form-card-container">
+        <div class="form-header">
+            <div class="form-header-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <div class="form-header-text">
+                <h2>Add Client</h2>
+            </div>
+        </div>
+
+        <form method="post" action="/Admin/AddClient">
+            <div class="form-group-custom">
+                <label class="form-label-custom">Client Full Name</label>
+                <div class="form-input-wrapper">
+                    <input name="name" placeholder="Client Name" required />
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Phone Number</label>
+                <div class="form-input-wrapper">
+                    <input name="phone" placeholder="03001234567" required />
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+            </div>
+
+            <button class="btn-submit-gold">
+                <span>Save Client</span>
+                <i class="fa-solid fa-check"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Client Roster Table -->
+    <div class="table-card-container">
+        <div class="table-title-group">
+            <h2>Client Customer Directory</h2>
+            <p>View registered clients for appointments and billing</p>
+        </div>
+
+        <table class="custom-data-table">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Phone Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var c in Model)
+                    {
+                        <tr>
+                            <td>
+                                <i class="fa-solid fa-user-heart" style="color:#d4af37; margin-right:8px;"></i>
+                                @c.name
+                            </td>
+                            <td>@c.phone</td>
+                            <td>
+                                <a class="btn-act-rose" href="#" onclick="confirmDelete('/Admin/DeleteClient?id=@c.id'); return false;">
+                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" style="text-align:center; color:var(--text-body); padding:30px;">
+                            No clients registered yet. Add a client using the form!
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Delete Client?',
+                text: "Are you sure you want to remove this client record?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, Delete',
+                background: '#131924',
+                color: '#ffffff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+}

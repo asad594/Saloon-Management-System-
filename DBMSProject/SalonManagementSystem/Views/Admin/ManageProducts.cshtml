@@ -1,0 +1,210 @@
+@model List<dynamic>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .table-card-container {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .table-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #ffffff;
+        }
+
+        .table-title-group p {
+            font-size: 0.84rem;
+            color: var(--text-body);
+        }
+
+        .custom-data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .custom-data-table th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .custom-data-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .custom-data-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .custom-data-table td {
+            padding: 14px 18px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .custom-data-table td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 600;
+        }
+
+        .custom-data-table td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .btn-act-teal {
+            background: rgba(13, 148, 136, 0.2);
+            border: 1px solid #14b8a6;
+            color: #2dd4bf;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-act-teal:hover {
+            background: #0d9488;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.4);
+        }
+
+        .btn-act-rose {
+            background: rgba(244, 63, 94, 0.2);
+            border: 1px solid #f43f5e;
+            color: #fca5a5;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-act-rose:hover {
+            background: #f43f5e;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
+        }
+
+        .qty-badge {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+    </style>
+}
+
+<div class="table-card-container">
+    <div class="table-card-header">
+        <div class="table-title-group">
+            <h2>Inventory Products Management</h2>
+            <p>Monitor stock quantities and pricing specs</p>
+        </div>
+        <a href="/Admin/AddProduct" class="btn-act-teal">
+            <i class="fa-solid fa-plus"></i> Add Product
+        </a>
+    </div>
+
+    <table class="custom-data-table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Brand Vendor</th>
+                <th>Stock Quantity</th>
+                <th>Cost Price</th>
+                <th>Selling Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var p in Model)
+                {
+                    <tr>
+                        <td>
+                            <i class="fa-solid fa-box-open" style="color:#d4af37; margin-right:8px;"></i>
+                            @p.name
+                        </td>
+                        <td>@p.brand</td>
+                        <td>
+                            <span class="qty-badge">@p.qty units</span>
+                        </td>
+                        <td>Rs. @p.cost</td>
+                        <td style="color:#2dd4bf; font-weight:700;">Rs. @p.sell</td>
+                        <td>
+                            <a class="btn-act-rose" href="#" onclick="confirmDelete('/Admin/DeleteProduct?id=@p.id'); return false;">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-body); padding:30px;">
+                        No inventory products found. Click "+ Add Product" to add stock items!
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Delete Product?',
+                text: "Are you sure you want to remove this product from inventory?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, Delete',
+                background: '#131924',
+                color: '#ffffff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+}

@@ -334,26 +334,26 @@
                     <a href="/Admin/Home" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Home" ? "active" : "")">
                         <i class="fa-solid fa-chart-pie"></i> Dashboard
                     </a>
-                    <a href="/Admin/AddService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Add Service
+                    <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
+                        <i class="fa-solid fa-scissors"></i> Manage Services
                     </a>
-                    <a href="/Admin/AddStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
-                        <i class="fa-solid fa-user-plus"></i> Add Staff
+                    <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
+                        <i class="fa-solid fa-users"></i> Manage Staff
                     </a>
-                    <a href="/Admin/AddBrand" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddBrand" ? "active" : "")">
-                        <i class="fa-solid fa-tags"></i> Add Brand
+                    <a href="/Admin/ManageBrands" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageBrands" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddBrand" ? "active" : "")">
+                        <i class="fa-solid fa-tags"></i> Manage Brands
                     </a>
-                    <a href="/Admin/AddProduct" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddProduct" ? "active" : "")">
-                        <i class="fa-solid fa-box-open"></i> Add Product
+                    <a href="/Admin/ManageProducts" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageProducts" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddProduct" ? "active" : "")">
+                        <i class="fa-solid fa-box-open"></i> Manage Products
                     </a>
-                    <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" ? "active" : "")">
-                        <i class="fa-solid fa-user-pen"></i> Update Staff
-                    </a>
-                    <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" ? "active" : "")">
-                        <i class="fa-solid fa-pen-to-square"></i> Update Service
+                    <a href="/Admin/ManageClients" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageClients" ? "active" : "")">
+                        <i class="fa-solid fa-user-group"></i> Manage Clients
                     </a>
                     <a href="/Admin/ActivityLogs" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ActivityLogs" ? "active" : "")">
                         <i class="fa-solid fa-clipboard-list"></i> Activity Logs
+                    </a>
+                    <a href="#" onclick="confirmResetDb(); return false;" class="nav-item" style="color:#fca5a5;">
+                        <i class="fa-solid fa-broom" style="color:#f43f5e;"></i> Clean Database
                     </a>
                 </nav>
             </div>
@@ -401,7 +401,7 @@
 
     </div>
 
-    <!-- SweetAlert2 Toast Notifications -->
+    <!-- SweetAlert2 Toast Notifications & Utility Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         @if (TempData["SuccessMessage"] != null)
@@ -418,6 +418,24 @@
                 iconColor: '#d4af37'
             });
             </text>
+        }
+
+        function confirmResetDb() {
+            Swal.fire({
+                title: 'Clean Entire Database?',
+                text: 'This will wipe all sample records (staff, services, products, brands, clients, activity logs) so you can enter your custom data from scratch. Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, Clean Database',
+                background: '#131924',
+                color: '#ffffff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Admin/CleanDatabase';
+                }
+            });
         }
     </script>
     @RenderSection("Scripts", required: false)
