@@ -110,6 +110,8 @@ Or open `SalonManagementSystem.sln` in Visual Studio 2022 and press **F5**.
 
 ---
 
+---
+
 ## 🔐 Default Access Credentials
 
 | Role | Username | Password | Accessible Features |
@@ -119,9 +121,18 @@ Or open `SalonManagementSystem.sln` in Visual Studio 2022 and press **F5**.
 
 ---
 
+## 🏆 Version 2.0 Major Enhancements
+- 💎 **StylOnyx Branding**: Complete luxury rebranding across all executive & user views.
+- 👑 **Multi-Admin Delegation**: Ability to create, manage, and revoke additional executive administrator accounts.
+- 🧹 **One-Click Database Reset**: Clean database utility with automated lookup table preservation.
+- 📊 **Chart.js Visual Analytics**: Real-time sales and revenue tracking graphs.
+- 🛡️ **SQL Trigger Activity Audit**: Live security and authentication logging.
+
+---
+
 <div align="center">
 
-  **Created for Database Management System (DBMS) Project**  
+  **StylOnyx Luxury Beauty Studio &mdash; Database Management System (DBMS) Project**  
   ⭐ *Star this repository if you find it helpful!* ⭐
 
 </div>
