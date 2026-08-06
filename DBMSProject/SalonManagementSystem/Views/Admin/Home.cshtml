@@ -222,15 +222,16 @@
 
 <!-- KPI Cards -->
 <div class="kpi-cards-grid">
-    <div class="kpi-card">
+    <a href="/Admin/DailyShiftRevenue" class="kpi-card" style="text-decoration: none;">
         <div>
-            <div class="kpi-data-title">Today's Sales</div>
-            <div class="kpi-data-value">Rs. @(Model?.TodaySales ?? 0)</div>
+            <div class="kpi-data-title">Shift Revenue (12PM - 12AM)</div>
+            <div class="kpi-data-value">PKR @((Model?.TodaySales ?? 0).ToString("N0"))</div>
+            <div style="font-size:0.75rem; color:var(--teal-light); margin-top:4px;"><i class="fa-solid fa-arrow-trend-up"></i> View Full Shift Reports &rarr;</div>
         </div>
         <div class="kpi-icon-box icon-sales">
             <i class="fa-solid fa-sack-dollar"></i>
         </div>
-    </div>
+    </a>
 
     <div class="kpi-card">
         <div>
