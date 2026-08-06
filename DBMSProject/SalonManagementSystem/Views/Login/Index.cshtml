@@ -87,30 +87,31 @@
         /* Titles */
         .login-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 2.3rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             line-height: 1.2;
         }
 
         .login-subtitle {
-            font-size: 0.88rem;
+            font-size: 1.02rem;
             color: var(--text-body);
             margin-bottom: 32px;
         }
 
         /* ── Input Fields ── */
         .form-field-group {
-            margin-bottom: 22px;
+            margin-bottom: 24px;
         }
 
         .field-label {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #e2e8f0;
-            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 10px;
             display: block;
+            letter-spacing: 0.3px;
         }
 
         .field-input-wrapper {
@@ -119,20 +120,28 @@
 
         .form-control-custom {
             width: 100%;
-            padding: 16px 48px 16px 48px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 48px 16px 52px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
             border-radius: 14px;
-            color: #ffffff;
-            font-size: 0.95rem;
+            color: #ffffff !important;
+            font-size: 1.15rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px;
             outline: none;
             transition: all 0.3s ease;
         }
 
+        .form-control-custom::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+            font-size: 1.02rem !important;
+            font-weight: 400 !important;
+        }
+
         .form-control-custom:focus {
             border-color: #d4af37;
-            background: rgba(212, 175, 55, 0.05);
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+            background: rgba(212, 175, 55, 0.08);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
         }
 
         .field-icon-left {
@@ -141,7 +150,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: #d4af37;
-            font-size: 1rem;
+            font-size: 1.2rem;
             pointer-events: none;
         }
 
@@ -154,7 +163,7 @@
             border: none;
             color: var(--text-body);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.15rem;
             padding: 4px;
             transition: color 0.2s ease;
         }
@@ -169,26 +178,29 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 28px;
-            font-size: 0.82rem;
+            font-size: 0.95rem;
         }
 
         .remember-checkbox {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-body);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
         }
 
         .remember-checkbox input {
             accent-color: #d4af37;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
         }
 
         .forgot-link {
             color: #d4af37;
             text-decoration: none;
+            font-size: 0.95rem;
             font-weight: 600;
             transition: opacity 0.2s ease;
         }
@@ -206,9 +218,9 @@
             border: none;
             border-radius: 50px;
             color: #ffffff;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
             cursor: pointer;
             transition: all 0.35s ease;
             box-shadow: 0 10px 28px rgba(13, 148, 136, 0.4);
@@ -233,7 +245,7 @@
         .register-footer-text {
             margin-top: 24px;
             text-align: center;
-            font-size: 0.88rem;
+            font-size: 0.95rem;
             color: var(--text-body);
         }
 
