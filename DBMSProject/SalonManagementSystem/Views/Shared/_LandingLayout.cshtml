@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aura Luxury Salon &mdash; Timeless Radiance & Bespoke Spa Experience</title>
+    <title>StylOnyx Luxury Salon &mdash; Timeless Radiance & Bespoke Spa Experience</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -114,39 +114,42 @@
         .brand-logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             text-decoration: none;
             color: var(--text-heading);
         }
         .brand-logo .logo-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold-accent) 0%, var(--teal-primary) 100%);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--teal-primary) 0%, var(--gold-accent) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0b0e14;
-            font-size: 1.2rem;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            color: #ffffff;
+            font-size: 1.25rem;
+            box-shadow: 0 0 18px rgba(13, 148, 136, 0.5), 0 0 10px rgba(212, 175, 55, 0.3);
         }
         .brand-logo .brand-text {
             font-family: var(--font-display);
-            font-size: 1.35rem;
+            font-size: 1.55rem;
             font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ffffff 0%, var(--gold-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+        .brand-logo .brand-text-styl {
+            color: #ffffff;
+        }
+        .brand-logo .brand-text-onyx {
+            color: var(--gold-primary);
         }
         .brand-logo .brand-sub {
             font-family: var(--font-sans);
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             letter-spacing: 2px;
             color: var(--teal-light);
             text-transform: uppercase;
             display: block;
-            margin-top: -3px;
+            margin-top: -4px;
         }
 
         .nav-menu {
@@ -353,10 +356,10 @@
     <nav class="navbar-floating" id="mainNav">
         <a href="#hero" class="brand-logo">
             <div class="logo-icon">
-                <i class="fa-solid fa-crown"></i>
+                <i class="fa-solid fa-scissors"></i>
             </div>
             <div>
-                <span class="brand-text">AURA SALON</span>
+                <span class="brand-text"><span class="brand-text-styl">Styl</span><span class="brand-text-onyx">Onyx</span></span>
                 <span class="brand-sub">LUXURY & SPA STUDIO</span>
             </div>
         </a>
@@ -389,9 +392,9 @@
         <div class="footer-container">
             <div class="footer-col">
                 <div class="brand-logo" style="margin-bottom: 20px;">
-                    <div class="logo-icon"><i class="fa-solid fa-gem"></i></div>
+                    <div class="logo-icon"><i class="fa-solid fa-scissors"></i></div>
                     <div>
-                        <span class="brand-text">AURA SALON</span>
+                        <span class="brand-text"><span class="brand-text-styl">Styl</span><span class="brand-text-onyx">Onyx</span></span>
                         <span class="brand-sub">HAUTE BEAUTY & SPA</span>
                     </div>
                 </div>
@@ -413,8 +416,8 @@
             <div class="footer-col">
                 <h4>VIP Concierge</h4>
                 <ul class="footer-links">
-                    <li><a href="tel:+18005552872"><i class="fa-solid fa-phone" style="color: var(--teal-light);"></i> +1 (800) 555-AURA</a></li>
-                    <li><a href="mailto:vip@aurasalon.com"><i class="fa-solid fa-envelope" style="color: var(--teal-light);"></i> vip@aurasalon.com</a></li>
+                    <li><a href="tel:+18005557895"><i class="fa-solid fa-phone" style="color: var(--teal-light);"></i> +1 (800) 555-STYL</a></li>
+                    <li><a href="mailto:vip@stylonyx.com"><i class="fa-solid fa-envelope" style="color: var(--teal-light);"></i> vip@stylonyx.com</a></li>
                     <li><a href="#"><i class="fa-solid fa-location-dot" style="color: var(--gold-accent);"></i> 740 Fifth Avenue, Suite 12, NYC</a></li>
                     <li><a href="/Login/Register"><i class="fa-solid fa-user-plus"></i> Join Staff Portal</a></li>
                 </ul>
@@ -431,7 +434,7 @@
         </div>
 
         <div class="footer-bottom">
-            <div>&copy; 2026 Aura Luxury Salon Management System. All Rights Reserved.</div>
+            <div>&copy; 2026 StylOnyx Luxury Salon Management System. All Rights Reserved.</div>
             <div style="display: flex; gap: 20px;">
                 <a href="#" style="color: var(--text-muted); text-decoration: none;">Privacy Policy</a>
                 <a href="#" style="color: var(--text-muted); text-decoration: none;">Terms of Service</a>
@@ -468,7 +471,7 @@
             }
             Swal.fire({
                 icon: 'success',
-                title: 'Welcome to VIP Inner Circle!',
+                title: 'Welcome to StylOnyx Inner Circle!',
                 text: 'Thank you for subscribing. Check your inbox for your 15% VIP welcome voucher.',
                 background: '#131924',
                 color: '#fff',

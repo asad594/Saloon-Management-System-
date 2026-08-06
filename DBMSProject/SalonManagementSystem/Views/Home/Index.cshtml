@@ -1,6 +1,6 @@
 @{
     Layout = "~/Views/Shared/_LandingLayout.cshtml";
-    ViewData["Title"] = "Haute Beauty & VIP Spa Experience";
+    ViewData["Title"] = "StylOnyx &mdash; Haute Beauty & VIP Spa Experience";
 }
 
 @section Styles {
@@ -391,7 +391,7 @@
 
         .stat-card:hover {
             border-color: var(--teal-glow);
-            transform: translateY(-50px);
+            transform: translateY(-5px);
             background: rgba(20, 184, 166, 0.08);
             box-shadow: 0 10px 25px rgba(20, 184, 166, 0.15);
         }
@@ -1127,7 +1127,7 @@
 <section class="section-padding" id="vip-lounge">
     <div class="section-header">
         <span class="section-title-sub">Exclusivity & Privilege</span>
-        <h2 class="section-title">Aura VIP Inner Circle Tiers</h2>
+        <h2 class="section-title">StylOnyx VIP Inner Circle Tiers</h2>
         <p class="section-desc">Unlock priority scheduling, personal beauty concierges, and complimentary luxury treatments.</p>
     </div>
 
@@ -1186,7 +1186,7 @@
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
             </div>
             <p style="color: var(--text-body); font-style: italic; font-size: 0.95rem; margin-bottom: 20px;">
-                "Aura Luxury Salon is completely unmatched. The Diamond Facial left my skin glowing for weeks, and the staff treats every visitor like royalty."
+                "StylOnyx Luxury Salon is completely unmatched. The Diamond Facial left my skin glowing for weeks, and the staff treats every visitor like royalty."
             </p>
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" style="width: 42px; height: 42px; border-radius: 50%;" alt="Client" />
@@ -1357,7 +1357,7 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Slot Reserved!',
-                html: `<p style="color:#94a3b8">Your quick slot for <strong style="color:#d4af37">${serviceText}</strong> on <strong>${date}</strong> has been tentatively held.</p><p style="color:#2dd4bf; margin-top:10px;">Reference Code: #AURA-${Math.floor(1000 + Math.random() * 9000)}</p>`,
+                html: `<p style="color:#94a3b8">Your quick slot for <strong style="color:#d4af37">${serviceText}</strong> on <strong>${date}</strong> has been tentatively held.</p><p style="color:#2dd4bf; margin-top:10px;">Reference Code: #STYL-${Math.floor(1000 + Math.random() * 9000)}</p>`,
                 background: '#131924',
                 color: '#fff',
                 confirmButtonColor: '#0d9488'
@@ -1369,7 +1369,7 @@
             const name = document.getElementById('modalName').value;
             const service = document.getElementById('modalService').value;
             const date = document.getElementById('modalDate').value;
-            const code = '#AURA-' + Math.floor(1000 + Math.random() * 9000);
+            const code = '#STYL-' + Math.floor(1000 + Math.random() * 9000);
 
             closeBookingModal();
 
