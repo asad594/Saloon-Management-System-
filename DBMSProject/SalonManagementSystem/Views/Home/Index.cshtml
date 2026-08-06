@@ -527,30 +527,125 @@
         }
 
         .service-addon-list {
-            margin-bottom: 16px;
-            background: rgba(11, 14, 20, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 10px 14px;
+            margin-bottom: 20px;
+            background: linear-gradient(145deg, rgba(13, 19, 30, 0.9) 0%, rgba(11, 14, 20, 0.95) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            padding: 12px 14px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s ease;
         }
 
-        .addon-label {
-            font-size: 0.75rem;
+        .service-addon-list:hover {
+            border-color: rgba(212, 175, 55, 0.45);
+        }
+
+        .addon-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            font-family: var(--font-sans);
+            font-weight: 700;
             color: var(--gold-primary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 6px;
-            display: block;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed rgba(212, 175, 55, 0.2);
         }
 
         .addon-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.82rem;
-            color: var(--text-body);
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             cursor: pointer;
-            margin-bottom: 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .addon-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .addon-item:hover {
+            background: rgba(20, 184, 166, 0.08);
+            border-color: rgba(20, 184, 166, 0.3);
+            transform: translateX(3px);
+        }
+
+        .addon-item.selected {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.18) 0%, rgba(13, 148, 136, 0.1) 100%);
+            border-color: var(--teal-glow);
+            box-shadow: 0 4px 14px rgba(20, 184, 166, 0.25);
+        }
+
+        .addon-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid rgba(212, 175, 55, 0.5);
+            background: rgba(11, 14, 20, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-size: 0.65rem;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .addon-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .addon-item input[type="checkbox"]:checked + .custom-checkbox {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
+            border-color: var(--gold-primary);
+            color: #0b0e14;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+        }
+
+        .addon-title {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-body);
+            transition: color 0.25s ease;
+        }
+
+        .addon-item.selected .addon-title {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .addon-price {
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 2px 7px;
+            border-radius: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.25s ease;
+        }
+
+        .addon-item.selected .addon-price {
+            color: #ffffff;
+            background: var(--teal-primary);
+            border-color: var(--teal-glow);
+            box-shadow: 0 0 8px rgba(45, 212, 191, 0.4);
         }
 
         .btn-service-book {
@@ -958,14 +1053,25 @@
                 
                 <!-- Interactive Addons -->
                 <div class="service-addon-list">
-                    <span class="addon-label"><i class="fa-solid fa-plus-circle"></i> Add VIP Enhancements</span>
-                    <label class="addon-item">
-                        <span><input type="checkbox" onchange="recalculateServicePrice(1, 4500, this, 1000)" /> Organic Glossing Mask</span>
-                        <span>+PKR 1,000</span>
+                    <div class="addon-header">
+                        <span><i class="fa-solid fa-sparkles"></i> VIP Enhancements</span>
+                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.72rem;">Optional</span>
+                    </div>
+                    <label class="addon-item" onclick="toggleAddonItem(this)">
+                        <div class="addon-left">
+                            <input type="checkbox" onchange="recalculateServicePrice(1, 4500, this, 1000)" />
+                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                            <span class="addon-title">Organic Glossing Mask</span>
+                        </div>
+                        <span class="addon-price">+PKR 1,000</span>
                     </label>
-                    <label class="addon-item">
-                        <span><input type="checkbox" onchange="recalculateServicePrice(1, 4500, this, 800)" /> Scalp Detox Scrub</span>
-                        <span>+PKR 800</span>
+                    <label class="addon-item" onclick="toggleAddonItem(this)">
+                        <div class="addon-left">
+                            <input type="checkbox" onchange="recalculateServicePrice(1, 4500, this, 800)" />
+                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                            <span class="addon-title">Scalp Detox Scrub</span>
+                        </div>
+                        <span class="addon-price">+PKR 800</span>
                     </label>
                 </div>
 
@@ -992,14 +1098,25 @@
 
                 <!-- Interactive Addons -->
                 <div class="service-addon-list">
-                    <span class="addon-label"><i class="fa-solid fa-plus-circle"></i> Add VIP Enhancements</span>
-                    <label class="addon-item">
-                        <span><input type="checkbox" onchange="recalculateServicePrice(2, 5500, this, 1500)" /> 24K Gold Leaf Boost</span>
-                        <span>+PKR 1,500</span>
+                    <div class="addon-header">
+                        <span><i class="fa-solid fa-sparkles"></i> VIP Enhancements</span>
+                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.72rem;">Optional</span>
+                    </div>
+                    <label class="addon-item" onclick="toggleAddonItem(this)">
+                        <div class="addon-left">
+                            <input type="checkbox" onchange="recalculateServicePrice(2, 5500, this, 1500)" />
+                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                            <span class="addon-title">24K Gold Leaf Boost</span>
+                        </div>
+                        <span class="addon-price">+PKR 1,500</span>
                     </label>
-                    <label class="addon-item">
-                        <span><input type="checkbox" onchange="recalculateServicePrice(2, 5500, this, 1000)" /> Cryo Eye Lift</span>
-                        <span>+PKR 1,000</span>
+                    <label class="addon-item" onclick="toggleAddonItem(this)">
+                        <div class="addon-left">
+                            <input type="checkbox" onchange="recalculateServicePrice(2, 5500, this, 1000)" />
+                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                            <span class="addon-title">Cryo Eye Lift</span>
+                        </div>
+                        <span class="addon-price">+PKR 1,000</span>
                     </label>
                 </div>
 
@@ -1026,14 +1143,25 @@
 
                 <!-- Interactive Addons -->
                 <div class="service-addon-list">
-                    <span class="addon-label"><i class="fa-solid fa-plus-circle"></i> Add VIP Enhancements</span>
-                    <label class="addon-item">
-                        <span><input type="checkbox" onchange="recalculateServicePrice(3, 3000, this, 600)" /> Swarovski Crystals</span>
-                        <span>+PKR 600</span>
+                    <div class="addon-header">
+                        <span><i class="fa-solid fa-sparkles"></i> VIP Enhancements</span>
+                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.72rem;">Optional</span>
+                    </div>
+                    <label class="addon-item" onclick="toggleAddonItem(this)">
+                        <div class="addon-left">
+                            <input type="checkbox" onchange="recalculateServicePrice(3, 3000, this, 600)" />
+                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                            <span class="addon-title">Swarovski Crystals</span>
+                        </div>
+                        <span class="addon-price">+PKR 600</span>
                     </label>
-                    <label class="addon-item">
-                        <span><input type="checkbox" onchange="recalculateServicePrice(3, 3000, this, 500)" /> Paraffin Hydration Dip</span>
-                        <span>+PKR 500</span>
+                    <label class="addon-item" onclick="toggleAddonItem(this)">
+                        <div class="addon-left">
+                            <input type="checkbox" onchange="recalculateServicePrice(3, 3000, this, 500)" />
+                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
+                            <span class="addon-title">Paraffin Hydration Dip</span>
+                        </div>
+                        <span class="addon-price">+PKR 500</span>
                     </label>
                 </div>
 
@@ -1440,6 +1568,17 @@
         }
 
         // ── Interactive Addon Price Recalculation ──
+        function toggleAddonItem(labelElem) {
+            setTimeout(() => {
+                const chk = labelElem.querySelector('input[type="checkbox"]');
+                if (chk && chk.checked) {
+                    labelElem.classList.add('selected');
+                } else {
+                    labelElem.classList.remove('selected');
+                }
+            }, 10);
+        }
+
         function recalculateServicePrice(cardId, basePrice, checkbox, addonVal) {
             const priceTag = document.getElementById('priceTag' + cardId);
             let currentNum = parseInt(priceTag.innerText.replace(/[^0-9]/g, ''));
