@@ -335,7 +335,10 @@
                         <i class="fa-solid fa-chart-pie"></i> Dashboard
                     </a>
                     <a href="/Admin/DayRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "DayRevenue" ? "active" : "")">
-                        <i class="fa-solid fa-vault"></i> Day Revenue & Closing
+                        <i class="fa-solid fa-sun"></i> Day Revenue
+                    </a>
+                    <a href="/Admin/TotalRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "TotalRevenue" ? "active" : "")">
+                        <i class="fa-solid fa-vault"></i> Total Revenue
                     </a>
                     <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
                         <i class="fa-solid fa-scissors"></i> Manage Services

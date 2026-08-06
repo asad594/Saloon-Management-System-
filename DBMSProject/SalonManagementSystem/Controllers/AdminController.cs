@@ -141,26 +141,7 @@ namespace SalonManagementSystem.Controllers
                     }
                 }
 
-                // 3. Fetch Closed Days History
-                SqlCommand cmdHistory = new SqlCommand("SELECT ClosingID, ClosingDate, DayName, TotalRevenue, TotalBills, ClosedBy FROM daily_closings ORDER BY ClosingID DESC", conn);
-                using (SqlDataReader reader = cmdHistory.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        decimal rev = Convert.ToDecimal(reader["TotalRevenue"]);
-                        model.ClosedDaysHistory.Add(new ClosedDayLog
-                        {
-                            ClosingId = Convert.ToInt32(reader["ClosingID"]),
-                            ClosingDate = Convert.ToDateTime(reader["ClosingDate"]),
-                            DayName = reader["DayName"].ToString() ?? "",
-                            TotalRevenue = rev,
-                            TotalBills = Convert.ToInt32(reader["TotalBills"]),
-                            ClosedBy = reader["ClosedBy"].ToString() ?? "Admin"
-                        });
-                        model.TotalAllTimeClosedRevenue += rev;
-                        model.TotalClosedDaysCount++;
-                    }
-                }
+                // 3. Remove history from DayRevenue page (as it belongs to TotalRevenue page)
             }
 
             return View(model);
@@ -219,10 +200,58 @@ namespace SalonManagementSystem.Controllers
 
                 cmdInsert.ExecuteNonQuery();
 
-                TempData["SuccessMessage"] = $"Day Closed Successfully! {dayName} ({now:MMM dd, yyyy}) finalized with PKR {totalRevenue:N0} across {totalBills} transactions!";
+                TempData["SuccessMessage"] = $"Day Closed Successfully! {dayName} ({now:MMM dd, yyyy}) finalized with PKR {totalRevenue:N0} across {totalBills} transactions and added into Total Revenue!";
             }
 
-            return RedirectToAction("DayRevenue");
+            return RedirectToAction("TotalRevenue");
+        }
+
+        // ✅ SEPARATE OPTION: TOTAL REVENUE (ALL FINALIZED CLOSED DAYS & GRAND TOTAL)
+        public IActionResult TotalRevenue()
+        {
+            TotalRevenueViewModel model = new TotalRevenueViewModel();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                EnsureDailyClosingsTable(conn);
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT ClosingID, ClosingDate, DayName, TotalRevenue, TotalBills, ClosedBy 
+                    FROM daily_closings 
+                    ORDER BY ClosingID DESC", conn);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime cDate = Convert.ToDateTime(reader["ClosingDate"]);
+                        decimal rev = Convert.ToDecimal(reader["TotalRevenue"]);
+                        int bills = Convert.ToInt32(reader["TotalBills"]);
+
+                        model.ClosedDaysHistory.Add(new ClosedDayLog
+                        {
+                            ClosingId = Convert.ToInt32(reader["ClosingID"]),
+                            ClosingDate = cDate,
+                            DayName = reader["DayName"].ToString() ?? "",
+                            TotalRevenue = rev,
+                            TotalBills = bills,
+                            ClosedBy = reader["ClosedBy"].ToString() ?? "Admin"
+                        });
+
+                        model.GrandTotalRevenue += rev;
+                        model.TotalClosedDaysCount++;
+                        model.TotalClosedBillsCount += bills;
+
+                        if (!model.LatestClosedDate.HasValue || cDate > model.LatestClosedDate.Value)
+                            model.LatestClosedDate = cDate;
+                        if (!model.FirstClosedDate.HasValue || cDate < model.FirstClosedDate.Value)
+                            model.FirstClosedDate = cDate;
+                    }
+                }
+            }
+
+            return View(model);
         }
 
         

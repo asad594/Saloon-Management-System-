@@ -30,10 +30,17 @@ namespace SalonManagementSystem.Models
         public decimal CurrentDayRevenue { get; set; }
         public int CurrentDayBillsCount { get; set; }
 
-        public decimal TotalAllTimeClosedRevenue { get; set; }
-        public int TotalClosedDaysCount { get; set; }
-
         public List<TransactionBillItem> CurrentDayBills { get; set; } = new List<TransactionBillItem>();
+    }
+
+    public class TotalRevenueViewModel
+    {
+        public decimal GrandTotalRevenue { get; set; }
+        public int TotalClosedDaysCount { get; set; }
+        public int TotalClosedBillsCount { get; set; }
+        public DateTime? FirstClosedDate { get; set; }
+        public DateTime? LatestClosedDate { get; set; }
+
         public List<ClosedDayLog> ClosedDaysHistory { get; set; } = new List<ClosedDayLog>();
     }
 }

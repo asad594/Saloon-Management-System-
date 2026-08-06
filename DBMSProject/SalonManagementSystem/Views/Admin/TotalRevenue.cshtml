@@ -1,4 +1,4 @@
-@model DayRevenueViewModel
+@model TotalRevenueViewModel
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -34,9 +34,9 @@
         }
 
         .status-pill {
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #4ade80;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold-primary);
             padding: 6px 14px;
             border-radius: 50px;
             font-size: 0.8rem;
@@ -46,34 +46,10 @@
             gap: 6px;
         }
 
-        /* ── Exact Red Close Day Pill Button matching screenshot ── */
-        .btn-close-day {
-            background: linear-gradient(90deg, #e11d48 0%, #be123c 100%);
-            color: #ffffff;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 50px;
-            font-size: 1.05rem;
-            font-weight: 800;
-            letter-spacing: 0.03em;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            box-shadow: 0 10px 28px rgba(225, 29, 72, 0.45);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-close-day:hover {
-            background: linear-gradient(90deg, #f43f5e 0%, #e11d48 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 14px 36px rgba(244, 63, 94, 0.55);
-        }
-
         /* KPI Grid */
         .kpi-cards-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 32px;
         }
@@ -195,72 +171,80 @@
     </style>
 }
 
-<!-- Revenue Header Panel -->
+<!-- Flash Success Alert -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 16px; padding: 16px 24px; color: #4ade80; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 1.02rem;">
+        <i class="fa-solid fa-circle-check" style="font-size: 1.4rem;"></i>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}
+
+<!-- Header Panel -->
 <div class="revenue-header-panel">
     <div class="header-title-box">
-        <h1><i class="fa-solid fa-sun" style="color: var(--gold-primary);"></i> Day Revenue Studio</h1>
-        <p>Live active day transaction manager & finalization portal.
-        @if (Model.LastClosingDate.HasValue)
-        {
-            <span style="color: var(--text-muted); margin-left: 6px;">(Last Closed: @Model.LastClosingDate.Value.ToString("MMM dd, yyyy - hh:mm tt"))</span>
-        }
-        </p>
+        <h1><i class="fa-solid fa-vault" style="color: var(--gold-primary);"></i> Total Revenue Vault</h1>
+        <p>All-Time Finalized Business Revenue Ledger & Closed Days Records.</p>
     </div>
 
-    <form method="post" action="/Admin/CloseDay" id="closeDayForm">
-        <button type="button" class="btn-close-day" onclick="confirmCloseDay();">
-            <i class="fa-solid fa-lock"></i> Close Day & Finalize Revenue
-        </button>
-    </form>
+    <div>
+        <a href="/Admin/DayRevenue" class="status-pill" style="text-decoration: none; padding: 10px 20px; font-size: 0.9rem;">
+            <i class="fa-solid fa-sun"></i> Go to Day Revenue &rarr;
+        </a>
+    </div>
 </div>
 
 <!-- KPI Metrics Grid -->
 <div class="kpi-cards-grid">
-    <div class="revenue-kpi-card" style="border-color: var(--gold-primary);">
-        <div class="kpi-label">Active Unclosed Day Revenue</div>
-        <div class="kpi-value" style="color: var(--gold-primary);">PKR @Model.CurrentDayRevenue.ToString("N0")</div>
-        <div class="kpi-subtitle">Accumulated live sales waiting to be closed into Total Revenue</div>
+    <div class="revenue-kpi-card" style="border-color: var(--teal-glow);">
+        <div class="kpi-label" style="color: var(--teal-light);">Grand Total Revenue</div>
+        <div class="kpi-value" style="color: var(--teal-light);">PKR @Model.GrandTotalRevenue.ToString("N0")</div>
+        <div class="kpi-subtitle">Sum of all finalized closed days revenue</div>
     </div>
 
     <div class="revenue-kpi-card">
-        <div class="kpi-label">Active Day Transactions</div>
-        <div class="kpi-value">@Model.CurrentDayBillsCount</div>
-        <div class="kpi-subtitle">Total paid bills in current active day</div>
+        <div class="kpi-label">Total Closed Days</div>
+        <div class="kpi-value">@Model.TotalClosedDaysCount Days</div>
+        <div class="kpi-subtitle">Number of business days closed by admin</div>
+    </div>
+
+    <div class="revenue-kpi-card">
+        <div class="kpi-label">Total Closed Transactions</div>
+        <div class="kpi-value">@Model.TotalClosedBillsCount Bills</div>
+        <div class="kpi-subtitle">Total paid transactions in closed days ledger</div>
     </div>
 </div>
 
-<!-- Active Day Transactions Table -->
+<!-- Finalized Closed Days History Table -->
 <div class="table-panel-card">
     <div class="panel-header">
-        <h3><i class="fa-solid fa-receipt" style="color: var(--gold-primary);"></i> Transactions in Current Active Day</h3>
-        <span class="status-pill"><i class="fa-solid fa-circle-dot"></i> Live Active Bills</span>
+        <h3><i class="fa-solid fa-calendar-days" style="color: var(--gold-primary);"></i> Finalized Closed Days Revenue Log</h3>
+        <span class="status-pill"><i class="fa-solid fa-lock"></i> Permanent Revenue Records</span>
     </div>
 
-    @if (Model.CurrentDayBills.Any())
+    @if (Model.ClosedDaysHistory.Any())
     {
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>Bill ID</th>
-                    <th>Client Name</th>
-                    <th>Phone</th>
-                    <th>Service</th>
-                    <th>Staff Member</th>
-                    <th>Time Paid</th>
-                    <th style="text-align: right;">Amount (PKR)</th>
+                    <th>Closing Ref</th>
+                    <th>Date & Time Closed</th>
+                    <th>Day Name</th>
+                    <th>Total Transactions</th>
+                    <th>Finalized Total Revenue</th>
+                    <th style="text-align: right;">Closed By</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var bill in Model.CurrentDayBills)
+                @foreach (var log in Model.ClosedDaysHistory)
                 {
                     <tr>
-                        <td>#@bill.BillId</td>
-                        <td style="font-weight: 600;">@bill.ClientName</td>
-                        <td style="color: var(--text-muted);">@bill.Phone</td>
-                        <td><span style="color: var(--teal-light); font-weight: 600;">@bill.ServiceName</span></td>
-                        <td>@bill.StaffName</td>
-                        <td><i class="fa-regular fa-clock" style="color: var(--gold-primary);"></i> @bill.BillDate.ToString("hh:mm tt")</td>
-                        <td style="text-align: right;" class="price-badge">PKR @bill.TotalAmount.ToString("N0")</td>
+                        <td>#LOG-@log.ClosingId</td>
+                        <td style="font-weight: 600; color: #ffffff;">@log.ClosingDate.ToString("MMM dd, yyyy - hh:mm tt")</td>
+                        <td><span class="status-pill" style="background: rgba(212, 175, 55, 0.15); border-color: rgba(212, 175, 55, 0.3); color: var(--gold-primary);">@log.DayName</span></td>
+                        <td>@log.TotalBills Bills</td>
+                        <td class="price-badge" style="font-size: 1.05rem;">PKR @log.TotalRevenue.ToString("N0")</td>
+                        <td style="text-align: right; color: var(--text-muted);"><i class="fa-solid fa-user-shield" style="color: var(--teal-light);"></i> @log.ClosedBy</td>
                     </tr>
                 }
             </tbody>
@@ -269,38 +253,8 @@
     else
     {
         <div class="empty-state">
-            <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 12px; display: block;"></i>
-            No transactions generated in the current active day yet.
+            <i class="fa-solid fa-vault" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 12px; display: block;"></i>
+            No closed days recorded yet. Navigate to <strong>Day Revenue</strong> and click <strong>"Close Day & Finalize Revenue"</strong> to add your first day!
         </div>
     }
 </div>
-
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function confirmCloseDay() {
-            const revenue = "@Model.CurrentDayRevenue.ToString("N0")";
-            const bills = "@Model.CurrentDayBillsCount";
-
-            Swal.fire({
-                title: 'Close Day & Finalize Revenue?',
-                html: `Are you sure you want to close this day?<br><br>` +
-                      `<b style="color:#d4af37; font-size:1.2rem;">Day Revenue: PKR ${revenue}</b><br>` +
-                      `<span style="color:#94a3b8;">(${bills} Transactions)</span><br><br>` +
-                      `This day's total revenue will be added into <b>Total Revenue</b> logs, and active day counter will reset to PKR 0.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e11d48',
-                cancelButtonColor: '#334155',
-                confirmButtonText: 'Yes, Close Day Now!',
-                cancelButtonText: 'Cancel',
-                background: '#131924',
-                color: '#ffffff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('closeDayForm').submit();
-                }
-            });
-        }
-    </script>
-}
