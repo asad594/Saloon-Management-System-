@@ -91,8 +91,27 @@ namespace SalonManagementSystem.Controllers
 
                 // 2. Fetch unclosed bills (since last closing date)
                 string billQuery = lastClosingDate.HasValue
-                    ? "SELECT BillID, ClientName, Phone, ServiceName, StaffName, BillDate, TotalAmount FROM bills WHERE BillDate > @LastClosing ORDER BY BillDate DESC"
-                    : "SELECT BillID, ClientName, Phone, ServiceName, StaffName, BillDate, TotalAmount FROM bills ORDER BY BillDate DESC";
+                    ? @"SELECT b.BillID, 
+                               ISNULL(c.ClientName, 'Walk-in Client') AS ClientName, 
+                               ISNULL(c.ClientPhone, 'N/A') AS Phone, 
+                               'Salon Service' AS ServiceName, 
+                               'Stylist Staff' AS StaffName, 
+                               b.BillDate, 
+                               b.TotalAmount
+                        FROM bills b
+                        LEFT JOIN clients c ON b.ClId = c.ClientId
+                        WHERE b.BillDate > @LastClosing
+                        ORDER BY b.BillDate DESC"
+                    : @"SELECT b.BillID, 
+                               ISNULL(c.ClientName, 'Walk-in Client') AS ClientName, 
+                               ISNULL(c.ClientPhone, 'N/A') AS Phone, 
+                               'Salon Service' AS ServiceName, 
+                               'Stylist Staff' AS StaffName, 
+                               b.BillDate, 
+                               b.TotalAmount
+                        FROM bills b
+                        LEFT JOIN clients c ON b.ClId = c.ClientId
+                        ORDER BY b.BillDate DESC";
 
                 using (SqlCommand cmdBills = new SqlCommand(billQuery, conn))
                 {
