@@ -304,6 +304,31 @@
             margin: 0;
         }
 
+        /* ── Input & Select Field Styling ── */
+        .widget-input, .widget-select {
+            width: 100%;
+            background: rgba(13, 19, 30, 0.95) !important;
+            border: 1px solid var(--border-gold) !important;
+            border-radius: 12px !important;
+            color: #ffffff !important;
+            padding: 12px 18px !important;
+            font-family: var(--font-body) !important;
+            font-size: 0.95rem !important;
+            outline: none !important;
+            transition: all 0.3s ease !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .widget-input::placeholder {
+            color: #64748b !important;
+        }
+
+        .widget-input:focus, .widget-select:focus {
+            border-color: var(--teal-glow) !important;
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+            background: rgba(19, 25, 36, 0.98) !important;
+        }
+
         /* ── Animated Stats Ribbon ── */
         .stats-ribbon {
             background: linear-gradient(90deg, #0d131e 0%, #131924 50%, #0d131e 100%);
