@@ -458,219 +458,220 @@
         }
 
         .service-card {
-            background: var(--bg-card-dark);
-            border: 1px solid var(--border-gold);
-            border-radius: 20px;
+            background: linear-gradient(165deg, rgba(19, 25, 36, 0.95) 0%, rgba(11, 14, 20, 0.98) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 28px;
             overflow: hidden;
-            transition: all 0.4s ease;
+            transition: all 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
             display: flex;
             flex-direction: column;
             position: relative;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .service-card:hover {
             border-color: var(--teal-glow);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(20, 184, 166, 0.2);
+            transform: translateY(-10px) scale(1.015);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(45, 212, 191, 0.25);
+        }
+
+        .service-img-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
         }
 
         .service-img {
-            height: 200px;
+            height: 100%;
             width: 100%;
             object-fit: cover;
-            position: relative;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .service-card:hover .service-img {
+            transform: scale(1.1);
+        }
+
+        .service-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(11, 14, 20, 0.1) 0%, rgba(13, 19, 30, 0.95) 100%);
+            pointer-events: none;
         }
 
         .service-price-tag {
             position: absolute;
             top: 16px;
             right: 16px;
-            background: rgba(11, 14, 20, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-fixed);
-            font-family: var(--font-display);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.95) 0%, rgba(180, 140, 30, 0.95) 100%);
+            color: #0b0e14;
+            font-family: var(--font-sans);
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 7px 16px;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(212, 175, 55, 0.4);
+            letter-spacing: 0.5px;
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .service-price-tag {
+            background: linear-gradient(135deg, #ffffff 0%, var(--teal-light) 100%);
+            color: #0b0e14;
+            box-shadow: 0 8px 25px rgba(45, 212, 191, 0.5);
+        }
+
+        .service-category-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(13, 19, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--teal-light);
+            font-family: var(--font-sans);
+            font-size: 0.72rem;
             font-weight: 700;
-            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             padding: 6px 14px;
             border-radius: 50px;
+            z-index: 5;
         }
 
         .service-body {
-            padding: 24px;
+            padding: 24px 24px 20px 24px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            margin-top: -24px;
+            position: relative;
+            z-index: 2;
         }
 
         .service-meta {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 12px;
-            font-size: 0.8rem;
+        }
+
+        .meta-pill {
+            background: rgba(20, 184, 166, 0.12);
+            border: 1px solid rgba(20, 184, 166, 0.25);
             color: var(--teal-light);
             font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .service-title {
             font-family: var(--font-display);
             font-size: 1.4rem;
-            color: var(--text-heading);
+            font-weight: 700;
+            color: #ffffff;
             margin-bottom: 10px;
+            line-height: 1.3;
+            transition: color 0.3s ease;
+        }
+
+        .service-card:hover .service-title {
+            color: var(--gold-light);
         }
 
         .service-desc {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            line-height: 1.6;
+            font-size: 0.88rem;
+            margin-bottom: 18px;
+            line-height: 1.65;
+            flex-grow: 1;
         }
 
-        .service-addon-list {
-            margin-bottom: 20px;
-            background: linear-gradient(145deg, rgba(13, 19, 30, 0.9) 0%, rgba(11, 14, 20, 0.95) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 16px;
-            padding: 12px 14px;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
-            transition: border-color 0.3s ease;
-        }
-
-        .service-addon-list:hover {
-            border-color: rgba(212, 175, 55, 0.45);
-        }
-
-        .addon-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.76rem;
-            font-family: var(--font-sans);
-            font-weight: 700;
+        /* ── Expandable VIP Addons Drawer ── */
+        .addon-toggle-btn {
+            width: 100%;
+            background: rgba(13, 19, 30, 0.8);
+            border: 1px dashed rgba(212, 175, 55, 0.35);
             color: var(--gold-primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px dashed rgba(212, 175, 55, 0.2);
-        }
-
-        .addon-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
         }
 
-        .addon-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .addon-item:hover {
-            background: rgba(20, 184, 166, 0.08);
-            border-color: rgba(20, 184, 166, 0.3);
-            transform: translateX(3px);
-        }
-
-        .addon-item.selected {
-            background: linear-gradient(135deg, rgba(20, 184, 166, 0.18) 0%, rgba(13, 148, 136, 0.1) 100%);
+        .addon-toggle-btn:hover {
             border-color: var(--teal-glow);
-            box-shadow: 0 4px 14px rgba(20, 184, 166, 0.25);
+            color: var(--teal-light);
+            background: rgba(20, 184, 166, 0.12);
         }
 
-        .addon-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .addon-toggle-btn .toggle-icon {
+            transition: transform 0.3s ease;
         }
 
-        .custom-checkbox {
-            width: 18px;
-            height: 18px;
-            border-radius: 5px;
-            border: 1.5px solid rgba(212, 175, 55, 0.5);
-            background: rgba(11, 14, 20, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: transparent;
-            font-size: 0.65rem;
-            transition: all 0.25s ease;
-            flex-shrink: 0;
+        .addon-toggle-btn.active .toggle-icon {
+            transform: rotate(180deg);
         }
 
-        .addon-item input[type="checkbox"] {
+        .addon-drawer {
             display: none;
-        }
-
-        .addon-item input[type="checkbox"]:checked + .custom-checkbox {
-            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
-            border-color: var(--gold-primary);
-            color: #0b0e14;
-            box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
-        }
-
-        .addon-title {
-            font-size: 0.82rem;
-            font-weight: 500;
-            color: var(--text-body);
-            transition: color 0.25s ease;
-        }
-
-        .addon-item.selected .addon-title {
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .addon-price {
-            font-family: var(--font-sans);
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--gold-primary);
-            background: rgba(212, 175, 55, 0.1);
-            padding: 2px 7px;
-            border-radius: 6px;
+            margin-bottom: 16px;
+            padding: 10px;
+            background: rgba(11, 14, 20, 0.95);
             border: 1px solid rgba(212, 175, 55, 0.2);
-            transition: all 0.25s ease;
+            border-radius: 16px;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
         }
 
-        .addon-item.selected .addon-price {
-            color: #ffffff;
-            background: var(--teal-primary);
-            border-color: var(--teal-glow);
-            box-shadow: 0 0 8px rgba(45, 212, 191, 0.4);
+        .addon-drawer.open {
+            display: block;
+            animation: fadeIn 0.35s ease;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .btn-service-book {
             width: 100%;
-            background: transparent;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%);
             border: 1px solid var(--border-gold);
             color: var(--gold-primary);
-            padding: 12px;
-            border-radius: 12px;
+            padding: 13px;
+            border-radius: 16px;
             font-family: var(--font-sans);
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.35s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-service-book:hover {
-            background: var(--gold-accent);
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
             color: #0b0e14;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            border-color: var(--gold-primary);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+            transform: translateY(-2px);
         }
 
         /* ── Specialist Showcase ── */
@@ -1039,24 +1040,29 @@
     <div class="services-grid" id="servicesGrid">
         <!-- Service 1 -->
         <div class="service-card" data-category="hair">
-            <div style="position: relative;">
-                <img src="/images/luxury_hair_styling.png" alt="Hair Styling" class="service-img" />
+            <div class="service-img-wrapper">
+                <span class="service-category-badge"><i class="fa-solid fa-scissors"></i> Hair Design</span>
                 <span class="service-price-tag" id="priceTag1">PKR 4,500</span>
+                <img src="/images/luxury_hair_styling.png" alt="Hair Styling" class="service-img" />
+                <div class="service-img-overlay"></div>
             </div>
             <div class="service-body">
                 <div class="service-meta">
-                    <span><i class="fa-regular fa-clock"></i> 75 Mins</span>
-                    <span>&bull;</span>
-                    <span><i class="fa-solid fa-scissors"></i> Master Stylist</span>
+                    <span class="meta-pill"><i class="fa-regular fa-clock"></i> 75 Mins</span>
+                    <span class="meta-pill"><i class="fa-solid fa-crown"></i> Master Stylist</span>
                 </div>
                 <h3 class="service-title">Royal Hair Styling & Couture Color</h3>
                 <p class="service-desc">Precision haircut, customized color glossing, scalp revive treatment, and red-carpet blowout finish.</p>
                 
-                <!-- Interactive Addons -->
-                <div class="service-addon-list">
+                <button class="addon-toggle-btn" onclick="toggleAddonDrawer(this)">
+                    <span><i class="fa-solid fa-sparkles"></i> Customize VIP Addons</span>
+                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                </button>
+
+                <div class="addon-drawer">
                     <div class="addon-header">
-                        <span><i class="fa-solid fa-sparkles"></i> VIP Enhancements</span>
-                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.72rem;">Optional</span>
+                        <span>VIP Addon Enhancements</span>
+                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.7rem;">Select to Add</span>
                     </div>
                     <label class="addon-item" onclick="toggleAddonItem(this)">
                         <div class="addon-left">
@@ -1077,31 +1083,36 @@
                 </div>
 
                 <button class="btn-service-book" onclick="quickBook('Royal Hair Styling', 'PKR 4,500')">
-                    Book Service <i class="fa-solid fa-calendar-check"></i>
+                    Book Service <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
 
         <!-- Service 2 -->
         <div class="service-card" data-category="skin">
-            <div style="position: relative;">
-                <img src="/images/luxury_facial_spa.png" alt="Facial Spa" class="service-img" />
+            <div class="service-img-wrapper">
+                <span class="service-category-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Skincare</span>
                 <span class="service-price-tag" id="priceTag2">PKR 5,500</span>
+                <img src="/images/luxury_facial_spa.png" alt="Facial Spa" class="service-img" />
+                <div class="service-img-overlay"></div>
             </div>
             <div class="service-body">
                 <div class="service-meta">
-                    <span><i class="fa-regular fa-clock"></i> 60 Mins</span>
-                    <span>&bull;</span>
-                    <span><i class="fa-solid fa-wand-magic-sparkles"></i> Aesthetician</span>
+                    <span class="meta-pill"><i class="fa-regular fa-clock"></i> 60 Mins</span>
+                    <span class="meta-pill"><span style="color: var(--gold-primary);">★</span> Aesthetician</span>
                 </div>
                 <h3 class="service-title">Diamond Hydra-Glow Facial Therapy</h3>
                 <p class="service-desc">Multi-step deep pore cleansing, micro-exfoliation, hyaluronic acid infusion, and 24K gold glowing mask.</p>
 
-                <!-- Interactive Addons -->
-                <div class="service-addon-list">
+                <button class="addon-toggle-btn" onclick="toggleAddonDrawer(this)">
+                    <span><i class="fa-solid fa-sparkles"></i> Customize VIP Addons</span>
+                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                </button>
+
+                <div class="addon-drawer">
                     <div class="addon-header">
-                        <span><i class="fa-solid fa-sparkles"></i> VIP Enhancements</span>
-                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.72rem;">Optional</span>
+                        <span>VIP Addon Enhancements</span>
+                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.7rem;">Select to Add</span>
                     </div>
                     <label class="addon-item" onclick="toggleAddonItem(this)">
                         <div class="addon-left">
@@ -1122,31 +1133,36 @@
                 </div>
 
                 <button class="btn-service-book" onclick="quickBook('Diamond Hydra-Glow Facial', 'PKR 5,500')">
-                    Book Service <i class="fa-solid fa-calendar-check"></i>
+                    Book Service <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
 
         <!-- Service 3 -->
         <div class="service-card" data-category="nails">
-            <div style="position: relative;">
-                <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&auto=format&fit=crop&q=80" alt="Nail Art" class="service-img" />
+            <div class="service-img-wrapper">
+                <span class="service-category-badge"><i class="fa-solid fa-gem"></i> Nail Couture</span>
                 <span class="service-price-tag" id="priceTag3">PKR 3,000</span>
+                <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&auto=format&fit=crop&q=80" alt="Nail Art" class="service-img" />
+                <div class="service-img-overlay"></div>
             </div>
             <div class="service-body">
                 <div class="service-meta">
-                    <span><i class="fa-regular fa-clock"></i> 45 Mins</span>
-                    <span>&bull;</span>
-                    <span><i class="fa-solid fa-gem"></i> Nail Artist</span>
+                    <span class="meta-pill"><i class="fa-regular fa-clock"></i> 45 Mins</span>
+                    <span class="meta-pill"><i class="fa-solid fa-gem"></i> Nail Artist</span>
                 </div>
                 <h3 class="service-title">Velvet Gel Nail Couture</h3>
                 <p class="service-desc">Luxury manicure, precision cuticle shaping, long-lasting gel polish, and hand painted custom art accents.</p>
 
-                <!-- Interactive Addons -->
-                <div class="service-addon-list">
+                <button class="addon-toggle-btn" onclick="toggleAddonDrawer(this)">
+                    <span><i class="fa-solid fa-sparkles"></i> Customize VIP Addons</span>
+                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                </button>
+
+                <div class="addon-drawer">
                     <div class="addon-header">
-                        <span><i class="fa-solid fa-sparkles"></i> VIP Enhancements</span>
-                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.72rem;">Optional</span>
+                        <span>VIP Addon Enhancements</span>
+                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.7rem;">Select to Add</span>
                     </div>
                     <label class="addon-item" onclick="toggleAddonItem(this)">
                         <div class="addon-left">
@@ -1167,67 +1183,70 @@
                 </div>
 
                 <button class="btn-service-book" onclick="quickBook('Velvet Gel Nail Couture', 'PKR 3,000')">
-                    Book Service <i class="fa-solid fa-calendar-check"></i>
+                    Book Service <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
 
         <!-- Service 4 -->
         <div class="service-card" data-category="spa">
-            <div style="position: relative;">
-                <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&auto=format&fit=crop&q=80" alt="Spa" class="service-img" />
+            <div class="service-img-wrapper">
+                <span class="service-category-badge"><i class="fa-solid fa-spa"></i> Aromatherapy Spa</span>
                 <span class="service-price-tag">PKR 6,500</span>
+                <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&auto=format&fit=crop&q=80" alt="Spa" class="service-img" />
+                <div class="service-img-overlay"></div>
             </div>
             <div class="service-body">
                 <div class="service-meta">
-                    <span><i class="fa-regular fa-clock"></i> 90 Mins</span>
-                    <span>&bull;</span>
-                    <span><i class="fa-solid fa-spa"></i> Therapist</span>
+                    <span class="meta-pill"><i class="fa-regular fa-clock"></i> 90 Mins</span>
+                    <span class="meta-pill"><i class="fa-solid fa-spa"></i> Therapist</span>
                 </div>
                 <h3 class="service-title">Organic Botanical Spa Therapy</h3>
                 <p class="service-desc">Full body hot stone massage infused with lavender & gold oils for deep muscular relaxation and energy restoration.</p>
                 <button class="btn-service-book" onclick="quickBook('Organic Botanical Spa Therapy', 'PKR 6,500')">
-                    Book Service <i class="fa-solid fa-calendar-check"></i>
+                    Book Service <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
 
         <!-- Service 5 -->
         <div class="service-card" data-category="hair">
-            <div style="position: relative;">
-                <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&auto=format&fit=crop&q=80" alt="Bridal Package" class="service-img" />
+            <div class="service-img-wrapper">
+                <span class="service-category-badge"><i class="fa-solid fa-crown"></i> Bridal Package</span>
                 <span class="service-price-tag">PKR 12,000</span>
+                <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&auto=format&fit=crop&q=80" alt="Bridal Package" class="service-img" />
+                <div class="service-img-overlay"></div>
             </div>
             <div class="service-body">
                 <div class="service-meta">
-                    <span><i class="fa-regular fa-clock"></i> 180 Mins</span>
-                    <span>&bull;</span>
-                    <span><i class="fa-solid fa-crown"></i> Master Team</span>
+                    <span class="meta-pill"><i class="fa-regular fa-clock"></i> 180 Mins</span>
+                    <span class="meta-pill"><i class="fa-solid fa-crown"></i> Master Team</span>
                 </div>
                 <h3 class="service-title">Haute Couture Bridal Makeover</h3>
                 <p class="service-desc">Complete bridal hair styling, HD airbrush makeup, gel manicure, and complimentary champagne lounge access.</p>
                 <button class="btn-service-book" onclick="quickBook('Haute Couture Bridal Makeover', 'PKR 12,000')">
-                    Book Service <i class="fa-solid fa-calendar-check"></i>
+                    Book Service <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
 
         <!-- Service 6 -->
         <div class="service-card" data-category="spa">
-            <div style="position: relative;">
-                <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&auto=format&fit=crop&q=80" alt="Scalp Therapy" class="service-img" />
+            <div class="service-img-wrapper">
+                <span class="service-category-badge"><i class="fa-solid fa-leaf"></i> Scalp Therapy</span>
                 <span class="service-price-tag">PKR 3,500</span>
+                <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&auto=format&fit=crop&q=80" alt="Scalp Therapy" class="service-img" />
+                <div class="service-img-overlay"></div>
             </div>
             <div class="service-body">
                 <div class="service-meta">
-                    <span><i class="fa-regular fa-clock"></i> 50 Mins</span>
-                    <span>&bull;</span>
-                    <span><i class="fa-solid fa-leaf"></i> Specialist</span>
+                    <span class="meta-pill"><i class="fa-regular fa-clock"></i> 50 Mins</span>
+                    <span class="meta-pill"><i class="fa-solid fa-leaf"></i> Specialist</span>
                 </div>
                 <h3 class="service-title">Botanical Scalp Detox & Steam</h3>
                 <p class="service-desc">Deep herbal scalp exfoliation, warm botanical steam treatment, and invigorating neck massage.</p>
                 <button class="btn-service-book" onclick="quickBook('Botanical Scalp Detox', 'PKR 3,500')">
-                    Book Service <i class="fa-solid fa-calendar-check"></i>
+                    Book Service <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
@@ -1568,7 +1587,15 @@
             }, 200);
         }
 
-        // ── Interactive Addon Price Recalculation ──
+        // ── Interactive Addon Drawer & Price Recalculation ──
+        function toggleAddonDrawer(btn) {
+            btn.classList.toggle('active');
+            const drawer = btn.nextElementSibling;
+            if (drawer) {
+                drawer.classList.toggle('open');
+            }
+        }
+
         function toggleAddonItem(labelElem) {
             setTimeout(() => {
                 const chk = labelElem.querySelector('input[type="checkbox"]');
