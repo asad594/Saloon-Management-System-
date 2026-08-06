@@ -220,8 +220,8 @@
             animation: floatSlow 4s ease-in-out infinite alternate;
         }
 
-        .badge-1 { top: 30px; left: -20px; }
-        .badge-2 { bottom: 40px; right: -20px; animation-delay: 2s; }
+        .badge-1 { top: 24px; left: 24px; }
+        .badge-2 { bottom: 24px; right: 24px; animation-delay: 2s; }
 
         @@keyframes floatSlow {
             0% { transform: translateY(0px); }
@@ -838,41 +838,6 @@
                 <div class="badge-info">
                     <h5>100% Organic Therapies</h5>
                     <p>Pure Botanical Formulations</p>
-                </div>
-            </div>
-
-            <!-- Quick Booking Estimator Widget -->
-            <div class="quick-booking-card">
-                <div class="widget-header">
-                    <h4><i class="fa-solid fa-calendar-plus"></i> Quick Appointment</h4>
-                    <span style="color: var(--teal-light); font-size: 0.78rem;"><i class="fa-solid fa-bolt"></i> Instant Confirmation</span>
-                </div>
-
-                <div class="widget-grid">
-                    <div class="widget-group">
-                        <label>Select Treatment</label>
-                        <select class="widget-select" id="quickServiceSelect" onchange="updateEstimate()">
-                            <option value="145|75" selected>Royal Hair Styling ($145)</option>
-                            <option value="180|60">Diamond Facial Spa ($180)</option>
-                            <option value="95|45">Velvet Gel Nail Art ($95)</option>
-                            <option value="210|90">Aromatherapy Spa ($210)</option>
-                            <option value="350|180">Haute Bridal Package ($350)</option>
-                        </select>
-                    </div>
-
-                    <div class="widget-group">
-                        <label>Preferred Date</label>
-                        <input type="date" class="widget-input" id="quickDate" value="2026-08-07" />
-                    </div>
-                </div>
-
-                <div class="widget-bottom">
-                    <div class="price-estimate">
-                        Est: <strong id="quickEstPrice">$145</strong> &bull; <span id="quickEstDuration">75 Mins</span>
-                    </div>
-                    <button class="btn-widget-confirm" onclick="confirmQuickBooking()">
-                        Reserve Slot <i class="fa-solid fa-arrow-right"></i>
-                    </button>
                 </div>
             </div>
         </div>
