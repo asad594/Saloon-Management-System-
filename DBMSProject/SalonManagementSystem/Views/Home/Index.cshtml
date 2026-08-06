@@ -458,26 +458,43 @@
         }
 
         .service-card {
-            background: linear-gradient(165deg, rgba(19, 25, 36, 0.95) 0%, rgba(11, 14, 20, 0.98) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 28px;
+            background: linear-gradient(160deg, rgba(19, 25, 36, 0.98) 0%, rgba(10, 14, 22, 0.99) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            border-radius: 24px;
             overflow: hidden;
             transition: all 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
         }
 
         .service-card:hover {
             border-color: var(--teal-glow);
-            transform: translateY(-10px) scale(1.015);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(45, 212, 191, 0.25);
+            transform: translateY(-12px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(45, 212, 191, 0.25);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), var(--teal-glow), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 10;
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
         }
 
         .service-img-wrapper {
             position: relative;
-            height: 220px;
+            height: 230px;
             overflow: hidden;
         }
 
@@ -495,41 +512,18 @@
         .service-img-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(11, 14, 20, 0.1) 0%, rgba(13, 19, 30, 0.95) 100%);
+            background: linear-gradient(180deg, rgba(11, 14, 20, 0.15) 0%, rgba(13, 19, 30, 0.95) 100%);
             pointer-events: none;
-        }
-
-        .service-price-tag {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.95) 0%, rgba(180, 140, 30, 0.95) 100%);
-            color: #0b0e14;
-            font-family: var(--font-sans);
-            font-weight: 800;
-            font-size: 0.95rem;
-            padding: 7px 16px;
-            border-radius: 50px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(212, 175, 55, 0.4);
-            letter-spacing: 0.5px;
-            z-index: 5;
-            transition: all 0.3s ease;
-        }
-
-        .service-card:hover .service-price-tag {
-            background: linear-gradient(135deg, #ffffff 0%, var(--teal-light) 100%);
-            color: #0b0e14;
-            box-shadow: 0 8px 25px rgba(45, 212, 191, 0.5);
         }
 
         .service-category-badge {
             position: absolute;
             top: 16px;
             left: 16px;
-            background: rgba(13, 19, 30, 0.85);
+            background: rgba(11, 14, 20, 0.85);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--teal-light);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold-primary);
             font-family: var(--font-sans);
             font-size: 0.72rem;
             font-weight: 700;
@@ -540,21 +534,41 @@
             z-index: 5;
         }
 
+        .service-price-tag {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
+            color: #0b0e14;
+            font-family: var(--font-sans);
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 6px 16px;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .service-price-tag {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+            transform: scale(1.05);
+        }
+
         .service-body {
-            padding: 24px 24px 20px 24px;
+            padding: 22px 24px 20px 24px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            margin-top: -24px;
-            position: relative;
-            z-index: 2;
         }
 
         .service-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.78rem;
+            color: var(--teal-light);
         }
 
         .meta-pill {
@@ -573,10 +587,10 @@
 
         .service-title {
             font-family: var(--font-display);
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             line-height: 1.3;
             transition: color 0.3s ease;
         }
@@ -587,90 +601,109 @@
 
         .service-desc {
             color: var(--text-muted);
-            font-size: 0.88rem;
-            margin-bottom: 18px;
-            line-height: 1.65;
+            font-size: 0.86rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
             flex-grow: 1;
         }
 
-        /* ── Expandable VIP Addons Drawer ── */
-        .addon-toggle-btn {
-            width: 100%;
-            background: rgba(13, 19, 30, 0.8);
-            border: 1px dashed rgba(212, 175, 55, 0.35);
-            color: var(--gold-primary);
-            padding: 10px 16px;
-            border-radius: 14px;
-            font-family: var(--font-sans);
-            font-size: 0.8rem;
+        /* ── Interactive Instant Addon Chips ── */
+        .addon-chips-wrapper {
+            margin-bottom: 18px;
+        }
+
+        .addon-chips-label {
+            font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            cursor: pointer;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-            transition: all 0.3s ease;
         }
 
-        .addon-toggle-btn:hover {
+        .addon-chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .addon-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-body);
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .addon-chip:hover {
+            border-color: var(--gold-primary);
+            color: #ffffff;
+            background: rgba(212, 175, 55, 0.12);
+        }
+
+        .addon-chip.active {
+            background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-accent) 100%);
             border-color: var(--teal-glow);
-            color: var(--teal-light);
-            background: rgba(20, 184, 166, 0.12);
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(45, 212, 191, 0.4);
         }
 
-        .addon-toggle-btn .toggle-icon {
-            transition: transform 0.3s ease;
+        .addon-chip-price {
+            opacity: 0.85;
+            font-weight: 700;
         }
 
-        .addon-toggle-btn.active .toggle-icon {
-            transform: rotate(180deg);
+        /* ── Card Footer Action Bar ── */
+        .service-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: auto;
         }
 
-        .addon-drawer {
-            display: none;
-            margin-bottom: 16px;
-            padding: 10px;
-            background: rgba(11, 14, 20, 0.95);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 16px;
-            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.6);
-        }
-
-        .addon-drawer.open {
-            display: block;
-            animation: fadeIn 0.35s ease;
-        }
-
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+        .service-rating {
+            font-size: 0.8rem;
+            color: var(--gold-primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .btn-service-book {
-            width: 100%;
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%);
             border: 1px solid var(--border-gold);
             color: var(--gold-primary);
-            padding: 13px;
-            border-radius: 16px;
+            padding: 10px 20px;
+            border-radius: 50px;
             font-family: var(--font-sans);
-            font-size: 0.9rem;
+            font-size: 0.84rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.35s ease;
-            display: flex;
+            transition: all 0.3s ease;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            gap: 8px;
         }
 
         .btn-service-book:hover {
             background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
             color: #0b0e14;
             border-color: var(--gold-primary);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
             transform: translateY(-2px);
         }
 
@@ -1054,37 +1087,32 @@
                 <h3 class="service-title">Royal Hair Styling & Couture Color</h3>
                 <p class="service-desc">Precision haircut, customized color glossing, scalp revive treatment, and red-carpet blowout finish.</p>
                 
-                <button class="addon-toggle-btn" onclick="toggleAddonDrawer(this)">
-                    <span><i class="fa-solid fa-sparkles"></i> Customize VIP Addons</span>
-                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
-                </button>
-
-                <div class="addon-drawer">
-                    <div class="addon-header">
-                        <span>VIP Addon Enhancements</span>
-                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.7rem;">Select to Add</span>
+                <!-- Interactive Instant Addon Chips -->
+                <div class="addon-chips-wrapper">
+                    <div class="addon-chips-label">
+                        <span><i class="fa-solid fa-wand-magic-sparkles"></i> VIP Enhancements</span>
+                        <span style="opacity:0.75; font-weight:500; text-transform:none;">Tap to Add</span>
                     </div>
-                    <label class="addon-item" onclick="toggleAddonItem(this)">
-                        <div class="addon-left">
-                            <input type="checkbox" onchange="recalculateServicePrice(1, 4500, this, 1000)" />
-                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
-                            <span class="addon-title">Organic Glossing Mask</span>
+                    <div class="addon-chips-container">
+                        <div class="addon-chip" onclick="toggleAddonChip(this, 1, 4500, 1000)">
+                            <span>+ Organic Glossing</span>
+                            <span class="addon-chip-price">+PKR 1,000</span>
                         </div>
-                        <span class="addon-price">+PKR 1,000</span>
-                    </label>
-                    <label class="addon-item" onclick="toggleAddonItem(this)">
-                        <div class="addon-left">
-                            <input type="checkbox" onchange="recalculateServicePrice(1, 4500, this, 800)" />
-                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
-                            <span class="addon-title">Scalp Detox Scrub</span>
+                        <div class="addon-chip" onclick="toggleAddonChip(this, 1, 4500, 800)">
+                            <span>+ Scalp Detox</span>
+                            <span class="addon-chip-price">+PKR 800</span>
                         </div>
-                        <span class="addon-price">+PKR 800</span>
-                    </label>
+                    </div>
                 </div>
 
-                <button class="btn-service-book" onclick="quickBook('Royal Hair Styling', 'PKR 4,500')">
-                    Book Service <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                <div class="service-footer">
+                    <div class="service-rating">
+                        <i class="fa-solid fa-star" style="color: var(--gold-primary);"></i> 4.9 <span style="color: var(--text-muted); font-weight:400;">(128)</span>
+                    </div>
+                    <button class="btn-service-book" onclick="quickBook('Royal Hair Styling', 'PKR 4,500')">
+                        Book Treatment <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1104,37 +1132,32 @@
                 <h3 class="service-title">Diamond Hydra-Glow Facial Therapy</h3>
                 <p class="service-desc">Multi-step deep pore cleansing, micro-exfoliation, hyaluronic acid infusion, and 24K gold glowing mask.</p>
 
-                <button class="addon-toggle-btn" onclick="toggleAddonDrawer(this)">
-                    <span><i class="fa-solid fa-sparkles"></i> Customize VIP Addons</span>
-                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
-                </button>
-
-                <div class="addon-drawer">
-                    <div class="addon-header">
-                        <span>VIP Addon Enhancements</span>
-                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.7rem;">Select to Add</span>
+                <!-- Interactive Instant Addon Chips -->
+                <div class="addon-chips-wrapper">
+                    <div class="addon-chips-label">
+                        <span><i class="fa-solid fa-wand-magic-sparkles"></i> VIP Enhancements</span>
+                        <span style="opacity:0.75; font-weight:500; text-transform:none;">Tap to Add</span>
                     </div>
-                    <label class="addon-item" onclick="toggleAddonItem(this)">
-                        <div class="addon-left">
-                            <input type="checkbox" onchange="recalculateServicePrice(2, 5500, this, 1500)" />
-                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
-                            <span class="addon-title">24K Gold Leaf Boost</span>
+                    <div class="addon-chips-container">
+                        <div class="addon-chip" onclick="toggleAddonChip(this, 2, 5500, 1500)">
+                            <span>+ 24K Gold Leaf</span>
+                            <span class="addon-chip-price">+PKR 1,500</span>
                         </div>
-                        <span class="addon-price">+PKR 1,500</span>
-                    </label>
-                    <label class="addon-item" onclick="toggleAddonItem(this)">
-                        <div class="addon-left">
-                            <input type="checkbox" onchange="recalculateServicePrice(2, 5500, this, 1000)" />
-                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
-                            <span class="addon-title">Cryo Eye Lift</span>
+                        <div class="addon-chip" onclick="toggleAddonChip(this, 2, 5500, 1000)">
+                            <span>+ Cryo Eye Lift</span>
+                            <span class="addon-chip-price">+PKR 1,000</span>
                         </div>
-                        <span class="addon-price">+PKR 1,000</span>
-                    </label>
+                    </div>
                 </div>
 
-                <button class="btn-service-book" onclick="quickBook('Diamond Hydra-Glow Facial', 'PKR 5,500')">
-                    Book Service <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                <div class="service-footer">
+                    <div class="service-rating">
+                        <i class="fa-solid fa-star" style="color: var(--gold-primary);"></i> 5.0 <span style="color: var(--text-muted); font-weight:400;">(210)</span>
+                    </div>
+                    <button class="btn-service-book" onclick="quickBook('Diamond Hydra-Glow Facial', 'PKR 5,500')">
+                        Book Treatment <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1154,37 +1177,32 @@
                 <h3 class="service-title">Velvet Gel Nail Couture</h3>
                 <p class="service-desc">Luxury manicure, precision cuticle shaping, long-lasting gel polish, and hand painted custom art accents.</p>
 
-                <button class="addon-toggle-btn" onclick="toggleAddonDrawer(this)">
-                    <span><i class="fa-solid fa-sparkles"></i> Customize VIP Addons</span>
-                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
-                </button>
-
-                <div class="addon-drawer">
-                    <div class="addon-header">
-                        <span>VIP Addon Enhancements</span>
-                        <span style="font-weight: 500; text-transform: none; opacity: 0.75; font-size: 0.7rem;">Select to Add</span>
+                <!-- Interactive Instant Addon Chips -->
+                <div class="addon-chips-wrapper">
+                    <div class="addon-chips-label">
+                        <span><i class="fa-solid fa-wand-magic-sparkles"></i> VIP Enhancements</span>
+                        <span style="opacity:0.75; font-weight:500; text-transform:none;">Tap to Add</span>
                     </div>
-                    <label class="addon-item" onclick="toggleAddonItem(this)">
-                        <div class="addon-left">
-                            <input type="checkbox" onchange="recalculateServicePrice(3, 3000, this, 600)" />
-                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
-                            <span class="addon-title">Swarovski Crystals</span>
+                    <div class="addon-chips-container">
+                        <div class="addon-chip" onclick="toggleAddonChip(this, 3, 3000, 600)">
+                            <span>+ Swarovski Art</span>
+                            <span class="addon-chip-price">+PKR 600</span>
                         </div>
-                        <span class="addon-price">+PKR 600</span>
-                    </label>
-                    <label class="addon-item" onclick="toggleAddonItem(this)">
-                        <div class="addon-left">
-                            <input type="checkbox" onchange="recalculateServicePrice(3, 3000, this, 500)" />
-                            <div class="custom-checkbox"><i class="fa-solid fa-check"></i></div>
-                            <span class="addon-title">Paraffin Hydration Dip</span>
+                        <div class="addon-chip" onclick="toggleAddonChip(this, 3, 3000, 500)">
+                            <span>+ Paraffin Dip</span>
+                            <span class="addon-chip-price">+PKR 500</span>
                         </div>
-                        <span class="addon-price">+PKR 500</span>
-                    </label>
+                    </div>
                 </div>
 
-                <button class="btn-service-book" onclick="quickBook('Velvet Gel Nail Couture', 'PKR 3,000')">
-                    Book Service <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                <div class="service-footer">
+                    <div class="service-rating">
+                        <i class="fa-solid fa-star" style="color: var(--gold-primary);"></i> 4.9 <span style="color: var(--text-muted); font-weight:400;">(94)</span>
+                    </div>
+                    <button class="btn-service-book" onclick="quickBook('Velvet Gel Nail Couture', 'PKR 3,000')">
+                        Book Treatment <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1203,9 +1221,15 @@
                 </div>
                 <h3 class="service-title">Organic Botanical Spa Therapy</h3>
                 <p class="service-desc">Full body hot stone massage infused with lavender & gold oils for deep muscular relaxation and energy restoration.</p>
-                <button class="btn-service-book" onclick="quickBook('Organic Botanical Spa Therapy', 'PKR 6,500')">
-                    Book Service <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                
+                <div class="service-footer" style="margin-top: auto;">
+                    <div class="service-rating">
+                        <i class="fa-solid fa-star" style="color: var(--gold-primary);"></i> 5.0 <span style="color: var(--text-muted); font-weight:400;">(165)</span>
+                    </div>
+                    <button class="btn-service-book" onclick="quickBook('Organic Botanical Spa Therapy', 'PKR 6,500')">
+                        Book Treatment <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1224,9 +1248,15 @@
                 </div>
                 <h3 class="service-title">Haute Couture Bridal Makeover</h3>
                 <p class="service-desc">Complete bridal hair styling, HD airbrush makeup, gel manicure, and complimentary champagne lounge access.</p>
-                <button class="btn-service-book" onclick="quickBook('Haute Couture Bridal Makeover', 'PKR 12,000')">
-                    Book Service <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                
+                <div class="service-footer" style="margin-top: auto;">
+                    <div class="service-rating">
+                        <i class="fa-solid fa-star" style="color: var(--gold-primary);"></i> 5.0 <span style="color: var(--text-muted); font-weight:400;">(310)</span>
+                    </div>
+                    <button class="btn-service-book" onclick="quickBook('Haute Couture Bridal Makeover', 'PKR 12,000')">
+                        Book Treatment <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1245,9 +1275,15 @@
                 </div>
                 <h3 class="service-title">Botanical Scalp Detox & Steam</h3>
                 <p class="service-desc">Deep herbal scalp exfoliation, warm botanical steam treatment, and invigorating neck massage.</p>
-                <button class="btn-service-book" onclick="quickBook('Botanical Scalp Detox', 'PKR 3,500')">
-                    Book Service <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                
+                <div class="service-footer" style="margin-top: auto;">
+                    <div class="service-rating">
+                        <i class="fa-solid fa-star" style="color: var(--gold-primary);"></i> 4.8 <span style="color: var(--text-muted); font-weight:400;">(87)</span>
+                    </div>
+                    <button class="btn-service-book" onclick="quickBook('Botanical Scalp Detox', 'PKR 3,500')">
+                        Book Treatment <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1587,35 +1623,24 @@
             }, 200);
         }
 
-        // ── Interactive Addon Drawer & Price Recalculation ──
-        function toggleAddonDrawer(btn) {
-            btn.classList.toggle('active');
-            const drawer = btn.nextElementSibling;
-            if (drawer) {
-                drawer.classList.toggle('open');
-            }
-        }
-
-        function toggleAddonItem(labelElem) {
-            setTimeout(() => {
-                const chk = labelElem.querySelector('input[type="checkbox"]');
-                if (chk && chk.checked) {
-                    labelElem.classList.add('selected');
-                } else {
-                    labelElem.classList.remove('selected');
-                }
-            }, 10);
-        }
-
-        function recalculateServicePrice(cardId, basePrice, checkbox, addonVal) {
+        // ── Interactive Instant Addon Chip Toggle ──
+        function toggleAddonChip(chipElem, cardId, basePrice, addonVal) {
+            chipElem.classList.toggle('active');
             const priceTag = document.getElementById('priceTag' + cardId);
+            if (!priceTag) return;
+
             let currentNum = parseInt(priceTag.innerText.replace(/[^0-9]/g, ''));
-            if (checkbox.checked) {
+            if (chipElem.classList.contains('active')) {
                 currentNum += addonVal;
             } else {
                 currentNum -= addonVal;
             }
+
+            priceTag.style.transform = 'scale(1.2)';
             priceTag.innerText = 'PKR ' + currentNum.toLocaleString('en-US');
+            setTimeout(() => {
+                priceTag.style.transform = 'scale(1)';
+            }, 200);
         }
 
         // ── Specialist Detail Modal ──
