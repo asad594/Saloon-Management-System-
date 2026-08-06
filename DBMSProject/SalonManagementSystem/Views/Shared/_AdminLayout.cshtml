@@ -334,8 +334,8 @@
                     <a href="/Admin/Home" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Home" ? "active" : "")">
                         <i class="fa-solid fa-chart-pie"></i> Dashboard
                     </a>
-                    <a href="/Admin/DailyShiftRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "DailyShiftRevenue" ? "active" : "")">
-                        <i class="fa-solid fa-sack-dollar"></i> Shift Revenue (12PM-12AM)
+                    <a href="/Admin/DayRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "DayRevenue" ? "active" : "")">
+                        <i class="fa-solid fa-vault"></i> Day Revenue & Closing
                     </a>
                     <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
                         <i class="fa-solid fa-scissors"></i> Manage Services

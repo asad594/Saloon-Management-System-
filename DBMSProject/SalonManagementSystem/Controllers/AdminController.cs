@@ -16,6 +16,26 @@ namespace SalonManagementSystem.Controllers
 
 
 
+        private void EnsureDailyClosingsTable(SqlConnection conn)
+        {
+            string sql = @"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'daily_closings')
+                BEGIN
+                    CREATE TABLE daily_closings (
+                        ClosingID INT IDENTITY(1,1) PRIMARY KEY,
+                        ClosingDate DATETIME NOT NULL DEFAULT GETDATE(),
+                        DayName NVARCHAR(50) NOT NULL,
+                        TotalRevenue DECIMAL(18,2) NOT NULL,
+                        TotalBills INT NOT NULL,
+                        ClosedBy NVARCHAR(100) DEFAULT 'Admin'
+                    );
+                END";
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         public IActionResult Home()
         {
             DashboardModel model = new DashboardModel();
@@ -23,14 +43,25 @@ namespace SalonManagementSystem.Controllers
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                EnsureDailyClosingsTable(conn);
 
-                DateTime today = DateTime.Today;
-                DateTime shiftStart = today.AddHours(12);
-                DateTime shiftEnd = today.AddDays(1);
+                // Find last closing date to compute current live unclosed sales
+                SqlCommand cmdLast = new SqlCommand("SELECT TOP 1 ClosingDate FROM daily_closings ORDER BY ClosingID DESC", conn);
+                object objLast = cmdLast.ExecuteScalar();
+                DateTime? lastClosingDate = objLast != null && objLast != DBNull.Value ? Convert.ToDateTime(objLast) : (DateTime?)null;
 
-                // Total Shift Revenue (12 PM - 12 AM today)
-                model.TodaySales = Convert.ToDecimal(new SqlCommand(
-                    $"SELECT ISNULL(SUM(TotalAmount),0) FROM bills WHERE BillDate >= '{shiftStart:yyyy-MM-dd HH:mm:ss}' AND BillDate < '{shiftEnd:yyyy-MM-dd HH:mm:ss}'", conn).ExecuteScalar());
+                string salesSql = lastClosingDate.HasValue
+                    ? "SELECT ISNULL(SUM(TotalAmount),0) FROM bills WHERE BillDate > @LastClosing"
+                    : "SELECT ISNULL(SUM(TotalAmount),0) FROM bills";
+
+                using (SqlCommand cmdSales = new SqlCommand(salesSql, conn))
+                {
+                    if (lastClosingDate.HasValue)
+                    {
+                        cmdSales.Parameters.AddWithValue("@LastClosing", lastClosingDate.Value);
+                    }
+                    model.TodaySales = Convert.ToDecimal(cmdSales.ExecuteScalar());
+                }
 
                 model.TodayAppointments = (int)new SqlCommand(
                     "SELECT COUNT(*) FROM appointments WHERE CAST(AppDate AS DATE)=CAST(GETDATE() AS DATE)", conn).ExecuteScalar();
@@ -42,120 +73,137 @@ namespace SalonManagementSystem.Controllers
             return View(model);
         }
 
-        // ✅ 12 PM - 12 AM DAILY SHIFT REVENUE REPORT
-        public IActionResult DailyShiftRevenue(DateTime? targetDate)
+        // ✅ MANUAL DAY REVENUE & DAY CLOSING STUDIO
+        public IActionResult DayRevenue()
         {
-            DateTime selected = targetDate.HasValue ? targetDate.Value.Date : DateTime.Today;
-            DateTime shiftStart = selected.AddHours(12); // 12:00:00 PM
-            DateTime shiftEnd = selected.AddDays(1);     // 12:00:00 AM (midnight next morning)
-
-            DateTime today = DateTime.Today;
-            DateTime todayShiftStart = today.AddHours(12);
-            DateTime todayShiftEnd = today.AddDays(1);
-
-            DailyShiftRevenueViewModel model = new DailyShiftRevenueViewModel
-            {
-                SelectedDate = selected,
-                ShiftStart = shiftStart,
-                ShiftEnd = shiftEnd
-            };
+            DayRevenueViewModel model = new DayRevenueViewModel();
 
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                EnsureDailyClosingsTable(conn);
 
-                // 1. Today's 12 PM - 12 AM Shift Revenue
-                SqlCommand cmdToday = new SqlCommand(@"
-                    SELECT ISNULL(SUM(TotalAmount), 0) AS Revenue, COUNT(*) AS BillCount
-                    FROM bills
-                    WHERE BillDate >= @Start AND BillDate < @End", conn);
-                cmdToday.Parameters.AddWithValue("@Start", todayShiftStart);
-                cmdToday.Parameters.AddWithValue("@End", todayShiftEnd);
+                // 1. Find Last Closing Date
+                SqlCommand cmdLast = new SqlCommand("SELECT TOP 1 ClosingDate FROM daily_closings ORDER BY ClosingID DESC", conn);
+                object objLast = cmdLast.ExecuteScalar();
+                DateTime? lastClosingDate = objLast != null && objLast != DBNull.Value ? Convert.ToDateTime(objLast) : (DateTime?)null;
+                model.LastClosingDate = lastClosingDate;
 
-                using (SqlDataReader reader = cmdToday.ExecuteReader())
+                // 2. Fetch unclosed bills (since last closing date)
+                string billQuery = lastClosingDate.HasValue
+                    ? "SELECT BillID, ClientName, Phone, ServiceName, StaffName, BillDate, TotalAmount FROM bills WHERE BillDate > @LastClosing ORDER BY BillDate DESC"
+                    : "SELECT BillID, ClientName, Phone, ServiceName, StaffName, BillDate, TotalAmount FROM bills ORDER BY BillDate DESC";
+
+                using (SqlCommand cmdBills = new SqlCommand(billQuery, conn))
                 {
-                    if (reader.Read())
+                    if (lastClosingDate.HasValue)
                     {
-                        model.TodayShiftRevenue = Convert.ToDecimal(reader["Revenue"]);
-                        model.TodayShiftBillCount = Convert.ToInt32(reader["BillCount"]);
+                        cmdBills.Parameters.AddWithValue("@LastClosing", lastClosingDate.Value);
                     }
-                }
 
-                // 2. Selected Date 12 PM - 12 AM Shift Revenue
-                SqlCommand cmdSelected = new SqlCommand(@"
-                    SELECT ISNULL(SUM(TotalAmount), 0) AS Revenue, COUNT(*) AS BillCount
-                    FROM bills
-                    WHERE BillDate >= @Start AND BillDate < @End", conn);
-                cmdSelected.Parameters.AddWithValue("@Start", shiftStart);
-                cmdSelected.Parameters.AddWithValue("@End", shiftEnd);
-
-                using (SqlDataReader reader = cmdSelected.ExecuteReader())
-                {
-                    if (reader.Read())
+                    using (SqlDataReader reader = cmdBills.ExecuteReader())
                     {
-                        model.SelectedShiftRevenue = Convert.ToDecimal(reader["Revenue"]);
-                        model.SelectedShiftBillCount = Convert.ToInt32(reader["BillCount"]);
-                    }
-                }
-
-                // 3. Bills generated in Selected Shift (12 PM - 12 AM)
-                SqlCommand cmdBills = new SqlCommand(@"
-                    SELECT BillID, ClientName, Phone, ServiceName, StaffName, BillDate, TotalAmount
-                    FROM bills
-                    WHERE BillDate >= @Start AND BillDate < @End
-                    ORDER BY BillDate DESC", conn);
-                cmdBills.Parameters.AddWithValue("@Start", shiftStart);
-                cmdBills.Parameters.AddWithValue("@End", shiftEnd);
-
-                using (SqlDataReader reader = cmdBills.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        model.ShiftBills.Add(new ShiftBillItem
+                        while (reader.Read())
                         {
-                            BillId = Convert.ToInt32(reader["BillID"]),
-                            ClientName = reader["ClientName"].ToString() ?? "",
-                            Phone = reader["Phone"].ToString() ?? "",
-                            ServiceName = reader["ServiceName"].ToString() ?? "",
-                            StaffName = reader["StaffName"].ToString() ?? "",
-                            BillDate = Convert.ToDateTime(reader["BillDate"]),
-                            TotalAmount = Convert.ToDecimal(reader["TotalAmount"])
-                        });
+                            decimal amt = Convert.ToDecimal(reader["TotalAmount"]);
+                            model.CurrentDayBills.Add(new TransactionBillItem
+                            {
+                                BillId = Convert.ToInt32(reader["BillID"]),
+                                ClientName = reader["ClientName"].ToString() ?? "",
+                                Phone = reader["Phone"].ToString() ?? "",
+                                ServiceName = reader["ServiceName"].ToString() ?? "",
+                                StaffName = reader["StaffName"].ToString() ?? "",
+                                BillDate = Convert.ToDateTime(reader["BillDate"]),
+                                TotalAmount = amt
+                            });
+                            model.CurrentDayRevenue += amt;
+                            model.CurrentDayBillsCount++;
+                        }
                     }
                 }
 
-                // 4. Daily Shift History (Grouped by Day, 12 PM to 12 AM shifts)
-                SqlCommand cmdHistory = new SqlCommand(@"
-                    SELECT 
-                        CAST(CASE WHEN DATEPART(hour, BillDate) < 12 
-                                  THEN DATEADD(day, -1, CAST(BillDate AS DATE)) 
-                                  ELSE CAST(BillDate AS DATE) END AS DATE) AS ShiftDate,
-                        COUNT(*) AS BillCount,
-                        SUM(TotalAmount) AS TotalRevenue
-                    FROM bills
-                    GROUP BY CAST(CASE WHEN DATEPART(hour, BillDate) < 12 
-                                       THEN DATEADD(day, -1, CAST(BillDate AS DATE)) 
-                                       ELSE CAST(BillDate AS DATE) END AS DATE)
-                    ORDER BY ShiftDate DESC", conn);
-
+                // 3. Fetch Closed Days History
+                SqlCommand cmdHistory = new SqlCommand("SELECT ClosingID, ClosingDate, DayName, TotalRevenue, TotalBills, ClosedBy FROM daily_closings ORDER BY ClosingID DESC", conn);
                 using (SqlDataReader reader = cmdHistory.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        DateTime d = Convert.ToDateTime(reader["ShiftDate"]);
-                        model.ShiftHistory.Add(new DailyShiftSummary
+                        decimal rev = Convert.ToDecimal(reader["TotalRevenue"]);
+                        model.ClosedDaysHistory.Add(new ClosedDayLog
                         {
-                            ShiftDate = d,
-                            ShiftStart = d.AddHours(12),
-                            ShiftEnd = d.AddDays(1),
-                            BillCount = Convert.ToInt32(reader["BillCount"]),
-                            TotalRevenue = Convert.ToDecimal(reader["TotalRevenue"])
+                            ClosingId = Convert.ToInt32(reader["ClosingID"]),
+                            ClosingDate = Convert.ToDateTime(reader["ClosingDate"]),
+                            DayName = reader["DayName"].ToString() ?? "",
+                            TotalRevenue = rev,
+                            TotalBills = Convert.ToInt32(reader["TotalBills"]),
+                            ClosedBy = reader["ClosedBy"].ToString() ?? "Admin"
                         });
+                        model.TotalAllTimeClosedRevenue += rev;
+                        model.TotalClosedDaysCount++;
                     }
                 }
             }
 
             return View(model);
+        }
+
+        // ✅ POST ACTION: CLOSE DAY & FINALIZE REVENUE
+        [HttpPost]
+        public IActionResult CloseDay()
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                EnsureDailyClosingsTable(conn);
+
+                // 1. Get last closing date
+                SqlCommand cmdLast = new SqlCommand("SELECT TOP 1 ClosingDate FROM daily_closings ORDER BY ClosingID DESC", conn);
+                object objLast = cmdLast.ExecuteScalar();
+                DateTime? lastClosingDate = objLast != null && objLast != DBNull.Value ? Convert.ToDateTime(objLast) : (DateTime?)null;
+
+                // 2. Compute current unclosed transactions sum & count
+                string billQuery = lastClosingDate.HasValue
+                    ? "SELECT ISNULL(SUM(TotalAmount),0) AS TotalRev, COUNT(*) AS TotalCount FROM bills WHERE BillDate > @LastClosing"
+                    : "SELECT ISNULL(SUM(TotalAmount),0) AS TotalRev, COUNT(*) AS TotalCount FROM bills";
+
+                decimal totalRevenue = 0;
+                int totalBills = 0;
+
+                using (SqlCommand cmdCalc = new SqlCommand(billQuery, conn))
+                {
+                    if (lastClosingDate.HasValue)
+                    {
+                        cmdCalc.Parameters.AddWithValue("@LastClosing", lastClosingDate.Value);
+                    }
+
+                    using (SqlDataReader reader = cmdCalc.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            totalRevenue = Convert.ToDecimal(reader["TotalRev"]);
+                            totalBills = Convert.ToInt32(reader["TotalCount"]);
+                        }
+                    }
+                }
+
+                // 3. Insert Closed Day Record into daily_closings
+                DateTime now = DateTime.Now;
+                string dayName = now.ToString("dddd");
+
+                SqlCommand cmdInsert = new SqlCommand(@"
+                    INSERT INTO daily_closings (ClosingDate, DayName, TotalRevenue, TotalBills, ClosedBy)
+                    VALUES (@Date, @DayName, @Revenue, @Bills, 'Admin')", conn);
+                cmdInsert.Parameters.AddWithValue("@Date", now);
+                cmdInsert.Parameters.AddWithValue("@DayName", dayName);
+                cmdInsert.Parameters.AddWithValue("@Revenue", totalRevenue);
+                cmdInsert.Parameters.AddWithValue("@Bills", totalBills);
+
+                cmdInsert.ExecuteNonQuery();
+
+                TempData["SuccessMessage"] = $"Day Closed Successfully! {dayName} ({now:MMM dd, yyyy}) finalized with PKR {totalRevenue:N0} across {totalBills} transactions!";
+            }
+
+            return RedirectToAction("DayRevenue");
         }
 
         
