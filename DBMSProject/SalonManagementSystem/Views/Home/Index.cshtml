@@ -883,19 +883,19 @@
 <section class="stats-ribbon" id="stats">
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-number" data-target="15000" data-suffix="+" data-decimals="0" data-format="comma">0+</div>
+            <div class="stat-number" data-target="15000" data-suffix="+" data-decimals="0" data-format="comma">15,000+</div>
             <div class="stat-label">Appointments Booked</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" data-target="45" data-suffix="+" data-decimals="0">0+</div>
+            <div class="stat-number" data-target="45" data-suffix="+" data-decimals="0">45+</div>
             <div class="stat-label">Master Stylists</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" data-target="99.4" data-suffix="%" data-decimals="1">0.0%</div>
+            <div class="stat-number" data-target="99.4" data-suffix="%" data-decimals="1">99.4%</div>
             <div class="stat-label">VIP Satisfaction</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" data-target="12" data-suffix="+" data-decimals="0">0+</div>
+            <div class="stat-number" data-target="12" data-suffix="+" data-decimals="0">12+</div>
             <div class="stat-label">Global Excellence Awards</div>
         </div>
     </div>
@@ -1387,6 +1387,8 @@
                 `,
                 background: '#131924',
                 color: '#fff',
+                confirmButtonColor: '#d4af37'
+            });
         }
 
         // ── Scroll-triggered Number Counter Animation ──
@@ -1400,14 +1402,17 @@
                     const suffix = counter.getAttribute("data-suffix") || "";
                     const decimals = parseInt(counter.getAttribute("data-decimals") || "0");
                     const formatComma = counter.getAttribute("data-format") === "comma";
-                    const duration = 2200; // 2.2 seconds silky smooth animation
+                    const duration = 2000; // 2 seconds silky smooth animation
                     const startTime = performance.now();
+
+                    // Reset to 0 before starting count-up
+                    counter.innerText = (decimals > 0 ? (0).toFixed(decimals) : "0") + suffix;
 
                     function updateNumber(currentTime) {
                         const elapsedTime = currentTime - startTime;
                         const progress = Math.min(elapsedTime / duration, 1);
                         
-                        // Ease-out cubic animation formula for premium feel
+                        // Ease-out cubic animation formula for high-end luxury feel
                         const easeProgress = 1 - Math.pow(1 - progress, 3);
                         const currentValue = easeProgress * target;
 
@@ -1431,17 +1436,17 @@
             }
 
             // IntersectionObserver triggers animation when scrolling into viewport
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !animated) {
-                        animated = true;
-                        animateCounters();
-                    }
-                });
-            }, { threshold: 0.2 });
-
             const statsSection = document.getElementById("stats");
             if (statsSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !animated) {
+                            animated = true;
+                            animateCounters();
+                        }
+                    });
+                }, { threshold: 0.15 });
+
                 observer.observe(statsSection);
             }
         });
