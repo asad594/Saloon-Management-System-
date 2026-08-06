@@ -239,6 +239,42 @@
             color: #0b0e14;
         }
 
+        /* ── Floating Quick Action Pill ── */
+        .floating-action-bar {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .action-circle-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(19, 25, 36, 0.9);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+        }
+
+        .action-circle-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            border-color: var(--teal-glow);
+            color: var(--teal-light);
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+        }
+
         /* ── Main Container ── */
         main {
             position: relative;
@@ -352,6 +388,22 @@
     <div class="ambient-orb orb-2"></div>
     <div class="ambient-orb orb-3"></div>
 
+    <!-- HTML5 Particle Canvas -->
+    <canvas id="globalCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></canvas>
+
+    <!-- Floating Quick Action Bar -->
+    <div class="floating-action-bar">
+        <button class="action-circle-btn" onclick="toggleSpaAudio()" title="Spa Ambient Soundscape">
+            <i class="fa-solid fa-music" id="audioIcon"></i>
+        </button>
+        <button class="action-circle-btn" onclick="openConciergeModal()" title="VIP Concierge">
+            <i class="fa-solid fa-headset"></i>
+        </button>
+        <button class="action-circle-btn" onclick="scrollToTop()" title="Scroll to Top">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
+    </div>
+
     <!-- Floating Glass Navbar -->
     <nav class="navbar-floating" id="mainNav">
         <a href="#hero" class="brand-logo">
@@ -368,6 +420,7 @@
             <li><a href="#hero" class="nav-link-custom">Home</a></li>
             <li><a href="#services" class="nav-link-custom">Bespoke Services</a></li>
             <li><a href="#specialists" class="nav-link-custom">Specialists</a></li>
+            <li><a href="#giftcards" class="nav-link-custom">Gift Cards</a></li>
             <li><a href="#vip-lounge" class="nav-link-custom">VIP Membership</a></li>
             <li><a href="#testimonials" class="nav-link-custom">Reviews</a></li>
         </ul>
@@ -456,6 +509,52 @@
             }
         });
 
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let isPlayingAudio = false;
+        function toggleSpaAudio() {
+            const icon = document.getElementById('audioIcon');
+            isPlayingAudio = !isPlayingAudio;
+            if (isPlayingAudio) {
+                icon.className = "fa-solid fa-volume-high";
+                icon.style.color = "#2dd4bf";
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-start',
+                    icon: 'info',
+                    title: '🎵 Spa Soundscape Active',
+                    text: 'Ambient lounge frequency enabled.',
+                    showConfirmButton: false,
+                    timer: 2500,
+                    background: '#131924',
+                    color: '#fff'
+                });
+            } else {
+                icon.className = "fa-solid fa-music";
+                icon.style.color = "var(--gold-primary)";
+            }
+        }
+
+        function openConciergeModal() {
+            Swal.fire({
+                icon: 'question',
+                title: '👑 StylOnyx VIP Concierge',
+                html: `
+                    <div style="text-align:left; background:#0b0e14; padding:15px; border-radius:12px; border:1px solid rgba(212,175,55,0.3); margin-top:10px;">
+                        <p style="color:#fff; margin-bottom:8px;"><i class="fa-solid fa-phone" style="color:#2dd4bf;"></i> Direct Line: <strong>+1 (800) 555-STYL</strong></p>
+                        <p style="color:#fff; margin-bottom:8px;"><i class="fa-brands fa-whatsapp" style="color:#2dd4bf;"></i> WhatsApp: <strong>+1 (800) 555-9988</strong></p>
+                        <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:0;">Our VIP concierge team is online 24/7 to assist with private bookings and custom packages.</p>
+                    </div>
+                `,
+                background: '#131924',
+                color: '#fff',
+                confirmButtonColor: '#d4af37',
+                confirmButtonText: 'Call Now'
+            });
+        }
+
         function subscribeNewsletter() {
             const email = document.getElementById('newsletterEmail').value;
             if (!email || email.indexOf('@@') === -1) {
@@ -478,6 +577,56 @@
                 confirmButtonColor: '#d4af37'
             });
             document.getElementById('newsletterEmail').value = '';
+        }
+
+        // ── Particle Canvas Background ──
+        const canvas = document.getElementById('globalCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            const particleCount = 45;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 2 + 1,
+                    color: Math.random() > 0.5 ? 'rgba(212, 175, 55, ' : 'rgba(45, 212, 191, ',
+                    alpha: Math.random() * 0.5 + 0.2,
+                    speedY: Math.random() * 0.4 + 0.1,
+                    speedX: Math.random() * 0.2 - 0.1
+                });
+            }
+
+            function renderParticles() {
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.y -= p.speedY;
+                    p.x += p.speedX;
+
+                    if (p.y < 0) p.y = height;
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ')';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(renderParticles);
+            }
+
+            renderParticles();
         }
     </script>
     @await RenderSectionAsync("Scripts", required: false)

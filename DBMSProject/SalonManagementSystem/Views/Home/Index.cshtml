@@ -501,24 +501,31 @@
             line-height: 1.6;
         }
 
-        .service-perks {
-            list-style: none;
-            margin-bottom: 24px;
-            margin-top: auto;
+        .service-addon-list {
+            margin-bottom: 16px;
+            background: rgba(11, 14, 20, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 10px 14px;
         }
 
-        .service-perks li {
-            font-size: 0.85rem;
-            color: var(--text-body);
+        .addon-label {
+            font-size: 0.75rem;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-bottom: 6px;
+            display: block;
+        }
+
+        .addon-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .service-perks li i {
-            color: var(--teal-glow);
-            font-size: 0.8rem;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-body);
+            cursor: pointer;
+            margin-bottom: 4px;
         }
 
         .btn-service-book {
@@ -559,6 +566,7 @@
             padding: 24px;
             text-align: center;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .specialist-card:hover {
@@ -600,7 +608,74 @@
             margin-bottom: 16px;
         }
 
+        /* ── Interactive Gift Card Generator ── */
+        .giftcard-container {
+            background: linear-gradient(135deg, #131924 0%, #0d131e 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 28px;
+            padding: 48px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .giftcard-preview-box {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
+            border-radius: 24px;
+            height: 260px;
+            padding: 28px;
+            color: #0b0e14;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .giftcard-preview-box.emerald {
+            background: linear-gradient(135deg, var(--teal-glow) 0%, #064e3b 100%);
+            color: #fff;
+            box-shadow: 0 15px 35px rgba(20, 184, 166, 0.4);
+        }
+
+        .giftcard-preview-box.obsidian {
+            background: linear-gradient(135deg, #1f2937 0%, #0b0e14 100%);
+            color: var(--gold-primary);
+            border: 1px solid var(--border-gold-bright);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+        }
+
         /* ── VIP Membership Section ── */
+        .billing-toggle-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .billing-toggle-btn {
+            background: rgba(19, 25, 36, 0.8);
+            border: 1px solid var(--border-gold);
+            color: var(--text-body);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .billing-toggle-btn.active {
+            background: var(--gold-accent);
+            color: #0b0e14;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(212,175,55,0.4);
+        }
+
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -708,6 +783,7 @@
             .services-grid { grid-template-columns: 1fr 1fr; }
             .specialist-grid { grid-template-columns: 1fr 1fr; }
             .pricing-grid { grid-template-columns: 1fr; }
+            .giftcard-container { grid-template-columns: 1fr; }
             .badge-1, .badge-2, .badge-3 { display: none; }
         }
         @@media (max-width: 600px) {
@@ -844,7 +920,7 @@
         <div class="service-card" data-category="hair">
             <div style="position: relative;">
                 <img src="/images/luxury_hair_styling.png" alt="Hair Styling" class="service-img" />
-                <span class="service-price-tag">$145</span>
+                <span class="service-price-tag" id="priceTag1">$145</span>
             </div>
             <div class="service-body">
                 <div class="service-meta">
@@ -854,11 +930,20 @@
                 </div>
                 <h3 class="service-title">Royal Hair Styling & Couture Color</h3>
                 <p class="service-desc">Precision haircut, customized color glossing, scalp revive treatment, and red-carpet blowout finish.</p>
-                <ul class="service-perks">
-                    <li><i class="fa-solid fa-check"></i> Custom color consultation</li>
-                    <li><i class="fa-solid fa-check"></i> Organic hair nourishment mask</li>
-                    <li><i class="fa-solid fa-check"></i> Signature thermal styling</li>
-                </ul>
+                
+                <!-- Interactive Addons -->
+                <div class="service-addon-list">
+                    <span class="addon-label"><i class="fa-solid fa-plus-circle"></i> Add VIP Enhancements</span>
+                    <label class="addon-item">
+                        <span><input type="checkbox" onchange="recalculateServicePrice(1, 145, this, 35)" /> Organic Glossing Mask</span>
+                        <span>+$35</span>
+                    </label>
+                    <label class="addon-item">
+                        <span><input type="checkbox" onchange="recalculateServicePrice(1, 145, this, 25)" /> Scalp Detox Scrub</span>
+                        <span>+$25</span>
+                    </label>
+                </div>
+
                 <button class="btn-service-book" onclick="quickBook('Royal Hair Styling', 145)">
                     Book Service <i class="fa-solid fa-calendar-check"></i>
                 </button>
@@ -869,7 +954,7 @@
         <div class="service-card" data-category="skin">
             <div style="position: relative;">
                 <img src="/images/luxury_facial_spa.png" alt="Facial Spa" class="service-img" />
-                <span class="service-price-tag">$180</span>
+                <span class="service-price-tag" id="priceTag2">$180</span>
             </div>
             <div class="service-body">
                 <div class="service-meta">
@@ -879,11 +964,20 @@
                 </div>
                 <h3 class="service-title">Diamond Hydra-Glow Facial Therapy</h3>
                 <p class="service-desc">Multi-step deep pore cleansing, micro-exfoliation, hyaluronic acid infusion, and 24K gold glowing mask.</p>
-                <ul class="service-perks">
-                    <li><i class="fa-solid fa-check"></i> Ultrasound skin tightening</li>
-                    <li><i class="fa-solid fa-check"></i> Collagen boosting infusion</li>
-                    <li><i class="fa-solid fa-check"></i> LED light rejuvenation</li>
-                </ul>
+
+                <!-- Interactive Addons -->
+                <div class="service-addon-list">
+                    <span class="addon-label"><i class="fa-solid fa-plus-circle"></i> Add VIP Enhancements</span>
+                    <label class="addon-item">
+                        <span><input type="checkbox" onchange="recalculateServicePrice(2, 180, this, 45)" /> 24K Gold Leaf Boost</span>
+                        <span>+$45</span>
+                    </label>
+                    <label class="addon-item">
+                        <span><input type="checkbox" onchange="recalculateServicePrice(2, 180, this, 30)" /> Cryo Eye Lift</span>
+                        <span>+$30</span>
+                    </label>
+                </div>
+
                 <button class="btn-service-book" onclick="quickBook('Diamond Hydra-Glow Facial', 180)">
                     Book Service <i class="fa-solid fa-calendar-check"></i>
                 </button>
@@ -894,7 +988,7 @@
         <div class="service-card" data-category="nails">
             <div style="position: relative;">
                 <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&auto=format&fit=crop&q=80" alt="Nail Art" class="service-img" />
-                <span class="service-price-tag">$95</span>
+                <span class="service-price-tag" id="priceTag3">$95</span>
             </div>
             <div class="service-body">
                 <div class="service-meta">
@@ -904,11 +998,20 @@
                 </div>
                 <h3 class="service-title">Velvet Gel Nail Couture</h3>
                 <p class="service-desc">Luxury manicure, precision cuticle shaping, long-lasting gel polish, and hand painted custom art accents.</p>
-                <ul class="service-perks">
-                    <li><i class="fa-solid fa-check"></i> Exfoliating hand scrub</li>
-                    <li><i class="fa-solid fa-check"></i> Organic paraffin wax dip</li>
-                    <li><i class="fa-solid fa-check"></i> Hand & arm massage</li>
-                </ul>
+
+                <!-- Interactive Addons -->
+                <div class="service-addon-list">
+                    <span class="addon-label"><i class="fa-solid fa-plus-circle"></i> Add VIP Enhancements</span>
+                    <label class="addon-item">
+                        <span><input type="checkbox" onchange="recalculateServicePrice(3, 95, this, 20)" /> Swarovski Crystals</span>
+                        <span>+$20</span>
+                    </label>
+                    <label class="addon-item">
+                        <span><input type="checkbox" onchange="recalculateServicePrice(3, 95, this, 15)" /> Paraffin Hydration Dip</span>
+                        <span>+$15</span>
+                    </label>
+                </div>
+
                 <button class="btn-service-book" onclick="quickBook('Velvet Gel Nail Couture', 95)">
                     Book Service <i class="fa-solid fa-calendar-check"></i>
                 </button>
@@ -929,11 +1032,6 @@
                 </div>
                 <h3 class="service-title">Organic Botanical Spa Therapy</h3>
                 <p class="service-desc">Full body hot stone massage infused with lavender & gold oils for deep muscular relaxation and energy restoration.</p>
-                <ul class="service-perks">
-                    <li><i class="fa-solid fa-check"></i> Warm volcanic stone therapy</li>
-                    <li><i class="fa-solid fa-check"></i> Custom essential oil blend</li>
-                    <li><i class="fa-solid fa-check"></i> Scalp & pressure point release</li>
-                </ul>
                 <button class="btn-service-book" onclick="quickBook('Organic Botanical Spa Therapy', 210)">
                     Book Service <i class="fa-solid fa-calendar-check"></i>
                 </button>
@@ -954,11 +1052,6 @@
                 </div>
                 <h3 class="service-title">Haute Couture Bridal Makeover</h3>
                 <p class="service-desc">Complete bridal hair styling, HD airbrush makeup, gel manicure, and complimentary champagne lounge access.</p>
-                <ul class="service-perks">
-                    <li><i class="fa-solid fa-check"></i> Full trial consultation session</li>
-                    <li><i class="fa-solid fa-check"></i> Premium veil & hairpiece fitting</li>
-                    <li><i class="fa-solid fa-check"></i> VIP lounge refreshment service</li>
-                </ul>
                 <button class="btn-service-book" onclick="quickBook('Haute Couture Bridal Makeover', 350)">
                     Book Service <i class="fa-solid fa-calendar-check"></i>
                 </button>
@@ -979,11 +1072,6 @@
                 </div>
                 <h3 class="service-title">Botanical Scalp Detox & Steam</h3>
                 <p class="service-desc">Deep herbal scalp exfoliation, warm botanical steam treatment, and invigorating neck massage.</p>
-                <ul class="service-perks">
-                    <li><i class="fa-solid fa-check"></i> Follicle oxygenation steam</li>
-                    <li><i class="fa-solid fa-check"></i> Tea tree & rosemary serum</li>
-                    <li><i class="fa-solid fa-check"></i> Acupressure head massage</li>
-                </ul>
                 <button class="btn-service-book" onclick="quickBook('Botanical Scalp Detox', 110)">
                     Book Service <i class="fa-solid fa-calendar-check"></i>
                 </button>
@@ -1001,44 +1089,104 @@
     </div>
 
     <div class="specialist-grid">
-        <div class="specialist-card">
+        <div class="specialist-card" onclick="viewStylistModal('Elena Vance', 'Hair Couture Director', '5.0', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80')">
             <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80" alt="Elena Vance" class="specialist-avatar" />
             <h3 class="specialist-name">Elena Vance</h3>
             <div class="specialist-role">Hair Couture Director</div>
             <div class="specialist-rating">
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> (5.0)
             </div>
-            <button class="btn-service-book" onclick="selectStylist('Elena Vance')">Book Consultation</button>
+            <button class="btn-service-book" onclick="event.stopPropagation(); selectStylist('Elena Vance');">Book Consultation</button>
         </div>
 
-        <div class="specialist-card">
+        <div class="specialist-card" onclick="viewStylistModal('Marcus Sterling', 'Senior Stylist & Barber', '4.9', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80')">
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80" alt="Marcus Sterling" class="specialist-avatar" />
             <h3 class="specialist-name">Marcus Sterling</h3>
             <div class="specialist-role">Senior Stylist & Barber</div>
             <div class="specialist-rating">
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> (4.9)
             </div>
-            <button class="btn-service-book" onclick="selectStylist('Marcus Sterling')">Book Consultation</button>
+            <button class="btn-service-book" onclick="event.stopPropagation(); selectStylist('Marcus Sterling');">Book Consultation</button>
         </div>
 
-        <div class="specialist-card">
+        <div class="specialist-card" onclick="viewStylistModal('Sophia Chen', 'Master Aesthetician', '5.0', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80')">
             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80" alt="Sophia Chen" class="specialist-avatar" />
             <h3 class="specialist-name">Sophia Chen</h3>
             <div class="specialist-role">Master Aesthetician</div>
             <div class="specialist-rating">
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> (5.0)
             </div>
-            <button class="btn-service-book" onclick="selectStylist('Sophia Chen')">Book Consultation</button>
+            <button class="btn-service-book" onclick="event.stopPropagation(); selectStylist('Sophia Chen');">Book Consultation</button>
         </div>
 
-        <div class="specialist-card">
+        <div class="specialist-card" onclick="viewStylistModal('Aria Montgomery', 'Nail & Spa Artist', '4.9', 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=200&auto=format&fit=crop&q=80')">
             <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=200&auto=format&fit=crop&q=80" alt="Aria Montgomery" class="specialist-avatar" />
             <h3 class="specialist-name">Aria Montgomery</h3>
             <div class="specialist-role">Nail & Spa Artist</div>
             <div class="specialist-rating">
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> (4.9)
             </div>
-            <button class="btn-service-book" onclick="selectStylist('Aria Montgomery')">Book Consultation</button>
+            <button class="btn-service-book" onclick="event.stopPropagation(); selectStylist('Aria Montgomery');">Book Consultation</button>
+        </div>
+    </div>
+</section>
+
+<!-- ── INTERACTIVE LUXURY GIFT CARD GENERATOR ── -->
+<section class="section-padding" id="giftcards">
+    <div class="section-header">
+        <span class="section-title-sub">Gifting Perfection</span>
+        <h2 class="section-title">Personalized VIP Gift Card</h2>
+        <p class="section-desc">Create a customized digital gift pass for your loved ones with instant luxury delivery.</p>
+    </div>
+
+    <div class="giftcard-container">
+        <!-- Generator Controls -->
+        <div>
+            <div style="margin-bottom: 20px;">
+                <label style="color: var(--text-muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Select Gift Amount</label>
+                <div style="display: flex; gap: 10px;">
+                    <button class="exp-pill active" onclick="updateGiftAmount(100, this)">$100</button>
+                    <button class="exp-pill" onclick="updateGiftAmount(250, this)">$250</button>
+                    <button class="exp-pill" onclick="updateGiftAmount(500, this)">$500</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="color: var(--text-muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Recipient Name</label>
+                <input type="text" id="giftRecipient" class="widget-input" placeholder="e.g. Lady Victoria" oninput="updateGiftName(this.value)" />
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="color: var(--text-muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Card Theme</label>
+                <div style="display: flex; gap: 10px;">
+                    <button class="tab-btn active" onclick="updateGiftTheme('gold', this)">Gold Obsidian</button>
+                    <button class="tab-btn" onclick="updateGiftTheme('emerald', this)">Emerald Teal</button>
+                    <button class="tab-btn" onclick="updateGiftTheme('obsidian', this)">Royal Dark</button>
+                </div>
+            </div>
+
+            <button class="btn-hero-primary" style="width: 100%; justify-content: center;" onclick="generateGiftPass()">
+                <i class="fa-solid fa-gift"></i> Issue VIP Gift Pass
+            </button>
+        </div>
+
+        <!-- Live Preview Card -->
+        <div class="giftcard-preview-box" id="giftCardPreview">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-family: var(--font-display); font-weight: 700; font-size: 1.3rem;">StylOnyx VIP</span>
+                <i class="fa-solid fa-crown" style="font-size: 1.4rem;"></i>
+            </div>
+            <div>
+                <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8;">Gifted To</span>
+                <h3 id="cardRecipientText" style="font-family: var(--font-display); font-size: 1.6rem; margin-top: 2px;">Valued Guest</h3>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <span style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.8;">Pass Value</span>
+                    <h2 id="cardAmountText" style="font-size: 2.2rem; line-height: 1;">$100</h2>
+                </div>
+                <span style="font-size: 0.75rem; letter-spacing: 2px; font-family: monospace;">#STYL-PASS-2026</span>
+            </div>
         </div>
     </div>
 </section>
@@ -1051,11 +1199,17 @@
         <p class="section-desc">Unlock priority scheduling, personal beauty concierges, and complimentary luxury treatments.</p>
     </div>
 
+    <!-- Billing Cycle Switcher -->
+    <div class="billing-toggle-bar">
+        <button class="billing-toggle-btn active" onclick="switchBilling('monthly', this)">Monthly Billing</button>
+        <button class="billing-toggle-btn" onclick="switchBilling('annual', this)">Annual Billing (Save 20%)</button>
+    </div>
+
     <div class="pricing-grid">
         <!-- Tier 1 -->
         <div class="price-card">
             <h3 class="price-title">Silver Elegance</h3>
-            <div class="price-val">$79 <span>/ month</span></div>
+            <div class="price-val" id="priceVal1">$79 <span id="pricePeriod1">/ month</span></div>
             <ul class="service-perks" style="margin-bottom: 30px;">
                 <li><i class="fa-solid fa-check"></i> 1 Monthly Haircut & Styling</li>
                 <li><i class="fa-solid fa-check"></i> 10% Off All Facial & Spa Treatments</li>
@@ -1068,7 +1222,7 @@
         <div class="price-card popular">
             <div class="popular-badge">Most Preferred</div>
             <h3 class="price-title" style="color: var(--gold-primary);">Gold VIP Circle</h3>
-            <div class="price-val">$149 <span>/ month</span></div>
+            <div class="price-val" id="priceVal2">$149 <span id="pricePeriod2">/ month</span></div>
             <ul class="service-perks" style="margin-bottom: 30px;">
                 <li><i class="fa-solid fa-check"></i> 2 Monthly Hair Stylings or Facials</li>
                 <li><i class="fa-solid fa-check"></i> Unlimited Gel Manicure Refills</li>
@@ -1081,7 +1235,7 @@
         <!-- Tier 3 -->
         <div class="price-card">
             <h3 class="price-title">Diamond Executive</h3>
-            <div class="price-val">$299 <span>/ month</span></div>
+            <div class="price-val" id="priceVal3">$299 <span id="pricePeriod3">/ month</span></div>
             <ul class="service-perks" style="margin-bottom: 30px;">
                 <li><i class="fa-solid fa-check"></i> Unlimited Hair Couture & Blowouts</li>
                 <li><i class="fa-solid fa-check"></i> Monthly Diamond Facial Treatment</li>
@@ -1247,6 +1401,99 @@
                 }
                 heroCard.style.opacity = '1';
             }, 200);
+        }
+
+        // ── Interactive Addon Price Recalculation ──
+        function recalculateServicePrice(cardId, basePrice, checkbox, addonVal) {
+            const priceTag = document.getElementById('priceTag' + cardId);
+            let currentPrice = parseInt(priceTag.innerText.replace('$', ''));
+            if (checkbox.checked) {
+                currentPrice += addonVal;
+            } else {
+                currentPrice -= addonVal;
+            }
+            priceTag.innerText = '$' + currentPrice;
+        }
+
+        // ── Specialist Detail Modal ──
+        function viewStylistModal(name, role, rating, imgUrl) {
+            Swal.fire({
+                title: name,
+                text: role + ' • ⭐ ' + rating,
+                imageUrl: imgUrl,
+                imageWidth: 120,
+                imageHeight: 120,
+                imageAlt: name,
+                html: `
+                    <p style="color: var(--teal-light); margin-top: 10px;">Specializes in haute couture styling & organic treatments.</p>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Available slots open for today & tomorrow.</p>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Book with ' + name.split(' ')[0],
+                cancelButtonText: 'Close',
+                background: '#131924',
+                color: '#fff',
+                confirmButtonColor: '#d4af37'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    selectStylist(name);
+                }
+            });
+        }
+
+        // ── Gift Card Generator Controls ──
+        let currentGiftAmount = 100;
+        function updateGiftAmount(amount, btn) {
+            document.querySelectorAll('#giftcards .exp-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentGiftAmount = amount;
+            document.getElementById('cardAmountText').innerText = '$' + amount;
+        }
+
+        function updateGiftName(val) {
+            document.getElementById('cardRecipientText').innerText = val.trim() ? val : 'Valued Guest';
+        }
+
+        function updateGiftTheme(theme, btn) {
+            document.querySelectorAll('#giftcards .tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const card = document.getElementById('giftCardPreview');
+            card.className = 'giftcard-preview-box ' + (theme === 'gold' ? '' : theme);
+        }
+
+        function generateGiftPass() {
+            const recipient = document.getElementById('cardRecipientText').innerText;
+            Swal.fire({
+                icon: 'success',
+                title: '🎁 VIP Gift Pass Issued!',
+                html: `
+                    <div style="text-align:left; background:#0b0e14; padding:15px; border-radius:12px; border:1px solid rgba(212,175,55,0.3); margin-top:10px;">
+                        <p style="color:#fff; margin-bottom:6px;"><strong>Recipient:</strong> ${recipient}</p>
+                        <p style="color:#fff; margin-bottom:6px;"><strong>Pass Value:</strong> $${currentGiftAmount}</p>
+                        <p style="color:#2dd4bf; margin-bottom:0;"><strong>Digital Voucher Code:</strong> #STYL-GIFT-${Math.floor(1000 + Math.random() * 9000)}</p>
+                    </div>
+                `,
+                background: '#131924',
+                color: '#fff',
+                confirmButtonColor: '#d4af37'
+            });
+        }
+
+        // ── Billing Cycle Switcher ──
+        function switchBilling(cycle, btn) {
+            document.querySelectorAll('.billing-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (cycle === 'annual') {
+                document.getElementById('priceVal1').innerHTML = '$63 <span>/ month</span>';
+                document.getElementById('priceVal2').innerHTML = '$119 <span>/ month</span>';
+                document.getElementById('priceVal3').innerHTML = '$239 <span>/ month</span>';
+            } else {
+                document.getElementById('priceVal1').innerHTML = '$79 <span>/ month</span>';
+                document.getElementById('priceVal2').innerHTML = '$149 <span>/ month</span>';
+                document.getElementById('priceVal3').innerHTML = '$299 <span>/ month</span>';
+            }
         }
 
         // ── Interactive Badge Detail Popups ──
