@@ -1391,6 +1391,40 @@
 
 @section Scripts {
     <script>
+        const IS_USER_LOGGED_IN = @(Context.Session.GetInt32("UserID").HasValue.ToString().ToLower());
+
+        function requireLogin(actionDescription, callback) {
+            if (!IS_USER_LOGGED_IN) {
+                Swal.fire({
+                    icon: 'lock',
+                    title: 'VIP Account Login Required',
+                    html: `
+                        <div style="text-align:center; padding:5px;">
+                            <div style="width:56px; height:56px; margin:0 auto 14px auto; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.4); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#d4af37; font-size:1.5rem;">
+                                <i class="fa-solid fa-user-lock"></i>
+                            </div>
+                            <h4 style="color:#fff; font-size:1.15rem; margin-bottom:8px;">Access Restricted to Registered VIP Guests</h4>
+                            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:0;">Please log into your StylOnyx account to ${actionDescription}. Non-logged-in visitors have full access to explore the landing page and view services.</p>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fa-solid fa-right-to-bracket"></i> Log In Now',
+                    cancelButtonText: 'Continue Browsing',
+                    background: '#131924',
+                    color: '#fff',
+                    confirmButtonColor: '#d4af37',
+                    cancelButtonColor: '#334155'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/Login';
+                    }
+                });
+                return false;
+            }
+            if (callback) callback();
+            return true;
+        }
+
         // ── Switch Hero Experience Image & Badges ──
         function switchHeroExperience(type, btn) {
             document.querySelectorAll('.exp-pill').forEach(p => p.classList.remove('active'));
@@ -1442,6 +1476,8 @@
 
         // ── Specialist Detail Modal ──
         function viewStylistModal(name, role, rating, imgUrl) {
+            if (!requireLogin('consult with master specialists')) return;
+
             Swal.fire({
                 title: name,
                 text: role + ' • ⭐ ' + rating,
@@ -1488,6 +1524,8 @@
         }
 
         function generateGiftPass() {
+            if (!requireLogin('issue VIP gift passes')) return;
+
             const recipient = document.getElementById('cardRecipientText').innerText;
             Swal.fire({
                 icon: 'success',
@@ -1637,6 +1675,7 @@
         }
 
         function openBookingModal() {
+            if (!requireLogin('book VIP appointments')) return;
             document.getElementById('bookingModal').classList.add('active');
         }
 
@@ -1645,35 +1684,33 @@
         }
 
         function quickBook(serviceName, price) {
+            if (!requireLogin('book this service')) return;
             document.getElementById('modalService').value = serviceName;
             openBookingModal();
         }
 
         function selectStylist(stylistName) {
+            if (!requireLogin('consult with master specialists')) return;
             document.getElementById('modalStylist').value = stylistName;
             openBookingModal();
         }
 
         function joinMembership(tierName) {
+            if (!requireLogin('join VIP membership tiers')) return;
             Swal.fire({
                 icon: 'info',
                 title: 'Join ' + tierName,
-                text: 'To activate your VIP membership perks, please log into your account or register.',
-                showCancelButton: true,
-                confirmButtonText: 'Log In Now',
-                cancelButtonText: 'Close',
+                text: 'Select your preferred payment method to activate ' + tierName + '.',
                 background: '#131924',
                 color: '#fff',
                 confirmButtonColor: '#d4af37'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/Login';
-                }
             });
         }
 
         function handleBookingSubmit(e) {
             e.preventDefault();
+            if (!requireLogin('confirm VIP bookings')) return;
+
             const name = document.getElementById('modalName').value;
             const service = document.getElementById('modalService').value;
             const date = document.getElementById('modalDate').value;

@@ -383,6 +383,13 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
+    @{
+        var userId = Context.Session.GetInt32("UserID");
+        var userRole = Context.Session.GetString("Role");
+        var userName = Context.Session.GetString("UserName");
+        bool isLoggedIn = userId.HasValue;
+    }
+
     <!-- Ambient Background Lighting -->
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
@@ -426,12 +433,27 @@
         </ul>
 
         <div class="nav-actions">
-            <a href="/Login" class="btn-portal">
-                <i class="fa-solid fa-user-lock"></i> Portal Login
-            </a>
-            <button class="btn-book-now" onclick="openBookingModal()">
-                <i class="fa-solid fa-calendar-check"></i> Book VIP
-            </button>
+            @if (isLoggedIn)
+            {
+                <span style="color: var(--teal-light); font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-circle-user" style="font-size: 1.1rem; color: var(--gold-primary);"></i> @userName
+                </span>
+                <a href="@(userRole == "Admin" ? "/Admin/Home" : "/Staff/Home")" class="btn-portal" style="border-color: var(--teal-glow);">
+                    <i class="fa-solid fa-gauge"></i> Dashboard
+                </a>
+                <a href="/Login/Logout" class="btn-portal" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            }
+            else
+            {
+                <a href="/Login" class="btn-portal">
+                    <i class="fa-solid fa-user-lock"></i> Portal Login
+                </a>
+                <button class="btn-book-now" onclick="openBookingModal()">
+                    <i class="fa-solid fa-calendar-check"></i> Book VIP
+                </button>
+            }
         </div>
     </nav>
 
