@@ -138,6 +138,19 @@
 
         .panel-header h3 {
             font-family: 'Playfair Display', serif;
+        }
+
+        @@media (max-width: 992px) {
+            .revenue-header-panel { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+            .kpi-cards-grid { grid-template-columns: 1fr !important; }
+            .btn-close-day { width: 100% !important; justify-content: center !important; }
+        }
+
+        @@media (max-width: 576px) {
+            .revenue-header-panel { padding: 20px 16px !important; }
+            .header-title-box h1 { font-size: 1.45rem !important; }
+            .table-panel-card { padding: 16px !important; overflow-x: auto !important; }
+        }
             font-size: 1.3rem;
             font-weight: 700;
             color: #ffffff;
