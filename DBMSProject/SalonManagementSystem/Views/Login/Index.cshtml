@@ -544,19 +544,6 @@
                 </button>
             </form>
 
-            <!-- Quick Demo Credentials -->
-            <div class="demo-pills-label">One-Click Demo Fill:</div>
-            <div class="quick-pills-row">
-                <button type="button" class="demo-pill-btn" onclick="fillDemo('user', 'user123', 'User')">
-                    <i class="fa-solid fa-circle-user"></i> User Demo
-                </button>
-                <button type="button" class="demo-pill-btn" onclick="fillDemo('staff', 'staff123', 'Staff')">
-                    <i class="fa-solid fa-scissors"></i> Staff Demo
-                </button>
-                <button type="button" class="demo-pill-btn" onclick="fillDemo('admin', 'admin123', 'Staff')">
-                    <i class="fa-solid fa-shield-halved"></i> Admin Demo
-                </button>
-            </div>
 
             <!-- Register Navigation Link -->
             <div class="register-footer-text">
@@ -622,11 +609,6 @@
         }
     }
 
-    function fillDemo(username, password, role) {
-        setRole(role);
-        document.getElementById('usernameInput').value = username;
-        document.getElementById('passwordInput').value = password;
-    }
 
     // Initialize UI on load
     setRole(currentRole);
