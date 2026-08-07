@@ -49,6 +49,8 @@
         .sidebar {
             width: 270px;
             min-width: 270px;
+            height: 100vh;
+            max-height: 100vh;
             background: linear-gradient(180deg, #131924 0%, #0b0e14 100%);
             border-right: 1px solid var(--border-gold);
             display: flex;
@@ -57,34 +59,29 @@
             position: fixed;
             top: 0; bottom: 0; left: 0;
             z-index: 100;
-            padding: 24px 16px;
+            padding: 20px 14px;
             box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
-            overflow-y: auto;
-            max-height: 100vh;
-            scrollbar-width: thin;
-            scrollbar-color: #d4af37 rgba(11, 14, 20, 0.6);
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        /* Custom Scrollbar for Sidebar & Nav Menu */
-        .sidebar::-webkit-scrollbar,
+        /* Custom Scrollbar for Nav Menu */
         .nav-menu::-webkit-scrollbar {
-            width: 6px;
+            width: 7px;
         }
 
-        .sidebar::-webkit-scrollbar-track,
         .nav-menu::-webkit-scrollbar-track {
-            background: rgba(11, 14, 20, 0.6);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
         }
 
-        .sidebar::-webkit-scrollbar-thumb,
         .nav-menu::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #d4af37 0%, #0d9488 100%);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
 
-        .sidebar::-webkit-scrollbar-thumb:hover,
         .nav-menu::-webkit-scrollbar-thumb:hover {
             background: #f2ca50;
         }
@@ -94,9 +91,10 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 8px 12px 24px 12px;
+            padding: 4px 10px 18px 10px;
             border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
+            flex-shrink: 0;
         }
 
         .sidebar-brand-icon {
@@ -136,9 +134,19 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            overflow-y: auto;
+            overflow-y: auto !important;
             flex: 1;
-            padding-right: 4px;
+            min-height: 0;
+            padding-right: 6px;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 rgba(11, 14, 20, 0.6);
+        }
+
+        .sidebar-footer {
+            flex-shrink: 0;
+            padding-top: 10px;
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
         }
 
         .nav-item {
@@ -345,55 +353,53 @@
 
         <!-- ── Sidebar ── -->
         <aside class="sidebar">
-            <div>
-                <!-- Brand Header -->
-                <div class="sidebar-brand">
-                    <div class="sidebar-brand-icon">
-                        <i class="fa-solid fa-scissors"></i>
-                    </div>
-                    <div class="sidebar-brand-text">
-                        Styl<span>Onyx</span>
-                        <span style="font-size:0.7rem; color:var(--text-body); font-weight:400; display:block;">Executive Studio</span>
-                    </div>
+            <!-- Brand Header -->
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="fa-solid fa-scissors"></i>
                 </div>
-
-                <!-- Navigation List -->
-                <nav class="nav-menu">
-                    <a href="/Admin/Home" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Home" ? "active" : "")">
-                        <i class="fa-solid fa-chart-pie"></i> Dashboard
-                    </a>
-                    <a href="/Admin/DayRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "DayRevenue" ? "active" : "")">
-                        <i class="fa-solid fa-sun"></i> Day Revenue
-                    </a>
-                    <a href="/Admin/TotalRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "TotalRevenue" ? "active" : "")">
-                        <i class="fa-solid fa-vault"></i> Total Revenue
-                    </a>
-                    <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
-                        <i class="fa-solid fa-scissors"></i> Manage Services
-                    </a>
-                    <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
-                        <i class="fa-solid fa-users"></i> Manage Staff
-                    </a>
-                    <a href="/Admin/ManageBrands" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageBrands" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddBrand" ? "active" : "")">
-                        <i class="fa-solid fa-tags"></i> Manage Brands
-                    </a>
-                    <a href="/Admin/ManageProducts" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageProducts" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddProduct" ? "active" : "")">
-                        <i class="fa-solid fa-box-open"></i> Manage Products
-                    </a>
-                    <a href="/Admin/ManageClients" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageClients" ? "active" : "")">
-                        <i class="fa-solid fa-user-group"></i> Manage Clients
-                    </a>
-                    <a href="/Admin/ManageAdmins" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageAdmins" ? "active" : "")">
-                        <i class="fa-solid fa-crown"></i> Manage Admins
-                    </a>
-                    <a href="/Admin/ActivityLogs" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ActivityLogs" ? "active" : "")">
-                        <i class="fa-solid fa-clipboard-list"></i> Activity Logs
-                    </a>
-                    <a href="#" onclick="confirmResetDb(); return false;" class="nav-item" style="color:#fca5a5;">
-                        <i class="fa-solid fa-broom" style="color:#f43f5e;"></i> Clean Database
-                    </a>
-                </nav>
+                <div class="sidebar-brand-text">
+                    Styl<span>Onyx</span>
+                    <span style="font-size:0.7rem; color:var(--text-body); font-weight:400; display:block;">Executive Studio</span>
+                </div>
             </div>
+
+            <!-- Navigation List -->
+            <nav class="nav-menu">
+                <a href="/Admin/Home" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Home" ? "active" : "")">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="/Admin/DayRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "DayRevenue" ? "active" : "")">
+                    <i class="fa-solid fa-sun"></i> Day Revenue
+                </a>
+                <a href="/Admin/TotalRevenue" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "TotalRevenue" ? "active" : "")">
+                    <i class="fa-solid fa-vault"></i> Total Revenue
+                </a>
+                <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
+                    <i class="fa-solid fa-scissors"></i> Manage Services
+                </a>
+                <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
+                    <i class="fa-solid fa-users"></i> Manage Staff
+                </a>
+                <a href="/Admin/ManageBrands" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageBrands" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddBrand" ? "active" : "")">
+                    <i class="fa-solid fa-tags"></i> Manage Brands
+                </a>
+                <a href="/Admin/ManageProducts" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageProducts" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddProduct" ? "active" : "")">
+                    <i class="fa-solid fa-box-open"></i> Manage Products
+                </a>
+                <a href="/Admin/ManageClients" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageClients" ? "active" : "")">
+                    <i class="fa-solid fa-user-group"></i> Manage Clients
+                </a>
+                <a href="/Admin/ManageAdmins" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageAdmins" ? "active" : "")">
+                    <i class="fa-solid fa-crown"></i> Manage Admins
+                </a>
+                <a href="/Admin/ActivityLogs" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ActivityLogs" ? "active" : "")">
+                    <i class="fa-solid fa-clipboard-list"></i> Activity Logs
+                </a>
+                <a href="#" onclick="confirmResetDb(); return false;" class="nav-item" style="color:#fca5a5;">
+                    <i class="fa-solid fa-broom" style="color:#f43f5e;"></i> Clean Database
+                </a>
+            </nav>
 
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
