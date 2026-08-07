@@ -11,6 +11,13 @@
             border-radius: 20px;
             padding: 32px;
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            overflow-x: auto;
+        }
+
+        @@media (max-width: 768px) {
+            .table-card-container { padding: 18px 14px !important; }
+            .table-card-header { flex-direction: column !important; align-items: flex-start !important; gap: 14px !important; }
+            .table-title-group h2 { font-size: 1.35rem !important; }
         }
 
         .table-card-header {
