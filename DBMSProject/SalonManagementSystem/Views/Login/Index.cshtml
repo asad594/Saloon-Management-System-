@@ -1,6 +1,7 @@
 @model SalonManagementSystem.Models.Login
 @{
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    string defaultRole = string.Equals(Model?.UserRole, "Staff", StringComparison.OrdinalIgnoreCase) ? "Staff" : "User";
 }
 
 @section Styles {
@@ -46,7 +47,7 @@
 
         .login-form-content {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             position: relative;
             z-index: 2;
         }
@@ -56,12 +57,12 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .brand-logo-icon {
-            width: 46px;
-            height: 46px;
+            width: 44px;
+            height: 44px;
             border-radius: 14px;
             background: linear-gradient(135deg, #d4af37 0%, #0d9488 100%);
             display: flex;
@@ -87,29 +88,70 @@
         /* Titles */
         .login-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.3rem;
+            font-size: 2.1rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             line-height: 1.2;
         }
 
         .login-subtitle {
-            font-size: 1.02rem;
+            font-size: 0.95rem;
             color: var(--text-body);
-            margin-bottom: 32px;
+            margin-bottom: 24px;
+        }
+
+        /* ── Role Selector Tabs ── */
+        .role-switch-container {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 50px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+
+        .role-tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: var(--text-body);
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .role-tab-btn.active {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(13, 148, 136, 0.4);
+        }
+
+        .role-tab-btn.active.staff-active {
+            background: linear-gradient(135deg, #d4af37 0%, #f2ca50 100%);
+            color: #0b0e14;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
         }
 
         /* ── Input Fields ── */
         .form-field-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .field-label {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: #f1f5f9;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: block;
             letter-spacing: 0.3px;
         }
@@ -120,12 +162,12 @@
 
         .form-control-custom {
             width: 100%;
-            padding: 16px 48px 16px 52px;
+            padding: 15px 48px 15px 50px;
             background: rgba(255, 255, 255, 0.05);
             border: 1.5px solid rgba(255, 255, 255, 0.15);
             border-radius: 14px;
             color: #ffffff !important;
-            font-size: 1.15rem !important;
+            font-size: 1.1rem !important;
             font-weight: 600 !important;
             letter-spacing: 0.5px;
             outline: none;
@@ -134,7 +176,7 @@
 
         .form-control-custom::placeholder {
             color: rgba(255, 255, 255, 0.45) !important;
-            font-size: 1.02rem !important;
+            font-size: 0.98rem !important;
             font-weight: 400 !important;
         }
 
@@ -150,7 +192,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: #d4af37;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             pointer-events: none;
         }
 
@@ -172,13 +214,13 @@
             color: #d4af37;
         }
 
-        /* Remember & Forgot Password */
+        /* Utility Row */
         .form-utility-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 28px;
-            font-size: 0.95rem;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
         }
 
         .remember-checkbox {
@@ -186,21 +228,21 @@
             align-items: center;
             gap: 8px;
             color: #e2e8f0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
         }
 
         .remember-checkbox input {
             accent-color: #d4af37;
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
         }
 
         .forgot-link {
             color: #d4af37;
             text-decoration: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: opacity 0.2s ease;
         }
@@ -210,15 +252,15 @@
             text-decoration: underline;
         }
 
-        /* ── Submit Button (Teal-to-Gold Gradient like Screenshot) ── */
+        /* Submit Button */
         .btn-gradient-submit {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             background: linear-gradient(90deg, #0d9488 0%, #14b8a6 40%, #d4af37 100%);
             border: none;
             border-radius: 50px;
             color: #ffffff;
-            font-size: 1.1rem;
+            font-size: 1.08rem;
             font-weight: 800;
             letter-spacing: 0.03em;
             cursor: pointer;
@@ -228,8 +270,6 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            position: relative;
-            overflow: hidden;
         }
 
         .btn-gradient-submit:hover {
@@ -237,15 +277,11 @@
             box-shadow: 0 16px 36px rgba(212, 175, 55, 0.45);
         }
 
-        .btn-gradient-submit:active {
-            transform: translateY(0);
-        }
-
         /* Register Footer Link */
         .register-footer-text {
-            margin-top: 24px;
+            margin-top: 22px;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--text-body);
         }
 
@@ -259,16 +295,25 @@
 
         .register-footer-text a:hover {
             text-decoration: underline;
-            opacity: 0.9;
         }
 
-        /* One-Click Quick Pills */
-        .quick-pills-row {
+        /* Demo Pills */
+        .demo-pills-label {
+            text-align: center;
+            font-size: 0.76rem;
+            color: var(--text-muted);
             margin-top: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .quick-pills-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .demo-pill-btn {
@@ -276,7 +321,7 @@
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 50px;
             padding: 6px 14px;
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: var(--text-body);
             cursor: pointer;
@@ -287,13 +332,10 @@
         }
 
         .demo-pill-btn:hover {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgba(212, 175, 55, 0.18);
             color: #ffffff;
+            border-color: #d4af37;
             transform: translateY(-2px);
-        }
-
-        .demo-pill-btn i {
-            color: #d4af37;
         }
 
         /* Error Banner */
@@ -319,7 +361,7 @@
             80% { transform: translateX(4px); }
         }
 
-        /* ── Right Side: Women's Luxury Salon Showcase (50% Width) ── */
+        /* ── Right Side Showcase ── */
         .salon-showcase-panel {
             width: 50%;
             height: 100vh;
@@ -332,16 +374,14 @@
             overflow: hidden;
         }
 
-        /* Dark Vignette Overlay */
         .salon-showcase-panel::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(11, 14, 20, 0.7) 0%, rgba(11, 14, 20, 0.2) 50%, rgba(11, 14, 20, 0.8) 100%);
+            background: linear-gradient(180deg, rgba(11, 14, 20, 0.7) 0%, rgba(11, 14, 20, 0.25) 50%, rgba(11, 14, 20, 0.85) 100%);
             z-index: 1;
         }
 
-        /* Overlay Headline */
         .showcase-top-headline {
             position: relative;
             z-index: 2;
@@ -350,7 +390,7 @@
         }
 
         .showcase-heading-text {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             font-weight: 800;
             color: #ffffff;
             letter-spacing: 0.18em;
@@ -358,14 +398,13 @@
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
         }
 
-        /* Floating Feature Badges Overlaid over Salon Image */
         .floating-badges-container {
             position: relative;
             z-index: 2;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 16px;
+            gap: 14px;
             margin-bottom: 20px;
         }
 
@@ -409,7 +448,6 @@
             color: #ffffff;
         }
 
-        /* Sparkle Canvas Overlay */
         #sparkle-canvas {
             position: absolute;
             inset: 0;
@@ -417,25 +455,17 @@
             pointer-events: none;
         }
 
-        /* Responsive Breakpoint for Mobile Screens */
         @@media (max-width: 900px) {
-            .login-split-container {
-                flex-direction: column;
-            }
-            .salon-showcase-panel {
-                display: none;
-            }
-            .login-form-panel {
-                width: 100%;
-                border-right: none;
-            }
+            .login-split-container { flex-direction: column; }
+            .salon-showcase-panel { display: none; }
+            .login-form-panel { width: 100%; border-right: none; }
         }
     </style>
 }
 
 <div class="login-split-container">
 
-    <!-- ── Left Side: Single Unified Login Form ── -->
+    <!-- ── Left Side: Login Form ── -->
     <div class="login-form-panel">
         <div class="login-form-content">
 
@@ -448,8 +478,20 @@
             </div>
 
             <!-- Welcome Title -->
-            <h1 class="login-title">Welcome to StylOnyx</h1>
-            <p class="login-subtitle">Luxury Beauty & Executive Salon Portal</p>
+            <h1 class="login-title" id="loginTitleText">Welcome Back</h1>
+            <p class="login-subtitle" id="loginSubtitleText">Select your login portal to continue</p>
+
+            <!-- Role Selector Tabs -->
+            <div class="role-switch-container">
+                <button type="button" class="role-tab-btn @(defaultRole == "User" ? "active" : "")" id="tabUser" onclick="setRole('User')">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>User Login</span>
+                </button>
+                <button type="button" class="role-tab-btn @(defaultRole == "Staff" ? "active staff-active" : "")" id="tabStaff" onclick="setRole('Staff')">
+                    <i class="fa-solid fa-scissors"></i>
+                    <span>Staff Login</span>
+                </button>
+            </div>
 
             <!-- Error Alert -->
             @if (!string.IsNullOrEmpty(ViewBag.Error as string))
@@ -460,15 +502,16 @@
                 </div>
             }
 
-            <!-- Single Unified Login Form -->
+            <!-- Login Form -->
             <form method="post" id="loginForm" novalidate>
+                <input type="hidden" name="UserRole" id="userRoleInput" value="@defaultRole" />
 
                 <!-- Username Input -->
                 <div class="form-field-group">
                     <label class="field-label" for="usernameInput">Username</label>
                     <div class="field-input-wrapper">
                         <input type="text" id="usernameInput" name="UserName" class="form-control-custom"
-                               value="@Model?.UserName" placeholder="Enter your username..." required />
+                               value="@Model?.UserName" placeholder="Enter username..." required />
                         <i class="fa-solid fa-user field-icon-left"></i>
                     </div>
                 </div>
@@ -478,7 +521,7 @@
                     <label class="field-label" for="passwordInput">Password</label>
                     <div class="field-input-wrapper">
                         <input type="password" id="passwordInput" name="UserPassword" class="form-control-custom"
-                               placeholder="Enter your password..." required autocomplete="current-password" />
+                               placeholder="Enter password..." required autocomplete="current-password" />
                         <i class="fa-solid fa-lock field-icon-left"></i>
                         <button type="button" class="field-icon-right-btn" id="togglePwBtn" title="Show/Hide password">
                             <i class="fa-solid fa-eye" id="eyeIcon"></i>
@@ -496,50 +539,53 @@
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn-gradient-submit" id="submitBtn">
-                    <span id="btnText">Log In</span>
+                    <span id="btnText">Log In as User</span>
                     <i class="fa-solid fa-arrow-right" id="btnIcon"></i>
                 </button>
-
             </form>
+
+            <!-- Quick Demo Credentials -->
+            <div class="demo-pills-label">One-Click Demo Fill:</div>
+            <div class="quick-pills-row">
+                <button type="button" class="demo-pill-btn" onclick="fillDemo('user', 'user123', 'User')">
+                    <i class="fa-solid fa-circle-user"></i> User Demo
+                </button>
+                <button type="button" class="demo-pill-btn" onclick="fillDemo('staff', 'staff123', 'Staff')">
+                    <i class="fa-solid fa-scissors"></i> Staff Demo
+                </button>
+                <button type="button" class="demo-pill-btn" onclick="fillDemo('admin', 'admin123', 'Staff')">
+                    <i class="fa-solid fa-shield-halved"></i> Admin Demo
+                </button>
+            </div>
 
             <!-- Register Navigation Link -->
             <div class="register-footer-text">
-                Don't have an account? <a href="/Login/Register">Register Here</a>
+                Don't have an account? <a href="/Login/Register?role=User" id="registerLink">Register as User</a>
             </div>
 
         </div>
     </div>
 
-    <!-- ── Right Side: Luxury Women's Salon Showcase ── -->
+    <!-- ── Right Side: Luxury Salon Showcase ── -->
     <div class="salon-showcase-panel">
         <canvas id="sparkle-canvas"></canvas>
 
-        <!-- Top Headline -->
         <div class="showcase-top-headline">
             <div class="showcase-heading-text">MANAGE . GROW . SHINE.</div>
         </div>
 
-        <!-- Floating Feature Badges Overlaid over Salon Image -->
         <div class="floating-badges-container">
             <div class="floating-badge-item">
-                <div class="badge-circle-icon">
-                    <i class="fa-solid fa-spray-can-sparkles"></i>
-                </div>
-                <div class="badge-text-title">Luxury Hair & Styling</div>
+                <div class="badge-circle-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+                <div class="badge-text-title">Luxury Hair & Spa</div>
             </div>
-
             <div class="floating-badge-item">
-                <div class="badge-circle-icon">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </div>
-                <div class="badge-text-title">Smart Appointments</div>
+                <div class="badge-circle-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="badge-text-title">Smart VIP Bookings</div>
             </div>
-
             <div class="floating-badge-item">
-                <div class="badge-circle-icon">
-                    <i class="fa-solid fa-gem"></i>
-                </div>
-                <div class="badge-text-title">VIP Client Experience</div>
+                <div class="badge-circle-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="badge-text-title">Executive Salon Portal</div>
             </div>
         </div>
     </div>
@@ -547,7 +593,45 @@
 </div>
 
 <script>
-    // ── Password Visibility Toggle ──
+    let currentRole = '@defaultRole';
+
+    function setRole(role) {
+        currentRole = role;
+        document.getElementById('userRoleInput').value = role;
+
+        const tabUser = document.getElementById('tabUser');
+        const tabStaff = document.getElementById('tabStaff');
+        const btnText = document.getElementById('btnText');
+        const registerLink = document.getElementById('registerLink');
+        const loginSubtitleText = document.getElementById('loginSubtitleText');
+
+        if (role === 'Staff') {
+            tabStaff.className = 'role-tab-btn active staff-active';
+            tabUser.className = 'role-tab-btn';
+            btnText.textContent = 'Log In as Staff';
+            loginSubtitleText.textContent = 'Access staff roster, client orders & shift management';
+            registerLink.href = '/Login/Register?role=Staff';
+            registerLink.textContent = 'Register as Staff';
+        } else {
+            tabUser.className = 'role-tab-btn active';
+            tabStaff.className = 'role-tab-btn';
+            btnText.textContent = 'Log In as User';
+            loginSubtitleText.textContent = 'Access your VIP salon bookings, appointments & rewards';
+            registerLink.href = '/Login/Register?role=User';
+            registerLink.textContent = 'Register as User';
+        }
+    }
+
+    function fillDemo(username, password, role) {
+        setRole(role);
+        document.getElementById('usernameInput').value = username;
+        document.getElementById('passwordInput').value = password;
+    }
+
+    // Initialize UI on load
+    setRole(currentRole);
+
+    // Password Visibility Toggle
     const pwInput = document.getElementById('passwordInput');
     const togglePwBtn = document.getElementById('togglePwBtn');
     const eyeIcon = document.getElementById('eyeIcon');
@@ -559,7 +643,7 @@
         eyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
     });
 
-    // ── Loading state on Submit ──
+    // Loading State
     const submitBtn = document.getElementById('submitBtn');
     const loginForm = document.getElementById('loginForm');
 
@@ -570,12 +654,12 @@
             else pwInput.focus();
             return;
         }
-        document.getElementById('btnText').textContent = 'Logging in...';
+        document.getElementById('btnText').textContent = 'Logging in as ' + currentRole + '...';
         document.getElementById('btnIcon').className = 'fa-solid fa-circle-notch fa-spin';
         submitBtn.style.opacity = '0.85';
     });
 
-    // ── Sparkle Particle Effects on Right Panel ──
+    // Sparkle Canvas
     const canvas = document.getElementById('sparkle-canvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -589,7 +673,7 @@
         });
 
         const sparkles = [];
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 35; i++) {
             sparkles.push({
                 x: Math.random() * W,
                 y: Math.random() * H,

@@ -1,11 +1,11 @@
 @model SalonManagementSystem.Models.RegisterViewModel
 @{
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    string defaultRole = string.Equals(Model?.Role, "Staff", StringComparison.OrdinalIgnoreCase) ? "Staff" : "User";
 }
 
 @section Styles {
     <style>
-        /* ── Fullscreen 50/50 Split Container ── */
         .login-split-container {
             display: flex;
             flex-direction: row;
@@ -17,7 +17,6 @@
             position: relative;
         }
 
-        /* ── Left Side: Register Form Panel (50% Width) ── */
         .login-form-panel {
             width: 50%;
             height: 100vh;
@@ -26,7 +25,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 30px 40px;
             position: relative;
             z-index: 5;
             box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
@@ -34,7 +33,6 @@
             overflow-y: auto;
         }
 
-        /* Gold Geometric Frame Lines */
         .login-form-panel::before {
             content: '';
             position: absolute;
@@ -51,12 +49,11 @@
             z-index: 2;
         }
 
-        /* Brand Logo Header */
         .brand-logo-wrapper {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .brand-logo-icon {
@@ -84,10 +81,9 @@
             color: #d4af37;
         }
 
-        /* Titles */
         .login-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 1.95rem;
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 4px;
@@ -95,27 +91,67 @@
         }
 
         .login-subtitle {
-            font-size: 0.84rem;
+            font-size: 0.86rem;
             color: var(--text-body);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
-        /* Input Grid for Registration */
+        /* Role Selector Cards */
+        .role-switch-container {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 50px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .role-tab-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: var(--text-body);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .role-tab-btn.active {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(13, 148, 136, 0.4);
+        }
+
+        .role-tab-btn.active.staff-active {
+            background: linear-gradient(135deg, #d4af37 0%, #f2ca50 100%);
+            color: #0b0e14;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+        }
+
         .form-grid-two-col {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 12px;
         }
 
         .form-field-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .field-label {
-            font-size: 0.92rem;
+            font-size: 0.88rem;
             font-weight: 700;
             color: #f1f5f9;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: block;
             letter-spacing: 0.3px;
         }
@@ -126,12 +162,12 @@
 
         .form-control-custom {
             width: 100%;
-            padding: 14px 16px 14px 46px;
+            padding: 13px 14px 13px 44px;
             background: rgba(255, 255, 255, 0.05);
             border: 1.5px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             color: #ffffff !important;
-            font-size: 1.1rem !important;
+            font-size: 1.05rem !important;
             font-weight: 600 !important;
             letter-spacing: 0.5px;
             outline: none;
@@ -140,7 +176,7 @@
 
         .form-control-custom::placeholder {
             color: rgba(255, 255, 255, 0.45) !important;
-            font-size: 1rem !important;
+            font-size: 0.95rem !important;
             font-weight: 400 !important;
         }
 
@@ -156,19 +192,18 @@
             top: 50%;
             transform: translateY(-50%);
             color: #d4af37;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             pointer-events: none;
         }
 
-        /* ── Submit Button ── */
         .btn-gradient-submit {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             background: linear-gradient(90deg, #0d9488 0%, #14b8a6 40%, #d4af37 100%);
             border: none;
             border-radius: 50px;
             color: #ffffff;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 800;
             letter-spacing: 0.03em;
             cursor: pointer;
@@ -178,7 +213,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .btn-gradient-submit:hover {
@@ -186,11 +221,10 @@
             box-shadow: 0 16px 36px rgba(212, 175, 55, 0.45);
         }
 
-        /* Footer Link */
         .register-footer-text {
             margin-top: 18px;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             color: var(--text-body);
         }
 
@@ -201,11 +235,6 @@
             margin-left: 4px;
         }
 
-        .register-footer-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* Error Banner */
         .error-banner {
             background: rgba(244, 63, 94, 0.15);
             border: 1px solid rgba(244, 63, 94, 0.4);
@@ -217,18 +246,8 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 16px;
-            animation: shake 0.4s ease;
         }
 
-        @@keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-6px); }
-            40% { transform: translateX(6px); }
-            60% { transform: translateX(-4px); }
-            80% { transform: translateX(4px); }
-        }
-
-        /* ── Right Side: Women's Luxury Salon Showcase (50% Width) ── */
         .salon-showcase-panel {
             width: 50%;
             height: 100vh;
@@ -257,65 +276,12 @@
         }
 
         .showcase-heading-text {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             font-weight: 800;
             color: #ffffff;
             letter-spacing: 0.18em;
             text-transform: uppercase;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-        }
-
-        .floating-badges-container {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .floating-badge-item {
-            background: rgba(19, 25, 36, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(45, 212, 191, 0.4);
-            border-radius: 50px;
-            padding: 10px 22px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.3);
-            animation: floatBadge 4s ease-in-out infinite alternate;
-        }
-
-        @@keyframes floatBadge {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10px); }
-        }
-
-        .badge-circle-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #14b8a6, #d4af37);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 0.9rem;
-        }
-
-        .badge-text-title {
-            font-size: 0.84rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        #sparkle-canvas {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
         }
 
         @@media (max-width: 900px) {
@@ -341,7 +307,19 @@
 
             <!-- Welcome Title -->
             <h1 class="login-title">Create Account</h1>
-            <p class="login-subtitle">Join StylOnyx Luxury Beauty Studio</p>
+            <p class="login-subtitle" id="regSubtitle">Register a new account to join StylOnyx</p>
+
+            <!-- Role Selector Tabs -->
+            <div class="role-switch-container">
+                <button type="button" class="role-tab-btn @(defaultRole == "User" ? "active" : "")" id="regTabUser" onclick="setRegisterRole('User')">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>Register as User</span>
+                </button>
+                <button type="button" class="role-tab-btn @(defaultRole == "Staff" ? "active staff-active" : "")" id="regTabStaff" onclick="setRegisterRole('Staff')">
+                    <i class="fa-solid fa-scissors"></i>
+                    <span>Register as Staff</span>
+                </button>
+            </div>
 
             <!-- Error Alert -->
             @if (!string.IsNullOrEmpty(ViewBag.Error as string))
@@ -353,155 +331,110 @@
             }
 
             <!-- Registration Form -->
-            <form method="post" id="registerForm">
+            <form method="post" id="registerForm" novalidate>
+                <input type="hidden" name="Role" id="regRoleInput" value="@defaultRole" />
 
-                <!-- Full Name -->
+                <!-- Full Name Input -->
                 <div class="form-field-group">
-                    <label class="field-label" for="fullNameInput">Full Name</label>
+                    <label class="field-label">Full Name</label>
                     <div class="field-input-wrapper">
-                        <input type="text" id="fullNameInput" name="FullName" class="form-control-custom"
-                               value="@Model?.FullName" placeholder="Enter your full name..." required />
-                        <i class="fa-solid fa-id-card field-icon-left"></i>
+                        <input type="text" name="FullName" class="form-control-custom"
+                               value="@Model?.FullName" placeholder="e.g. Ayesha Khan" required />
+                        <i class="fa-solid fa-user-check field-icon-left"></i>
                     </div>
                 </div>
 
-                <!-- Username & Phone in 2 Columns -->
                 <div class="form-grid-two-col">
+                    <!-- Username Input -->
                     <div class="form-field-group">
-                        <label class="field-label" for="regUsernameInput">Username</label>
+                        <label class="field-label">Username</label>
                         <div class="field-input-wrapper">
-                            <input type="text" id="regUsernameInput" name="UserName" class="form-control-custom"
-                                   value="@Model?.UserName" placeholder="Username..." required />
+                            <input type="text" name="UserName" class="form-control-custom"
+                                   value="@Model?.UserName" placeholder="Username" required />
                             <i class="fa-solid fa-user field-icon-left"></i>
                         </div>
                     </div>
 
+                    <!-- Phone Input -->
                     <div class="form-field-group">
-                        <label class="field-label" for="phoneInput">Phone Number</label>
+                        <label class="field-label">Phone</label>
                         <div class="field-input-wrapper">
-                            <input type="tel" id="phoneInput" name="Phone" class="form-control-custom"
-                                   value="@Model?.Phone" placeholder="03001234567" />
+                            <input type="text" name="Phone" class="form-control-custom"
+                                   value="@Model?.Phone" placeholder="03001234567" required />
                             <i class="fa-solid fa-phone field-icon-left"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- Email -->
-                <div class="form-field-group">
-                    <label class="field-label" for="emailInput">Email Address</label>
-                    <div class="field-input-wrapper">
-                        <input type="email" id="emailInput" name="Email" class="form-control-custom"
-                               value="@Model?.Email" placeholder="name@example.com" />
-                        <i class="fa-solid fa-envelope field-icon-left"></i>
+                <div class="form-grid-two-col">
+                    <!-- Email Input -->
+                    <div class="form-field-group">
+                        <label class="field-label">Email</label>
+                        <div class="field-input-wrapper">
+                            <input type="email" name="Email" class="form-control-custom"
+                                   value="@Model?.Email" placeholder="ayesha@salon.com" required />
+                            <i class="fa-solid fa-envelope field-icon-left"></i>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Password -->
-                <div class="form-field-group">
-                    <label class="field-label" for="regPasswordInput">Password</label>
-                    <div class="field-input-wrapper">
-                        <input type="password" id="regPasswordInput" name="Password" class="form-control-custom"
-                               placeholder="Choose a strong password..." required />
-                        <i class="fa-solid fa-lock field-icon-left"></i>
+                    <!-- Password Input -->
+                    <div class="form-field-group">
+                        <label class="field-label">Password</label>
+                        <div class="field-input-wrapper">
+                            <input type="password" name="Password" class="form-control-custom"
+                                   placeholder="Create password" required />
+                            <i class="fa-solid fa-lock field-icon-left"></i>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn-gradient-submit" id="regSubmitBtn">
-                    <span id="regBtnText">Create User Account</span>
-                    <i class="fa-solid fa-user-plus" id="regBtnIcon"></i>
+                    <span id="regBtnText">Complete Registration</span>
+                    <i class="fa-solid fa-user-plus"></i>
                 </button>
-
             </form>
 
-            <!-- Navigation back to Login -->
+            <!-- Login Navigation Link -->
             <div class="register-footer-text">
-                Already have an account? <a href="/Login/Index">Log In Here</a>
+                Already have an account? <a href="/Login/Index" id="loginBackLink">Log in here</a>
             </div>
 
         </div>
     </div>
 
-    <!-- ── Right Side: Women's Luxury Salon Showcase ── -->
+    <!-- ── Right Side Showcase ── -->
     <div class="salon-showcase-panel">
-        <canvas id="sparkle-canvas"></canvas>
-
         <div class="showcase-top-headline">
-            <div class="showcase-heading-text">MANAGE . GROW . SHINE.</div>
-        </div>
-
-        <div class="floating-badges-container">
-            <div class="floating-badge-item">
-                <div class="badge-circle-icon">
-                    <i class="fa-solid fa-spray-can-sparkles"></i>
-                </div>
-                <div class="badge-text-title">Luxury Hair & Styling</div>
-            </div>
-
-            <div class="floating-badge-item">
-                <div class="badge-circle-icon">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </div>
-                <div class="badge-text-title">Smart Appointments</div>
-            </div>
-
-            <div class="floating-badge-item">
-                <div class="badge-circle-icon">
-                    <i class="fa-solid fa-gem"></i>
-                </div>
-                <div class="badge-text-title">VIP Client Experience</div>
-            </div>
+            <div class="showcase-heading-text">JOIN STYLONYX TODAY.</div>
         </div>
     </div>
 
 </div>
 
 <script>
-    const regForm = document.getElementById('registerForm');
-    const regSubmitBtn = document.getElementById('regSubmitBtn');
+    function setRegisterRole(role) {
+        document.getElementById('regRoleInput').value = role;
+        const tabUser = document.getElementById('regTabUser');
+        const tabStaff = document.getElementById('regTabStaff');
+        const subtitle = document.getElementById('regSubtitle');
+        const btnText = document.getElementById('regBtnText');
+        const loginBackLink = document.getElementById('loginBackLink');
 
-    regForm.addEventListener('submit', () => {
-        document.getElementById('regBtnText').textContent = 'Creating Account...';
-        document.getElementById('regBtnIcon').className = 'fa-solid fa-circle-notch fa-spin';
-        regSubmitBtn.style.opacity = '0.85';
-    });
-
-    const canvas = document.getElementById('sparkle-canvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let W = canvas.width = canvas.parentElement.clientWidth;
-        let H = canvas.height = canvas.parentElement.clientHeight;
-
-        window.addEventListener('resize', () => {
-            if (!canvas.parentElement) return;
-            W = canvas.width = canvas.parentElement.clientWidth;
-            H = canvas.height = canvas.parentElement.clientHeight;
-        });
-
-        const sparkles = [];
-        for (let i = 0; i < 40; i++) {
-            sparkles.push({
-                x: Math.random() * W,
-                y: Math.random() * H,
-                size: Math.random() * 3 + 1,
-                alpha: Math.random(),
-                speed: Math.random() * 0.02 + 0.005,
-                color: Math.random() > 0.5 ? '#d4af37' : '#2dd4bf'
-            });
+        if (role === 'Staff') {
+            tabStaff.className = 'role-tab-btn active staff-active';
+            tabUser.className = 'role-tab-btn';
+            subtitle.textContent = 'Register as a Staff Member / Salon Specialist';
+            btnText.textContent = 'Register as Staff Specialist';
+            loginBackLink.href = '/Login/Index?role=Staff';
+        } else {
+            tabUser.className = 'role-tab-btn active';
+            tabStaff.className = 'role-tab-btn';
+            subtitle.textContent = 'Register as a VIP User / Client';
+            btnText.textContent = 'Register as VIP User';
+            loginBackLink.href = '/Login/Index?role=User';
         }
-
-        function drawSparkles() {
-            ctx.clearRect(0, 0, W, H);
-            for (let s of sparkles) {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fillStyle = s.color;
-                ctx.globalAlpha = Math.abs(Math.sin(s.alpha));
-                ctx.fill();
-                s.alpha += s.speed;
-            }
-            requestAnimationFrame(drawSparkles);
-        }
-        drawSparkles();
     }
+
+    setRegisterRole('@defaultRole');
 </script>

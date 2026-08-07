@@ -13,10 +13,15 @@ namespace SalonManagementSystem.Controllers
             _connection = config.GetConnectionString("SalonDB") ?? string.Empty;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? role = null)
         {
             EnsureDatabaseSeeded();
-            return View();
+            var model = new Login();
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                model.UserRole = role;
+            }
+            return View(model);
         }
 
         [HttpPost]
@@ -24,7 +29,7 @@ namespace SalonManagementSystem.Controllers
         {
             EnsureDatabaseSeeded();
 
-            string inputUser = !string.IsNullOrWhiteSpace(l.UserName) ? l.UserName.Trim() : (l.UserRole ?? string.Empty).Trim();
+            string inputUser = !string.IsNullOrWhiteSpace(l.UserName) ? l.UserName.Trim() : string.Empty;
             string inputPass = l.UserPassword?.Trim() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(inputUser) || string.IsNullOrWhiteSpace(inputPass))
@@ -52,7 +57,7 @@ namespace SalonManagementSystem.Controllers
                 }
 
                 int userId = Convert.ToInt32(reader["UserID"]);
-                string role = reader["UserRole"].ToString() ?? "Staff";
+                string role = reader["UserRole"].ToString() ?? "User";
                 string userName = reader["UserName"].ToString() ?? inputUser;
                 reader.Close();
 
@@ -62,18 +67,32 @@ namespace SalonManagementSystem.Controllers
                 HttpContext.Session.SetString("LoginTime", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 TryLogActivity(conn, userId, role, "LOGIN");
-                TempData["SuccessMessage"] = $"Login Successful! Welcome, {userName}.";
+                TempData["SuccessMessage"] = $"Login Successful! Welcome, {userName} ({role}).";
 
-                return role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
-                    ? RedirectToAction("Home", "Admin")
-                    : RedirectToAction("Home", "Staff");
+                if (role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return RedirectToAction("Home", "Admin");
+                }
+                else if (role.Equals("Staff", StringComparison.OrdinalIgnoreCase))
+                {
+                    return RedirectToAction("Home", "Staff");
+                }
+                else
+                {
+                    // User / Client Role -> Redirect to main salon home landing page
+                    return RedirectToAction("Index", "Home");
+                }
             }
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string? role = "User")
         {
-            return View();
+            var model = new RegisterViewModel
+            {
+                Role = string.Equals(role, "Staff", StringComparison.OrdinalIgnoreCase) ? "Staff" : "User"
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -87,12 +106,14 @@ namespace SalonManagementSystem.Controllers
 
             EnsureDatabaseSeeded();
 
+            string assignedRole = string.Equals(m.Role, "Staff", StringComparison.OrdinalIgnoreCase) ? "Staff" : "User";
+
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
 
                 // Check if username already exists
-                SqlCommand checkCmd = new SqlCommand("SELECT COUNT(*) FROM users WHERE UserName = @uname OR UserRole = @uname", conn);
+                SqlCommand checkCmd = new SqlCommand("SELECT COUNT(*) FROM users WHERE UserName = @uname", conn);
                 checkCmd.Parameters.AddWithValue("@uname", m.UserName.Trim());
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
 
@@ -102,29 +123,50 @@ namespace SalonManagementSystem.Controllers
                     return View(m);
                 }
 
-                // Insert into users table as Staff/User role
+                // Insert into users table
                 SqlCommand userCmd = new SqlCommand(@"
                     INSERT INTO users (UserName, UserRole, UserPassword)
                     OUTPUT INSERTED.UserID
-                    VALUES (@uname, 'Staff', @pass)", conn);
+                    VALUES (@uname, @role, @pass)", conn);
                 userCmd.Parameters.AddWithValue("@uname", m.UserName.Trim());
+                userCmd.Parameters.AddWithValue("@role", assignedRole);
                 userCmd.Parameters.AddWithValue("@pass", m.Password.Trim());
 
                 int newUserId = Convert.ToInt32(userCmd.ExecuteScalar());
 
-                // Insert corresponding staff details
-                SqlCommand staffCmd = new SqlCommand(@"
-                    INSERT INTO staff (UsId, StaffName, StaffPhone, StaffEmail, StaffAddress, JoiningDate, StaffSalary, StaffSpecialilty, StaffStatus)
-                    VALUES (@usId, @name, @phone, @email, 'Karachi', GETDATE(), 30000, 'Beauty Specialist', 1)", conn);
-                staffCmd.Parameters.AddWithValue("@usId", newUserId);
-                staffCmd.Parameters.AddWithValue("@name", m.FullName.Trim());
-                staffCmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(m.Phone) ? "03000000000" : m.Phone.Trim());
-                staffCmd.Parameters.AddWithValue("@email", string.IsNullOrWhiteSpace(m.Email) ? m.UserName.Trim() + "@mail.com" : m.Email.Trim());
-                staffCmd.ExecuteNonQuery();
+                if (assignedRole == "Staff")
+                {
+                    // Insert corresponding staff details
+                    SqlCommand staffCmd = new SqlCommand(@"
+                        INSERT INTO staff (UsId, StaffName, StaffPhone, StaffEmail, StaffAddress, JoiningDate, StaffSalary, StaffSpecialilty, StaffStatus)
+                        VALUES (@usId, @name, @phone, @email, 'Karachi', GETDATE(), 35000, 'Beauty Specialist', 1)", conn);
+                    staffCmd.Parameters.AddWithValue("@usId", newUserId);
+                    staffCmd.Parameters.AddWithValue("@name", m.FullName.Trim());
+                    staffCmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(m.Phone) ? "03000000000" : m.Phone.Trim());
+                    staffCmd.Parameters.AddWithValue("@email", string.IsNullOrWhiteSpace(m.Email) ? m.UserName.Trim() + "@salon.com" : m.Email.Trim());
+                    staffCmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    // Insert into clients table if available
+                    try
+                    {
+                        SqlCommand clientCmd = new SqlCommand(@"
+                            IF OBJECT_ID('dbo.clients', 'U') IS NOT NULL
+                            BEGIN
+                                INSERT INTO clients (ClientName, ClientPhone)
+                                VALUES (@name, @phone)
+                            END", conn);
+                        clientCmd.Parameters.AddWithValue("@name", m.FullName.Trim());
+                        clientCmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(m.Phone) ? "03000000000" : m.Phone.Trim());
+                        clientCmd.ExecuteNonQuery();
+                    }
+                    catch { }
+                }
             }
 
-            TempData["SuccessMessage"] = "Registration Successful! You can now log in with your credentials.";
-            return RedirectToAction("Index");
+            TempData["SuccessMessage"] = $"Registration Successful! You are registered as {assignedRole}. Please log in.";
+            return RedirectToAction("Index", new { role = assignedRole });
         }
 
         public IActionResult Logout()
@@ -158,21 +200,33 @@ namespace SalonManagementSystem.Controllers
                     END", conn);
                 alterCmd.ExecuteNonQuery();
 
-                // Seed Default Admin (admin / admin123) if missing
+                // Seed Default User (user / user123) with Role = User
+                SqlCommand seedUserCmd = new SqlCommand(@"
+                    IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'user')
+                    BEGIN
+                        INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('user', 'User', 'user123');
+                    END
+                    ELSE
+                    BEGIN
+                        UPDATE users SET UserRole = 'User' WHERE UserName = 'user';
+                    END", conn);
+                seedUserCmd.ExecuteNonQuery();
+
+                // Seed Default Staff (staff / staff123) with Role = Staff
+                SqlCommand seedStaffCmd = new SqlCommand(@"
+                    IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'staff')
+                    BEGIN
+                        INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('staff', 'Staff', 'staff123');
+                    END", conn);
+                seedStaffCmd.ExecuteNonQuery();
+
+                // Seed Default Admin (admin / admin123) with Role = Admin
                 SqlCommand seedAdminCmd = new SqlCommand(@"
                     IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'admin')
                     BEGIN
                         INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('admin', 'Admin', 'admin123');
                     END", conn);
                 seedAdminCmd.ExecuteNonQuery();
-
-                // Seed Default User (user / user123) if missing
-                SqlCommand seedUserCmd = new SqlCommand(@"
-                    IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'user')
-                    BEGIN
-                        INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('user', 'Staff', 'user123');
-                    END", conn);
-                seedUserCmd.ExecuteNonQuery();
             }
             catch
             {
