@@ -96,58 +96,66 @@
             background: radial-gradient(circle, rgba(20,184,166,0.25) 0%, rgba(11,14,20,0) 70%);
         }
 
-        /* ── Floating Navbar ── */
+        /* ── Floating Glass Navbar ── */
         .navbar-floating {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            max-width: 1280px;
+            width: 92%;
+            max-width: 1320px;
+            height: 68px;
             z-index: 1000;
-            background: rgba(19, 25, 36, 0.75);
+            background: rgba(13, 19, 30, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-gold);
-            border-radius: 100px;
-            padding: 12px 28px;
+            border-radius: 50px;
+            padding: 0 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.1);
-            transition: all 0.4s ease;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(212, 175, 55, 0.12);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .navbar-floating.scrolled {
-            top: 10px;
-            background: rgba(13, 19, 30, 0.92);
-            border-color: var(--teal-primary);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(20, 184, 166, 0.2);
+            top: 12px;
+            height: 62px;
+            background: rgba(10, 14, 22, 0.95);
+            border-color: rgba(45, 212, 191, 0.4);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(20, 184, 166, 0.2);
         }
 
         .brand-logo {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             text-decoration: none;
             color: var(--text-heading);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .brand-logo .logo-icon {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             background: linear-gradient(135deg, var(--teal-primary) 0%, var(--gold-accent) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 1.25rem;
-            box-shadow: 0 0 18px rgba(13, 148, 136, 0.5), 0 0 10px rgba(212, 175, 55, 0.3);
+            font-size: 1.15rem;
+            box-shadow: 0 0 16px rgba(13, 148, 136, 0.4), 0 0 8px rgba(212, 175, 55, 0.25);
+            flex-shrink: 0;
         }
         .brand-logo .brand-text {
             font-family: var(--font-display);
-            font-size: 1.55rem;
+            font-size: 1.4rem;
             font-weight: 700;
             letter-spacing: 0.5px;
+            line-height: 1;
+            display: block;
+            white-space: nowrap;
         }
         .brand-logo .brand-text-styl {
             color: #ffffff;
@@ -157,36 +165,56 @@
         }
         .brand-logo .brand-sub {
             font-family: var(--font-sans);
-            font-size: 0.62rem;
-            letter-spacing: 2px;
+            font-size: 0.58rem;
+            font-weight: 600;
+            letter-spacing: 1.8px;
             color: var(--teal-light);
             text-transform: uppercase;
             display: block;
-            margin-top: -4px;
+            margin-top: 3px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .nav-content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+            margin-left: 32px;
         }
 
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: 32px;
+            gap: clamp(10px, 1.6vw, 26px);
             list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-menu li {
+            display: flex;
+            align-items: center;
         }
         .nav-link-custom {
             text-decoration: none;
             color: var(--text-body);
             font-family: var(--font-sans);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
             transition: all 0.3s ease;
             position: relative;
-            padding: 6px 0;
+            padding: 6px 2px;
+            display: inline-block;
         }
         .nav-link-custom::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 0;
             height: 2px;
             background: linear-gradient(90deg, var(--gold-accent), var(--teal-glow));
@@ -194,7 +222,8 @@
             border-radius: 2px;
         }
         .nav-link-custom:hover {
-            color: var(--gold-light);
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(242, 202, 80, 0.4);
         }
         .nav-link-custom:hover::after {
             width: 100%;
@@ -203,22 +232,41 @@
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .user-pill {
+            color: var(--teal-light);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            padding: 4px 8px;
+        }
+        .user-pill i {
+            font-size: 1.05rem;
+            color: var(--gold-primary);
         }
         .btn-portal {
             text-decoration: none;
             color: var(--text-heading);
             border: 1px solid var(--border-gold);
-            padding: 9px 20px;
+            padding: 8px 18px;
             border-radius: 50px;
             font-family: var(--font-sans);
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
+            white-space: nowrap;
             transition: all 0.3s ease;
             background: rgba(212, 175, 55, 0.08);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
+            line-height: 1;
+            flex-shrink: 0;
         }
         .btn-portal:hover {
             border-color: var(--gold-primary);
@@ -232,24 +280,115 @@
             text-decoration: none;
             color: #0b0e14;
             background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
-            padding: 10px 24px;
+            padding: 9px 22px;
             border-radius: 50px;
             font-family: var(--font-sans);
-            font-size: 0.88rem;
+            font-size: 0.84rem;
             font-weight: 700;
+            white-space: nowrap;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             cursor: pointer;
             border: none;
+            line-height: 1;
+            flex-shrink: 0;
         }
         .btn-book-now:hover {
             background: linear-gradient(135deg, #ffffff 0%, var(--teal-light) 100%);
-            box-shadow: 0 6px 25px rgba(45, 212, 191, 0.5);
+            box-shadow: 0 6px 22px rgba(45, 212, 191, 0.5);
             transform: translateY(-2px);
             color: #0b0e14;
+        }
+        .user-pill {
+            color: var(--teal-light);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            padding: 4px 8px;
+        }
+        .user-pill i {
+            font-size: 1.05rem;
+            color: var(--gold-primary);
+        }
+        .btn-portal {
+            text-decoration: none;
+            color: var(--text-heading);
+            border: 1px solid var(--border-gold);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            background: rgba(212, 175, 55, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .btn-portal:hover {
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold-light);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-book-now {
+            text-decoration: none;
+            color: #0b0e14;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
+            padding: 9px 22px;
+            border-radius: 50px;
+            font-family: var(--font-sans);
+            font-size: 0.84rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            border: none;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .btn-book-now:hover {
+            background: linear-gradient(135deg, #ffffff 0%, var(--teal-light) 100%);
+            box-shadow: 0 6px 22px rgba(45, 212, 191, 0.5);
+            transform: translateY(-2px);
+            color: #0b0e14;
+        }
+
+        /* Mobile Hamburger Button */
+        .nav-toggle-btn {
+            display: none;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            color: #ffffff;
+            border-color: var(--gold-primary);
         }
 
         /* ── Floating Quick Action Pill ── */
@@ -383,12 +522,56 @@
         }
 
         /* ── Responsive adjustments ── */
-        @@media (max-width: 992px) {
-            .nav-menu { display: none; }
+        @@media (max-width: 1080px) {
+            .nav-toggle-btn {
+                display: flex;
+            }
+            .nav-content-wrapper {
+                position: absolute;
+                top: calc(100% + 12px);
+                left: 0;
+                right: 0;
+                background: rgba(13, 19, 30, 0.96);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 1px solid var(--border-gold);
+                border-radius: 24px;
+                padding: 24px;
+                flex-direction: column;
+                gap: 18px;
+                margin-left: 0;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+            }
+            .nav-content-wrapper.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+            .nav-menu {
+                flex-direction: column;
+                gap: 14px;
+                width: 100%;
+            }
+            .nav-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+                padding-top: 16px;
+                border-top: 1px solid rgba(212, 175, 55, 0.2);
+            }
+            .nav-actions .btn-portal,
+            .nav-actions .btn-book-now {
+                width: 100%;
+                justify-content: center;
+            }
             .footer-container { grid-template-columns: 1fr 1fr; }
         }
         @@media (max-width: 600px) {
-            .navbar-floating { padding: 10px 16px; width: 94%; }
+            .navbar-floating { padding: 0 16px; width: 95%; height: 60px; }
             .footer-container { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
         }
@@ -430,38 +613,44 @@
             </div>
         </a>
 
-        <ul class="nav-menu">
-            <li><a href="#hero" class="nav-link-custom">Home</a></li>
-            <li><a href="#services" class="nav-link-custom">Bespoke Services</a></li>
-            <li><a href="#specialists" class="nav-link-custom">Specialists</a></li>
-            <li><a href="#giftcards" class="nav-link-custom">Gift Cards</a></li>
-            <li><a href="#vip-lounge" class="nav-link-custom">VIP Membership</a></li>
-            <li><a href="#testimonials" class="nav-link-custom">Reviews</a></li>
-        </ul>
+        <div class="nav-content-wrapper" id="navContent">
+            <ul class="nav-menu">
+                <li><a href="#hero" class="nav-link-custom">Home</a></li>
+                <li><a href="#services" class="nav-link-custom">Bespoke Services</a></li>
+                <li><a href="#specialists" class="nav-link-custom">Specialists</a></li>
+                <li><a href="#giftcards" class="nav-link-custom">Gift Cards</a></li>
+                <li><a href="#vip-lounge" class="nav-link-custom">VIP Membership</a></li>
+                <li><a href="#testimonials" class="nav-link-custom">Reviews</a></li>
+            </ul>
 
-        <div class="nav-actions">
-            @if (isLoggedIn)
-            {
-                <span style="color: var(--teal-light); font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-circle-user" style="font-size: 1.1rem; color: var(--gold-primary);"></i> @userName
-                </span>
-                <a href="@(userRole == "Admin" ? "/Admin/Home" : "/Staff/Home")" class="btn-portal" style="border-color: var(--teal-glow);">
-                    <i class="fa-solid fa-gauge"></i> Dashboard
-                </a>
-                <a href="/Login/Logout" class="btn-portal" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                </a>
-            }
-            else
-            {
-                <a href="/Login" class="btn-portal">
-                    <i class="fa-solid fa-user-lock"></i> Portal Login
-                </a>
-                <button class="btn-book-now" onclick="openBookingModal()">
-                    <i class="fa-solid fa-calendar-check"></i> Book VIP
-                </button>
-            }
+            <div class="nav-actions">
+                @if (isLoggedIn)
+                {
+                    <span class="user-pill">
+                        <i class="fa-solid fa-circle-user"></i> @userName
+                    </span>
+                    <a href="@(userRole == "Admin" ? "/Admin/Home" : "/Staff/Home")" class="btn-portal" style="border-color: var(--teal-glow);">
+                        <i class="fa-solid fa-gauge"></i> Dashboard
+                    </a>
+                    <a href="/Login/Logout" class="btn-portal" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                }
+                else
+                {
+                    <a href="/Login" class="btn-portal">
+                        <i class="fa-solid fa-user-lock"></i> Portal Login
+                    </a>
+                    <button class="btn-book-now" onclick="openBookingModal()">
+                        <i class="fa-solid fa-calendar-check"></i> Book VIP
+                    </button>
+                }
+            </div>
         </div>
+
+        <button class="nav-toggle-btn" id="navToggle" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
     </nav>
 
     <!-- Main Render Body -->
@@ -531,12 +720,34 @@
         // Navbar scroll effect
         window.addEventListener('scroll', function () {
             const nav = document.getElementById('mainNav');
-            if (window.scrollY > 50) {
+            if (window.scrollY > 30) {
                 nav.classList.add('scrolled');
             } else {
                 nav.classList.remove('scrolled');
             }
         });
+
+        // Mobile Nav Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navContent = document.getElementById('navContent');
+        if (navToggle && navContent) {
+            navToggle.addEventListener('click', function () {
+                navContent.classList.toggle('active');
+                const icon = navToggle.querySelector('i');
+                if (navContent.classList.contains('active')) {
+                    icon.className = 'fa-solid fa-xmark';
+                } else {
+                    icon.className = 'fa-solid fa-bars';
+                }
+            });
+            document.querySelectorAll('.nav-link-custom').forEach(link => {
+                link.addEventListener('click', () => {
+                    navContent.classList.remove('active');
+                    const icon = navToggle.querySelector('i');
+                    if (icon) icon.className = 'fa-solid fa-bars';
+                });
+            });
+        }
 
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
