@@ -11,7 +11,22 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: linear-gradient(135deg, #f8cdda, #1d2b64); min-height: 100vh; }
-        .sidebar { width: 230px; min-height: 100vh; background: linear-gradient(180deg, #1d2b64, #0f172a); color: white; padding-top: 20px; position: fixed; }
+        .sidebar { 
+            width: 230px; 
+            height: 100vh; 
+            background: linear-gradient(180deg, #1d2b64, #0f172a); 
+            color: white; 
+            padding-top: 20px; 
+            position: fixed; 
+            top: 0; bottom: 0; left: 0;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 rgba(15, 23, 42, 0.6);
+            box-sizing: border-box;
+        }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        .sidebar::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #d4af37, #0d9488); border-radius: 10px; }
         .sidebar h2 { text-align: center; margin-bottom: 30px; }
         .sidebar a { display: block; padding: 12px 20px; margin: 8px; border-radius: 10px; text-decoration: none; color: white; transition: 0.3s; }
         .sidebar a:hover, .sidebar a.active { background: #f8cdda; color: black !important; }
