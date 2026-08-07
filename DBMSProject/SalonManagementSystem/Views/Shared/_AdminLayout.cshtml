@@ -333,6 +333,92 @@
             font-weight: 600;
         }
 
+        /* ── Mobile Hamburger Toggle & Overlay Backdrop ── */
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-gold);
+            color: #d4af37;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+            color: #ffffff;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 14, 20, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 95;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ── Responsive Media Queries ── */
+        @@media (max-width: 992px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.6);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+
+            .top-header {
+                padding: 0 16px !important;
+            }
+
+            .header-title-area h2 {
+                font-size: 1.15rem;
+            }
+
+            .header-title-area p {
+                font-size: 0.72rem;
+            }
+
+            .status-badge {
+                display: none;
+            }
+
+            .page-body {
+                padding: 16px !important;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .user-profile-info {
+                display: none;
+            }
+            .user-profile-badge {
+                padding: 4px;
+            }
+        }
+
         /* Content Body Wrapper */
         .page-body {
             padding: 36px;
@@ -409,13 +495,21 @@
             </div>
         </aside>
 
+        <!-- Mobile Overlay Backdrop -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- ── Main Content Area ── -->
         <main class="main-content">
             <!-- Top Header Bar -->
             <header class="top-header">
-                <div class="header-title-area">
-                    <h2>Admin Management Studio</h2>
-                    <p>Salon Management System &bull; Live Control Center</p>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-title-area">
+                        <h2>Admin Management Studio</h2>
+                        <p>Salon Management System &bull; Live Control Center</p>
+                    </div>
                 </div>
 
                 <div class="header-actions">
@@ -478,6 +572,22 @@
                 if (result.isConfirmed) {
                     window.location.href = '/Admin/CleanDatabase';
                 }
+            });
+        }
+        // ── Mobile Sidebar Drawer Toggle ──
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (mobileMenuBtn && sidebar && sidebarOverlay) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
             });
         }
     </script>
