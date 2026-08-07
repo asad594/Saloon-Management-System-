@@ -456,9 +456,17 @@
         }
 
         @@media (max-width: 900px) {
-            .login-split-container { flex-direction: column; }
+            .login-split-container { flex-direction: column; height: auto; min-height: 100vh; overflow-y: auto; }
             .salon-showcase-panel { display: none; }
-            .login-form-panel { width: 100%; border-right: none; }
+            .login-form-panel { width: 100%; height: auto; min-height: 100vh; border-right: none; padding: 28px 20px; }
+            .login-form-content { max-width: 100%; }
+        }
+
+        @@media (max-width: 480px) {
+            .login-title { font-size: 1.65rem !important; }
+            .login-subtitle { font-size: 0.85rem !important; }
+            .role-tab-btn { padding: 8px 10px !important; font-size: 0.8rem !important; }
+            .form-control-custom { padding: 13px 40px 13px 44px !important; font-size: 1rem !important; }
         }
     </style>
 }

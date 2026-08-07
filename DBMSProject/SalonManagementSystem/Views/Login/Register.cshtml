@@ -285,8 +285,16 @@
         }
 
         @@media (max-width: 900px) {
+            .login-split-container { flex-direction: column; height: auto; min-height: 100vh; overflow-y: auto; }
             .salon-showcase-panel { display: none; }
-            .login-form-panel { width: 100%; border-right: none; }
+            .login-form-panel { width: 100%; height: auto; min-height: 100vh; border-right: none; padding: 24px 16px; }
+            .login-form-content { max-width: 100%; }
+        }
+
+        @@media (max-width: 576px) {
+            .form-grid-two-col { grid-template-columns: 1fr !important; gap: 0 !important; }
+            .login-title { font-size: 1.6rem !important; }
+            .role-tab-btn { padding: 8px 10px !important; font-size: 0.78rem !important; }
         }
     </style>
 }
