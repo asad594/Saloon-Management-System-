@@ -107,6 +107,66 @@ namespace SalonManagementSystem.Controllers
 
         }
 
+        public IActionResult MyAppointments()
+        {
+            EnsureStaffPortalTables();
+            List<StaffAppointmentViewModel> list = new List<StaffAppointmentViewModel>();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int staffId = GetLoggedInStaffId(conn);
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT a.AppId, a.CId, c.ClientName, c.ClientPhone, 
+                           ISNULL(s.ServiceName, 'Styling Service') AS ServiceName,
+                           ISNULL(s.ServicePrice, 0) AS ServicePrice,
+                           a.AppDate, a.AppTime, ISNULL(a.AppStatus, 1) AS AppStatus
+                    FROM appointments a
+                    LEFT JOIN clients c ON a.CId = c.ClientId
+                    LEFT JOIN appointmentservices aps ON a.AppId = aps.ApId
+                    LEFT JOIN salonservices s ON aps.SeId = s.ServiceId
+                    WHERE a.App_Booked_For = @staffId OR @staffId = 0
+                    ORDER BY a.AppDate DESC, a.AppId DESC", conn);
+                cmd.Parameters.AddWithValue("@staffId", staffId);
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    list.Add(new StaffAppointmentViewModel
+                    {
+                        AppId = Convert.ToInt32(reader["AppId"]),
+                        ClientId = Convert.ToInt32(reader["CId"]),
+                        ClientName = reader["ClientName"] != DBNull.Value ? reader["ClientName"].ToString()! : "VIP Client",
+                        ClientPhone = reader["ClientPhone"] != DBNull.Value ? reader["ClientPhone"].ToString()! : "N/A",
+                        ServiceName = reader["ServiceName"].ToString()!,
+                        ServicePrice = Convert.ToDecimal(reader["ServicePrice"]),
+                        AppDate = Convert.ToDateTime(reader["AppDate"]),
+                        AppTime = reader["AppTime"] != DBNull.Value ? reader["AppTime"].ToString()! : "Scheduled",
+                        AppStatus = Convert.ToInt32(reader["AppStatus"])
+                    });
+                }
+            }
+
+            return View(list);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateAppointmentStatus(int AppId, int NewStatus)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("UPDATE appointments SET AppStatus = @status WHERE AppId = @appId", conn);
+                cmd.Parameters.AddWithValue("@status", NewStatus);
+                cmd.Parameters.AddWithValue("@appId", AppId);
+                cmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Appointment status updated successfully!";
+            return RedirectToAction("MyAppointments");
+        }
+
 
 
 

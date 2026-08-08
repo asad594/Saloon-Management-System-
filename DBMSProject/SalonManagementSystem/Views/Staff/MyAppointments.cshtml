@@ -1,0 +1,193 @@
+@model List<SalonManagementSystem.Models.StaffAppointmentViewModel>
+@{
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    ViewData["Title"] = "My Scheduled Appointments";
+}
+
+@section Styles {
+    <style>
+        .appointments-card-container {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-action-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .title-group h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-group p {
+            font-size: 0.84rem;
+            color: var(--text-body);
+        }
+
+        .custom-appt-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .custom-appt-table th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .custom-appt-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-appt-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .custom-appt-table td {
+            padding: 16px 20px;
+            color: #ffffff;
+            font-size: 0.92rem;
+            vertical-align: middle;
+        }
+
+        .client-link {
+            color: #ffffff;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.25s ease;
+        }
+
+        .client-link:hover {
+            color: var(--gold-primary);
+            text-decoration: underline;
+        }
+
+        .badge-status {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-1 { background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); border: 1px solid rgba(212, 175, 55, 0.3); }
+        .status-2 { background: rgba(20, 184, 166, 0.15); color: var(--teal-light); border: 1px solid rgba(20, 184, 166, 0.3); }
+        .status-3 { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .status-4 { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .select-status-inline {
+            background: rgba(11, 14, 20, 0.8);
+            border: 1px solid var(--border-gold);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            outline: none;
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="appointments-card-container">
+    <div class="header-action-flex">
+        <div class="title-group">
+            <h2><i class="fa-solid fa-calendar-check" style="color:var(--gold-primary);"></i> My Client Appointments</h2>
+            <p>View and update active client sessions assigned to your booth</p>
+        </div>
+        <a href="/Staff/BookAppointment" class="btn-action-hero">
+            <i class="fa-solid fa-plus"></i> New Booking
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#4ade80; padding:12px 18px; border-radius:12px; margin-bottom:20px; font-size:0.9rem; font-weight:600;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <table class="custom-appt-table">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Contact Phone</th>
+                <th>Treatment Service</th>
+                <th>Date & Time</th>
+                <th>Current Status</th>
+                <th style="text-align:right;">Update Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var appt in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="/Staff/ClientHistory?clientId=@appt.ClientId" class="client-link">
+                                <i class="fa-solid fa-user-circle" style="color:var(--teal-light);"></i>
+                                <span>@appt.ClientName</span>
+                            </a>
+                        </td>
+                        <td style="color:var(--text-body);"><i class="fa-solid fa-phone" style="font-size:0.75rem;"></i> @appt.ClientPhone</td>
+                        <td><span style="color:var(--gold-accent); font-weight:600;">@appt.ServiceName</span></td>
+                        <td>
+                            <div>@appt.AppDate.ToString("MMM dd, yyyy")</div>
+                            <small style="color:var(--text-body); font-size:0.75rem;"><i class="fa-regular fa-clock"></i> @appt.AppTime</small>
+                        </td>
+                        <td>
+                            <span class="badge-status status-@appt.AppStatus">
+                                <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> @appt.StatusName
+                            </span>
+                        </td>
+                        <td style="text-align:right;">
+                            <form method="post" asp-action="UpdateAppointmentStatus" style="display:inline-flex; align-items:center; gap:6px;">
+                                <input type="hidden" name="AppId" value="@appt.AppId" />
+                                <select name="NewStatus" class="select-status-inline" onchange="this.form.submit()">
+                                    <!option value="1" @(appt.AppStatus == 1 ? "selected" : "")>1. Pending</!option>
+                                    <!option value="2" @(appt.AppStatus == 2 ? "selected" : "")>2. In Progress</!option>
+                                    <!option value="3" @(appt.AppStatus == 3 ? "selected" : "")>3. Completed</!option>
+                                    <!option value="4" @(appt.AppStatus == 4 ? "selected" : "")>4. No-show</!option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-body); padding:32px;">
+                        No appointments found for your shift.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
