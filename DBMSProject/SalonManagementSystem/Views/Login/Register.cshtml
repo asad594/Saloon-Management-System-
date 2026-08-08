@@ -315,19 +315,7 @@
 
             <!-- Welcome Title -->
             <h1 class="login-title">Create Account</h1>
-            <p class="login-subtitle" id="regSubtitle">Register a new account to join StylOnyx</p>
-
-            <!-- Role Selector Tabs -->
-            <div class="role-switch-container">
-                <button type="button" class="role-tab-btn @(defaultRole == "User" ? "active" : "")" id="regTabUser" onclick="setRegisterRole('User')">
-                    <i class="fa-solid fa-circle-user"></i>
-                    <span>Register as User</span>
-                </button>
-                <button type="button" class="role-tab-btn @(defaultRole == "Staff" ? "active staff-active" : "")" id="regTabStaff" onclick="setRegisterRole('Staff')">
-                    <i class="fa-solid fa-scissors"></i>
-                    <span>Register as Staff</span>
-                </button>
-            </div>
+            <p class="login-subtitle">Register a new client account to join StylOnyx</p>
 
             <!-- Error Alert -->
             @if (!string.IsNullOrEmpty(ViewBag.Error as string))
@@ -340,7 +328,7 @@
 
             <!-- Registration Form -->
             <form method="post" id="registerForm" novalidate>
-                <input type="hidden" name="Role" id="regRoleInput" value="@defaultRole" />
+                <input type="hidden" name="Role" value="User" />
 
                 <!-- Full Name Input -->
                 <div class="form-field-group">
