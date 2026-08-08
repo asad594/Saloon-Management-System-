@@ -464,8 +464,11 @@
                 <a href="/Admin/UpdateService" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateService" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddService" ? "active" : "")">
                     <i class="fa-solid fa-scissors"></i> Manage Services
                 </a>
-                <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
-                    <i class="fa-solid fa-users"></i> Manage Staff
+                <a href="/Admin/UpdateStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "UpdateStaff" ? "active" : "")">
+                    <i class="fa-solid fa-users"></i> Manage Staff Team
+                </a>
+                <a href="/Admin/AddStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
+                    <i class="fa-solid fa-user-plus"></i> Add Staff Specialist
                 </a>
                 <a href="/Admin/ManageBrands" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageBrands" || ViewContext.RouteData.Values["Action"]?.ToString() == "AddBrand" ? "active" : "")">
                     <i class="fa-solid fa-tags"></i> Manage Brands
