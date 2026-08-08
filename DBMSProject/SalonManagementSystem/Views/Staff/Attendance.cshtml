@@ -1,4 +1,4 @@
-﻿@model List<SalonManagementSystem.Models.AttendanceViewModel>
+@model List<SalonManagementSystem.Models.AttendanceViewModel>
 
 @{
     Layout = "~/Views/Shared/_StaffLayout.cshtml";
@@ -11,43 +11,50 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <!-- Reuse login page styles here -->
     <style>
-        .attendance-wrapper{
-            width: auto;
+        .attendance-wrapper {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
-        .staff-drop{
-            width: 300px;
-            height: 35px;
-            border-radius: 20px;
-            padding-left: 10px;
+        .staff-drop, .time-drop {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 44px;
+            border-radius: 12px;
+            padding-left: 14px;
+            margin-top: 10px;
+            box-sizing: border-box;
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+        .attendence-labels {
+            margin: 10px 0;
+            text-align: left;
+        }
+        .attendance-form {
+            border: 1px solid rgba(212,175,55,0.25);
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            padding: 24px 20px;
+            border-radius: 16px;
+            box-sizing: border-box;
+        }
+        .btn-attendance {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 48px;
             margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 50px;
+            background: linear-gradient(90deg, #0d9488, #d4af37);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 8px 24px rgba(13,148,136,0.3);
         }
-        .time-drop{
-            margin-top:10px;
-            width: 300px;
-            height: 35px;
-            border-radius: 20px;
-            padding-left: 10px;
-        }
-        .attendence-labels{
-            margin: 10px;
-            text-align: center;
-            justify-content: center;
-        }
-
-        .attendance-form{
-            border: 1px black solid;
-            padding-left: 30px;
-            padding-right: 15px;
-            border-radius: 10px;
-        }
-
-        .btn-attendance{
-            width: 450px;
-            height: 40px;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            border-radius: 25px;
-            background: #1d2b64;
             color: #ffffff
         }
 
