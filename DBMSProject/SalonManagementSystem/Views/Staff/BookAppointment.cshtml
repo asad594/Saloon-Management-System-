@@ -183,10 +183,41 @@
             box-shadow: 0 12px 32px rgba(212, 175, 55, 0.5);
         }
 
-        @@media (max-width: 600px) {
-            .booking-card-container { padding: 22px 16px; }
-            .form-grid-2col { grid-template-columns: 1fr; gap: 0; }
-            .stepper-bar { display: none; }
+        /* Treatment Addon Chips */
+        .addon-chips-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--teal-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .addon-chips-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .addon-chip-item {
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.25);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .addon-chip-item:hover, .addon-chip-item.active {
+            background: var(--teal-primary);
+            border-color: var(--teal-glow);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
         }
     </style>
 }
@@ -275,6 +306,14 @@
                     <option value="">Select Salon Service</option>
                 </select>
             </div>
+        </div>
+
+        <!-- VIP Addon Treatment Chips -->
+        <div class="addon-chips-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Treatment Add-ons</div>
+        <div class="addon-chips-grid">
+            <span class="addon-chip-item" onclick="this.classList.toggle('active')">+ Organic Glossing</span>
+            <span class="addon-chip-item" onclick="this.classList.toggle('active')">+ Scalp Detox Revive</span>
+            <span class="addon-chip-item" onclick="this.classList.toggle('active')">+ VIP Botanical Oil</span>
         </div>
 
         <div class="pricing-box">
