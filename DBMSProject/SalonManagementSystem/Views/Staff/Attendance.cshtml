@@ -1,100 +1,215 @@
 @model List<SalonManagementSystem.Models.AttendanceViewModel>
-
 @{
     Layout = "~/Views/Shared/_StaffLayout.cshtml";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <!-- Reuse login page styles here -->
+@section Styles {
     <style>
-        .attendance-wrapper {
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
-        .staff-drop, .time-drop {
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 44px;
-            border-radius: 12px;
-            padding-left: 14px;
-            margin-top: 10px;
-            box-sizing: border-box;
-            background: rgba(255,255,255,0.06);
-            color: #fff;
-            border: 1px solid rgba(212,175,55,0.3);
-        }
-        .attendence-labels {
-            margin: 10px 0;
-            text-align: left;
-        }
-        .attendance-form {
-            border: 1px solid rgba(212,175,55,0.25);
+        .attendance-card-container {
+            max-width: 850px;
+            margin: 20px auto;
             background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
-            padding: 24px 20px;
-            border-radius: 16px;
+            border: 1px solid var(--border-gold);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45);
             box-sizing: border-box;
         }
-        .btn-attendance {
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 48px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            border-radius: 50px;
-            background: linear-gradient(90deg, #0d9488, #d4af37);
-            color: #fff;
+
+        .attendance-hero-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .attendance-title-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .attendance-icon-badge {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
+        }
+
+        .attendance-title-group h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
             font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
+            color: #ffffff;
+        }
+
+        .attendance-title-group p {
+            font-size: 0.82rem;
+            color: var(--text-body);
+        }
+
+        .shift-timer-box {
+            background: rgba(20, 184, 166, 0.12);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: var(--teal-light);
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-attendance-custom {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group-custom {
+            margin-bottom: 16px;
+        }
+
+        .form-label-custom {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input-custom {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-family: var(--font-sans);
+            font-size: 0.92rem;
+            box-sizing: border-box;
+        }
+
+        .form-input-custom:focus {
+            outline: none;
+            border-color: var(--teal-glow);
+            box-shadow: 0 0 16px rgba(20, 184, 166, 0.25);
+        }
+
+        .btn-attendance-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, var(--teal-primary) 0%, var(--gold-primary) 100%);
             border: none;
-            box-shadow: 0 8px 24px rgba(13,148,136,0.3);
-        }
-            color: #ffffff
-        }
-
-        .btn-attendance:hover{
-                background: #09174f;
-                color: #ffffff
-        }
-
-        tr, th {
-            border-radius: 5px;
-            border: 1px black solid;
-            width: 200px;
+            border-radius: 50px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.35);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .attendance-table{
-            width: 850px;
-            height: auto;
-            border: 1px black solid;
-            padding: 10px;
-            border-radius: 10px;
+        .btn-attendance-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.45);
         }
 
-        .attendance-card{
-            margin-bottom: 30px;
+        /* Attendance Data Table */
+        .attendance-table-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 32px;
+            overflow-x: auto;
+        }
+
+        .attendance-data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 6px;
+        }
+
+        .attendance-data-table th {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--gold-primary);
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .attendance-data-table td {
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .badge-present {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        @@media (max-width: 600px) {
+            .attendance-hero-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .form-grid-2col { grid-template-columns: 1fr; gap: 0; }
         }
     </style>
-</head>
-<body>
-<div class="">
+}
 
-    <!-- FORM CARD -->
-    <div class="attendance-card">
-        <h2 class="title">Mark Attendance</h2>
+<div class="attendance-card-container">
+    <!-- Header -->
+    <div class="attendance-hero-header">
+        <div class="attendance-title-group">
+            <div class="attendance-icon-badge"><i class="fa-solid fa-user-clock"></i></div>
+            <div>
+                <h2>Workstation Shift Attendance</h2>
+                <p>StylOnyx Executive Studio &bull; Daily Clock In / Out Tracker</p>
+            </div>
+        </div>
 
-        <form method="post" asp-action="MarkAttendance" class="attendance-form">
+        <div class="shift-timer-box">
+            <i class="fa-solid fa-circle" style="font-size:0.5rem; color:#4ade80;"></i> Shift Active
+        </div>
+    </div>
 
-            <div class="form-group" class="attendance-card ">
-                <label class="attendence-labels">Staff Member</label>
-                    <select name="SelectedStaffId" class="form-control staff-drop">
-                        @if (ViewBag.StaffList != null)
+    <!-- Attendance Form -->
+    <form method="post" asp-action="MarkAttendance" class="form-attendance-custom">
+        <div class="form-grid-2col">
+            <div class="form-group-custom">
+                <label class="form-label-custom">Select Staff Specialist</label>
+                <select name="SelectedStaffId" class="form-input-custom" required>
+                    @if (ViewBag.StaffList != null)
                     {
                         foreach (var s in ViewBag.StaffList)
                         {
@@ -104,74 +219,93 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                    <label class="attendence-labels">Action</label>
-                    <select name="Type" class="form-control time-drop">
-                        <option value="CheckIn">Arrival</option>
-                        <option value="CheckOut">Departure</option>
+            <div class="form-group-custom">
+                <label class="form-label-custom">Attendance Action Type</label>
+                <select name="Type" class="form-input-custom" required>
+                    <option value="CheckIn">🌅 Shift Arrival (Check-In)</option>
+                    <option value="CheckOut">🌇 Shift Departure (Check-Out)</option>
                 </select>
             </div>
+        </div>
 
-            <button type="submit" class="btn-attendance">
-                Mark Attendance
-            </button>
+        <button type="submit" class="btn-attendance-submit">
+            <i class="fa-solid fa-user-check"></i> Mark Attendance Now
+        </button>
+    </form>
 
-        </form>
-    </div>
+    <!-- Table Container -->
+    <div class="attendance-table-container">
+        <div style="font-family:var(--font-display); font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
+            <span><i class="fa-solid fa-list-check" style="color:var(--gold-primary);"></i> Today's Shift Logs</span>
+            <span class="badge-present"><i class="fa-solid fa-check-double"></i> Live Roster</span>
+        </div>
 
-    <!-- TABLE CARD -->
-    <div class="attendance-table-card">
-        <h3>Today's Attendance</h3>
-
-        <table class="attendance-table">
+        <table class="attendance-data-table">
             <thead>
                 <tr>
-                    <th>Staff</th>
-                    <th>Check In</th>
-                    <th>Check Out</th>
+                    <th>Staff Specialist</th>
+                    <th>Check In Time</th>
+                    <th>Check Out Time</th>
                 </tr>
             </thead>
             <tbody>
-
                 @if (Model != null && Model.Count > 0)
                 {
                     foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.StaffName</td>
-                            <td>@item.CheckIn</td>
-                            <td>@(item.CheckOut == null ? "-" : item.CheckOut)</td>
+                            <td style="font-weight:700;">@item.StaffName</td>
+                            <td><span style="color:var(--teal-light); font-weight:600;"><i class="fa-regular fa-clock"></i> @item.CheckIn</span></td>
+                            <td>
+                                @if (item.CheckOut == null)
+                                {
+                                    <span style="color:var(--gold-primary); font-weight:600;"><i class="fa-solid fa-spinner fa-spin"></i> Shift In Progress</span>
+                                }
+                                else
+                                {
+                                    <span style="color:#94a3b8;"><i class="fa-solid fa-right-from-bracket"></i> @item.CheckOut</span>
+                                }
+                            </td>
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="3" style="text-align:center; padding:20px;">
-                            No attendance marked today
+                        <td colspan="3" style="text-align:center; padding:24px; color:var(--text-body);">
+                            <i class="fa-solid fa-folder-open" style="font-size:2rem; color:var(--gold-primary); margin-bottom:8px; display:block;"></i>
+                            No attendance records logged for today yet.
                         </td>
                     </tr>
                 }
-
             </tbody>
         </table>
-
-            <h3 style="margin-top:40px;">Attendance Chart</h3>
-
-            <canvas id="attendanceChart" height="100"></canvas>
     </div>
 
+    <!-- Attendance Trend Chart -->
+    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:18px; padding:24px;">
+        <div style="font-family:var(--font-display); font-size:1.2rem; font-weight:700; color:#fff; margin-bottom:16px;">
+            <i class="fa-solid fa-chart-line" style="color:var(--teal-light);"></i> Weekly Shift Attendance Frequency
+        </div>
+        <div style="position:relative; height:200px; width:100%;">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         fetch('/Staff/GetAttendanceChart')
             .then(response => response.json())
             .then(data => {
-
                 const labels = data.map(x => x.date);
                 const values = data.map(x => x.total);
-
                 const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+                const goldGradient = ctx.createLinearGradient(0, 0, 0, 200);
+                goldGradient.addColorStop(0, 'rgba(212, 175, 55, 0.5)');
+                goldGradient.addColorStop(1, 'rgba(13, 148, 136, 0.05)');
 
                 new Chart(ctx, {
                     type: 'line',
@@ -180,17 +314,23 @@
                         datasets: [{
                             label: 'Attendance Count',
                             data: values,
+                            borderColor: '#d4af37',
+                            backgroundColor: goldGradient,
                             borderWidth: 2,
+                            fill: true,
                             tension: 0.3
                         }]
                     },
                     options: {
-                        responsive: true
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 } }
+                        }
                     }
                 });
-
             });
     </script>
-
-</body>
-</html>
+}
