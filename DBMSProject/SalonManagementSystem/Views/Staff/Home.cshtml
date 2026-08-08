@@ -218,6 +218,74 @@
             font-size: 0.82rem;
             color: var(--text-body);
         }
+
+        /* ── Shift Schedule Timeline ── */
+        .timeline-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            margin-bottom: 32px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.05);
+            transform: translateX(4px);
+        }
+
+        .time-badge {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+            background: rgba(212, 175, 55, 0.12);
+            padding: 6px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .client-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .client-info p {
+            font-size: 0.8rem;
+            color: var(--text-body);
+        }
+
+        .service-tag-pill {
+            background: rgba(20, 184, 166, 0.15);
+            color: var(--teal-light);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        @@media (max-width: 768px) {
+            .timeline-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
     </style>
 }
 
@@ -274,6 +342,47 @@
             <div class="kpi-title">Catalog Services</div>
         </div>
         <div class="kpi-icon-badge icon-services"><i class="fa-solid fa-spa"></i></div>
+    </div>
+</div>
+
+<!-- ── Shift Schedule Timeline Container ── -->
+<div class="timeline-card">
+    <div class="chart-card-header">
+        <div>
+            <div class="chart-card-title"><i class="fa-solid fa-list-check" style="color:var(--gold-primary);"></i> Shift Roster & Station Timeline</div>
+            <div class="chart-card-subtitle">Active client appointments scheduled for your booth today</div>
+        </div>
+        <a href="/Staff/BookAppointment" style="color:var(--gold-primary); text-decoration:none; font-size:0.85rem; font-weight:700;">
+            <i class="fa-solid fa-plus-circle"></i> Add Client
+        </a>
+    </div>
+
+    <div class="timeline-item">
+        <div style="display:flex; align-items:center; gap:16px;">
+            <div class="time-badge"><i class="fa-regular fa-clock"></i> 10:30 AM</div>
+            <div class="client-info">
+                <h4>Sophia Reynolds &bull; <span style="color:var(--teal-light); font-size:0.82rem;">Booth #04</span></h4>
+                <p>Royal Hair Styling & Couture Color Glossing</p>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span class="service-tag-pill">Confirmed</span>
+            <a href="/Staff/GenerateBill" class="btn-action-hero" style="padding:6px 14px; font-size:0.78rem;">Generate Bill</a>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div style="display:flex; align-items:center; gap:16px;">
+            <div class="time-badge"><i class="fa-regular fa-clock"></i> 02:15 PM</div>
+            <div class="client-info">
+                <h4>Alexander Vance &bull; <span style="color:var(--teal-light); font-size:0.82rem;">Booth #02</span></h4>
+                <p>Gentlemen's Executive Sculpt & Scalp Revive</p>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span class="service-tag-pill" style="background:rgba(212,175,55,0.15); color:var(--gold-primary); border-color:rgba(212,175,55,0.3);">Scheduled</span>
+            <a href="/Staff/GenerateBill" class="btn-action-hero" style="padding:6px 14px; font-size:0.78rem;">Generate Bill</a>
+        </div>
     </div>
 </div>
 
