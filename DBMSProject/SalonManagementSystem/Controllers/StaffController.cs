@@ -386,6 +386,66 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("ClientHistory", new { clientId = ClientId });
         }
 
+        public IActionResult RequestLeave()
+        {
+            EnsureStaffPortalTables();
+            var model = new StaffLeaveViewModel();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int staffId = GetLoggedInStaffId(conn);
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT LeaveId, LeaveDate, Reason, ISNULL(Status, 'Pending') AS Status, RequestedOn
+                    FROM StaffLeaveRequests
+                    WHERE StaffId = @staffId OR @staffId = 0
+                    ORDER BY RequestedOn DESC", conn);
+                cmd.Parameters.AddWithValue("@staffId", staffId);
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    model.LeaveHistory.Add(new StaffLeaveItem
+                    {
+                        LeaveId = Convert.ToInt32(reader["LeaveId"]),
+                        LeaveDate = Convert.ToDateTime(reader["LeaveDate"]),
+                        Reason = reader["Reason"].ToString()!,
+                        Status = reader["Status"].ToString()!,
+                        RequestedOn = Convert.ToDateTime(reader["RequestedOn"])
+                    });
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult RequestLeave(StaffLeaveViewModel m)
+        {
+            if (!string.IsNullOrWhiteSpace(m.NewReason))
+            {
+                EnsureStaffPortalTables();
+                using (SqlConnection conn = new SqlConnection(_connection))
+                {
+                    conn.Open();
+                    int staffId = GetLoggedInStaffId(conn);
+
+                    SqlCommand cmd = new SqlCommand(@"
+                        INSERT INTO StaffLeaveRequests (StaffId, LeaveDate, Reason, Status, RequestedOn)
+                        VALUES (@sid, @ldate, @reason, 'Pending', GETDATE())", conn);
+                    cmd.Parameters.AddWithValue("@sid", staffId);
+                    cmd.Parameters.AddWithValue("@ldate", m.NewLeaveDate);
+                    cmd.Parameters.AddWithValue("@reason", m.NewReason.Trim());
+                    cmd.ExecuteNonQuery();
+                }
+
+                TempData["SuccessMessage"] = "Leave request submitted to Management for review successfully!";
+            }
+
+            return RedirectToAction("RequestLeave");
+        }
+
 
 
 
