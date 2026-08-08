@@ -263,6 +263,129 @@ namespace SalonManagementSystem.Controllers
             return View(model);
         }
 
+        public IActionResult ClientHistory(int clientId = 0)
+        {
+            EnsureStaffPortalTables();
+            var model = new ClientHistoryViewModel();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand cmdClients = new SqlCommand("SELECT ClientId, ClientName, ClientPhone FROM clients ORDER BY ClientName ASC", conn);
+                using (SqlDataReader rClients = cmdClients.ExecuteReader())
+                {
+                    while (rClients.Read())
+                    {
+                        model.ClientDropdown.Add(new SelectListItem
+                        {
+                            Value = rClients["ClientId"].ToString(),
+                            Text = $"{rClients["ClientName"]} ({rClients["ClientPhone"]})"
+                        });
+                    }
+                }
+
+                if (clientId <= 0 && model.ClientDropdown.Count > 0)
+                {
+                    clientId = Convert.ToInt32(model.ClientDropdown[0].Value);
+                }
+
+                model.ClientId = clientId;
+
+                if (clientId > 0)
+                {
+                    SqlCommand cmdCInfo = new SqlCommand("SELECT TOP 1 ClientName, ClientPhone FROM clients WHERE ClientId = @cid", conn);
+                    cmdCInfo.Parameters.AddWithValue("@cid", clientId);
+                    using (SqlDataReader rC = cmdCInfo.ExecuteReader())
+                    {
+                        if (rC.Read())
+                        {
+                            model.ClientName = rC["ClientName"].ToString()!;
+                            model.ClientPhone = rC["ClientPhone"].ToString()!;
+                        }
+                    }
+
+                    SqlCommand cmdHistory = new SqlCommand(@"
+                        SELECT a.AppId, ISNULL(s.ServiceName, 'Salon Treatment') AS ServiceName, a.AppDate, 
+                               ISNULL(b.TotalAmount, ISNULL(s.ServicePrice, 0)) AS AmountPaid,
+                               ISNULL(st.StaffName, 'Specialist') AS StaffName
+                        FROM appointments a
+                        LEFT JOIN appointmentservices aps ON a.AppId = aps.ApId
+                        LEFT JOIN salonservices s ON aps.SeId = s.ServiceId
+                        LEFT JOIN bills b ON a.AppId = b.AppointId
+                        LEFT JOIN staff st ON a.App_Booked_For = st.StaffId
+                        WHERE a.CId = @cid
+                        ORDER BY a.AppDate DESC", conn);
+                    cmdHistory.Parameters.AddWithValue("@cid", clientId);
+
+                    using (SqlDataReader rHist = cmdHistory.ExecuteReader())
+                    {
+                        while (rHist.Read())
+                        {
+                            model.PastAppointments.Add(new ClientPastAppointmentItem
+                            {
+                                AppId = Convert.ToInt32(rHist["AppId"]),
+                                ServiceName = rHist["ServiceName"].ToString()!,
+                                AppDate = Convert.ToDateTime(rHist["AppDate"]),
+                                AmountPaid = Convert.ToDecimal(rHist["AmountPaid"]),
+                                StaffName = rHist["StaffName"].ToString()!
+                            });
+                        }
+                    }
+
+                    SqlCommand cmdNotes = new SqlCommand(@"
+                        SELECT sn.NoteId, sn.Note, sn.CreatedDate, ISNULL(st.StaffName, 'Specialist') AS StaffName
+                        FROM StaffNotes sn
+                        LEFT JOIN staff st ON sn.StaffId = st.StaffId
+                        WHERE sn.ClientId = @cid
+                        ORDER BY sn.CreatedDate DESC", conn);
+                    cmdNotes.Parameters.AddWithValue("@cid", clientId);
+
+                    using (SqlDataReader rNotes = cmdNotes.ExecuteReader())
+                    {
+                        while (rNotes.Read())
+                        {
+                            model.StaffNotes.Add(new ClientStaffNoteItem
+                            {
+                                NoteId = Convert.ToInt32(rNotes["NoteId"]),
+                                Note = rNotes["Note"].ToString()!,
+                                CreatedDate = Convert.ToDateTime(rNotes["CreatedDate"]),
+                                StaffName = rNotes["StaffName"].ToString()!
+                            });
+                        }
+                    }
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult AddClientNote(int ClientId, string Note)
+        {
+            if (ClientId > 0 && !string.IsNullOrWhiteSpace(Note))
+            {
+                EnsureStaffPortalTables();
+                using (SqlConnection conn = new SqlConnection(_connection))
+                {
+                    conn.Open();
+                    int staffId = GetLoggedInStaffId(conn);
+
+                    SqlCommand cmd = new SqlCommand(@"
+                        INSERT INTO StaffNotes (ClientId, StaffId, Note, CreatedDate)
+                        VALUES (@cid, @sid, @note, GETDATE())", conn);
+                    cmd.Parameters.AddWithValue("@cid", ClientId);
+                    cmd.Parameters.AddWithValue("@sid", staffId);
+                    cmd.Parameters.AddWithValue("@note", Note.Trim());
+                    cmd.ExecuteNonQuery();
+                }
+
+                TempData["SuccessMessage"] = "Specialist note added to client history successfully!";
+            }
+
+            return RedirectToAction("ClientHistory", new { clientId = ClientId });
+        }
+
 
 
 

@@ -1,0 +1,240 @@
+@model SalonManagementSystem.Models.ClientHistoryViewModel
+@{
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    ViewData["Title"] = "Client Treatment History & Notes";
+}
+
+@section Styles {
+    <style>
+        .client-history-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 28px;
+        }
+
+        .history-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+            margin-bottom: 24px;
+        }
+
+        .client-selector-bar {
+            background: rgba(11, 14, 20, 0.7);
+            border: 1px solid var(--border-gold);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .client-select-dropdown {
+            background: rgba(19, 25, 36, 0.9);
+            border: 1.5px solid var(--border-gold);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            min-width: 260px;
+        }
+
+        .custom-history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .custom-history-table th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .custom-history-table tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .custom-history-table td {
+            padding: 14px 18px;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .note-bubble {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 3px solid var(--gold-primary);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+        }
+
+        .note-author {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--teal-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .btn-add-note {
+            background: linear-gradient(90deg, var(--teal-primary), var(--gold-primary));
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-note:hover {
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+
+        @@media (max-width: 992px) {
+            .client-history-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+}
+
+<!-- ── Client Selector Bar ── -->
+<div class="client-selector-bar">
+    <div style="display:flex; align-items:center; gap:12px;">
+        <i class="fa-solid fa-address-book" style="font-size:1.4rem; color:var(--gold-primary);"></i>
+        <div>
+            <h4 style="font-size:1rem; font-weight:700; color:#fff;">Client Portfolio History</h4>
+            <p style="font-size:0.78rem; color:var(--text-body);">Select a client to view past treatments and specialist notes</p>
+        </div>
+    </div>
+
+    <form method="get" asp-action="ClientHistory">
+        <select name="clientId" class="client-select-dropdown" onchange="this.form.submit()">
+            @foreach (var c in Model.ClientDropdown)
+            {
+                <!option value="@c.Value" @(c.Value == Model.ClientId.ToString() ? "selected" : "")>@c.Text</!option>
+            }
+        </select>
+    </form>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#4ade80; padding:12px 18px; border-radius:12px; margin-bottom:20px; font-size:0.9rem; font-weight:600;">
+        <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="client-history-grid">
+    <!-- Left Column: Treatment Timeline -->
+    <div class="history-card">
+        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+            <div>
+                <h3 style="font-family:var(--font-display); font-size:1.35rem; color:#ffffff;">
+                    <i class="fa-solid fa-clock-rotate-left" style="color:var(--gold-primary);"></i> Treatment History
+                </h3>
+                <p style="font-size:0.8rem; color:var(--text-body);">Client: <strong>@Model.ClientName</strong> &bull; @Model.ClientPhone</p>
+            </div>
+            <span style="background:rgba(20,184,166,0.15); color:var(--teal-light); border:1px solid rgba(20,184,166,0.3); padding:6px 14px; border-radius:50px; font-size:0.78rem; font-weight:700;">
+                @Model.PastAppointments.Count Sessions Recorded
+            </span>
+        </div>
+
+        <table class="custom-history-table">
+            <thead>
+                <tr>
+                    <th>Treatment Service</th>
+                    <th>Specialist</th>
+                    <th>Date & Time</th>
+                    <th style="text-align:right;">Amount Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PastAppointments != null && Model.PastAppointments.Count > 0)
+                {
+                    foreach (var appt in Model.PastAppointments)
+                    {
+                        <tr>
+                            <td><span style="font-weight:700; color:var(--gold-accent);">@appt.ServiceName</span></td>
+                            <td style="color:var(--text-body);"><i class="fa-solid fa-user-gear" style="font-size:0.75rem;"></i> @appt.StaffName</td>
+                            <td style="color:var(--text-body);">@appt.AppDate.ToString("MMM dd, yyyy")</td>
+                            <td style="text-align:right; font-weight:800; color:#4ade80;">PKR @appt.AmountPaid.ToString("N0")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center; color:var(--text-body); padding:32px;">
+                            No past treatment sessions found for this client.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Right Column: Specialist Notes -->
+    <div>
+        <div class="history-card">
+            <h3 style="font-family:var(--font-display); font-size:1.2rem; color:#ffffff; margin-bottom:16px;">
+                <i class="fa-solid fa-pen-to-square" style="color:var(--gold-primary);"></i> Add Specialist Note
+            </h3>
+
+            <form method="post" asp-action="AddClientNote">
+                <input type="hidden" name="ClientId" value="@Model.ClientId" />
+                <div style="margin-bottom:12px;">
+                    <textarea name="Note" rows="3" class="form-control" style="background:rgba(11,14,20,0.8); border:1px solid var(--border-gold); color:#ffffff; border-radius:10px; padding:12px; font-size:0.88rem; width:100%; outline:none;" placeholder="Write clinical notes (e.g., Hair texture, preferred color code, allergy notes)..." required></textarea>
+                </div>
+                <button type="submit" class="btn-add-note">
+                    <i class="fa-solid fa-plus"></i> Save Specialist Note
+                </button>
+            </form>
+        </div>
+
+        <div class="history-card">
+            <h3 style="font-family:var(--font-display); font-size:1.2rem; color:#ffffff; margin-bottom:18px;">
+                <i class="fa-solid fa-note-sticky" style="color:var(--teal-light);"></i> Past Client Notes
+            </h3>
+
+            @if (Model.StaffNotes != null && Model.StaffNotes.Count > 0)
+            {
+                foreach (var note in Model.StaffNotes)
+                {
+                    <div class="note-bubble">
+                        <div class="note-author">
+                            <span><i class="fa-solid fa-user-check"></i> @note.StaffName</span>
+                            <span style="color:var(--text-body); font-size:0.72rem;">@note.CreatedDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <p style="font-size:0.86rem; color:#e2e8f0; margin-bottom:0;">@note.Note</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="text-align:center; color:var(--text-body); font-size:0.82rem; padding:20px;">
+                    No specialist notes recorded yet.
+                </div>
+            }
+        </div>
+    </div>
+</div>
