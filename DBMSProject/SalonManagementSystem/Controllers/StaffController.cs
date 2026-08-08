@@ -72,20 +72,26 @@ namespace SalonManagementSystem.Controllers
 
         public IActionResult Home()
         {
+            EnsureStaffPortalTables();
             DashboardModel model = new DashboardModel();
 
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                int staffId = GetLoggedInStaffId(conn);
+                model.StaffId = staffId;
 
+                // Today's Total Appointments (Salon-wide)
                 SqlCommand cmd1 = new SqlCommand(
                     "SELECT COUNT(*) FROM appointments WHERE AppDate = CAST(GETDATE() AS DATE)", conn);
                 model.TodayAppointments = (int)cmd1.ExecuteScalar();
 
+                // Total Appointments (Salon-wide)
                 SqlCommand cmd2 = new SqlCommand(
                     "SELECT COUNT(*) FROM appointments", conn);
                 model.TotalAppointments = (int)cmd2.ExecuteScalar();
 
+                // Today's Sales (Salon-wide)
                 SqlCommand cmd3 = new SqlCommand(
                     "SELECT ISNULL(SUM(TotalAmount),0) FROM bills WHERE CAST(BillDate AS DATE)=CAST(GETDATE() AS DATE)", conn);
                 model.TodaySales = Convert.ToDecimal(cmd3.ExecuteScalar());
@@ -101,6 +107,30 @@ namespace SalonManagementSystem.Controllers
                 SqlCommand cmd6 = new SqlCommand(
                     "SELECT COUNT(*) FROM salonservices", conn);
                 model.TotalServices = (int)cmd6.ExecuteScalar();
+
+                // ── Personal Staff Metrics ──
+                SqlCommand cmdOwnToday = new SqlCommand(
+                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND AppDate = CAST(GETDATE() AS DATE)", conn);
+                cmdOwnToday.Parameters.AddWithValue("@staffId", staffId);
+                model.OwnTodayCount = Convert.ToInt32(cmdOwnToday.ExecuteScalar());
+
+                SqlCommand cmdCompleted = new SqlCommand(
+                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND AppStatus = 3", conn);
+                cmdCompleted.Parameters.AddWithValue("@staffId", staffId);
+                model.CompletedCount = Convert.ToInt32(cmdCompleted.ExecuteScalar());
+
+                SqlCommand cmdPending = new SqlCommand(
+                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND (AppStatus = 1 OR AppStatus IS NULL)", conn);
+                cmdPending.Parameters.AddWithValue("@staffId", staffId);
+                model.PendingCount = Convert.ToInt32(cmdPending.ExecuteScalar());
+
+                SqlCommand cmdOwnEarnings = new SqlCommand(@"
+                    SELECT ISNULL(SUM(b.TotalAmount), 0)
+                    FROM bills b
+                    INNER JOIN appointments a ON b.AppointId = a.AppId
+                    WHERE (a.App_Booked_For = @staffId OR @staffId = 0) AND CAST(b.BillDate AS DATE) = CAST(GETDATE() AS DATE)", conn);
+                cmdOwnEarnings.Parameters.AddWithValue("@staffId", staffId);
+                model.OwnTodayEarnings = Convert.ToDecimal(cmdOwnEarnings.ExecuteScalar());
             }
 
             return View(model);

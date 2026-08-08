@@ -369,38 +369,38 @@
     </a>
 </div>
 
-<!-- ── Staff KPI Metric Cards Grid ── -->
+<!-- ── Staff Personal KPI Metric Cards Grid ── -->
 <div class="staff-kpi-grid">
     <div class="staff-kpi-card">
         <div class="kpi-text-info">
-            <div class="kpi-number">@Model.TodayAppointments</div>
-            <div class="kpi-title">Today's Appointments</div>
+            <div class="kpi-number">@Model.OwnTodayCount</div>
+            <div class="kpi-title">My Today's Sessions</div>
         </div>
         <div class="kpi-icon-badge icon-appts"><i class="fa-solid fa-calendar-check"></i></div>
     </div>
 
     <div class="staff-kpi-card">
         <div class="kpi-text-info">
-            <div class="kpi-number">PKR @Model.TodaySales.ToString("N0")</div>
-            <div class="kpi-title">Today's Shift Revenue</div>
+            <div class="kpi-number">@Model.CompletedCount</div>
+            <div class="kpi-title">Completed Sessions</div>
+        </div>
+        <div class="kpi-icon-badge icon-services"><i class="fa-solid fa-circle-check"></i></div>
+    </div>
+
+    <div class="staff-kpi-card">
+        <div class="kpi-text-info">
+            <div class="kpi-number">@Model.PendingCount</div>
+            <div class="kpi-title">Pending Sessions</div>
+        </div>
+        <div class="kpi-icon-badge icon-scheduled"><i class="fa-solid fa-hourglass-half"></i></div>
+    </div>
+
+    <div class="staff-kpi-card">
+        <div class="kpi-text-info">
+            <div class="kpi-number">PKR @Model.OwnTodayEarnings.ToString("N0")</div>
+            <div class="kpi-title">My Today's Earnings</div>
         </div>
         <div class="kpi-icon-badge icon-sales"><i class="fa-solid fa-sack-dollar"></i></div>
-    </div>
-
-    <div class="staff-kpi-card">
-        <div class="kpi-text-info">
-            <div class="kpi-number">@Model.TotalAppointments</div>
-            <div class="kpi-title">Total Scheduled</div>
-        </div>
-        <div class="kpi-icon-badge icon-scheduled"><i class="fa-solid fa-clock-history"></i></div>
-    </div>
-
-    <div class="staff-kpi-card">
-        <div class="kpi-text-info">
-            <div class="kpi-number">@Model.TotalServices</div>
-            <div class="kpi-title">Catalog Services</div>
-        </div>
-        <div class="kpi-icon-badge icon-services"><i class="fa-solid fa-spa"></i></div>
     </div>
 </div>
 
