@@ -486,20 +486,8 @@
             </div>
 
             <!-- Welcome Title -->
-            <h1 class="login-title" id="loginTitleText">Welcome Back</h1>
-            <p class="login-subtitle" id="loginSubtitleText">Select your login portal to continue</p>
-
-            <!-- Role Selector Tabs -->
-            <div class="role-switch-container">
-                <button type="button" class="role-tab-btn @(defaultRole == "User" ? "active" : "")" id="tabUser" onclick="setRole('User')">
-                    <i class="fa-solid fa-circle-user"></i>
-                    <span>User Login</span>
-                </button>
-                <button type="button" class="role-tab-btn @(defaultRole == "Staff" ? "active staff-active" : "")" id="tabStaff" onclick="setRole('Staff')">
-                    <i class="fa-solid fa-scissors"></i>
-                    <span>Staff Login</span>
-                </button>
-            </div>
+            <h1 class="login-title">Welcome Back</h1>
+            <p class="login-subtitle">Sign in to your StylOnyx Executive account</p>
 
             <!-- Error Alert -->
             @if (!string.IsNullOrEmpty(ViewBag.Error as string))
@@ -512,8 +500,6 @@
 
             <!-- Login Form -->
             <form method="post" id="loginForm" novalidate>
-                <input type="hidden" name="UserRole" id="userRoleInput" value="@defaultRole" />
-
                 <!-- Username Input -->
                 <div class="form-field-group">
                     <label class="field-label" for="usernameInput">Username</label>
