@@ -57,8 +57,17 @@ namespace SalonManagementSystem.Controllers
 
                 int userId = Convert.ToInt32(reader["UserID"]);
                 string role = reader["UserRole"].ToString() ?? "User";
-                string userName = reader["UserName"].ToString() ?? inputUser;
-                reader.Close();
+                // If role is Staff, fetch exact StaffName if available
+                if (role.Equals("Staff", StringComparison.OrdinalIgnoreCase))
+                {
+                    SqlCommand staffNameCmd = new SqlCommand("SELECT TOP 1 StaffName FROM staff WHERE UsId = @uid", conn);
+                    staffNameCmd.Parameters.AddWithValue("@uid", userId);
+                    object? sName = staffNameCmd.ExecuteScalar();
+                    if (sName != null && sName != DBNull.Value && !string.IsNullOrWhiteSpace(sName.ToString()))
+                    {
+                        userName = sName.ToString()!;
+                    }
+                }
 
                 HttpContext.Session.SetInt32("UserID", userId);
                 HttpContext.Session.SetString("Role", role);
@@ -74,6 +83,7 @@ namespace SalonManagementSystem.Controllers
                 }
                 else if (role.Equals("Staff", StringComparison.OrdinalIgnoreCase))
                 {
+                    // Automatic Staff Portal Redirection
                     return RedirectToAction("Home", "Staff");
                 }
                 else
