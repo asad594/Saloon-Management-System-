@@ -462,7 +462,11 @@ namespace SalonManagementSystem.Controllers
             {
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("SELECT * FROM staff", conn);
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT s.StaffId, s.StaffName, s.StaffPhone, s.StaffEmail, s.StaffSalary, s.StaffSpecialilty, s.StaffStatus, s.JoiningDate,
+                           u.UserName, u.UserPassword
+                    FROM staff s
+                    LEFT JOIN users u ON s.UsId = u.UserID", conn);
                 SqlDataReader r = cmd.ExecuteReader();
 
                 while (r.Read())
@@ -471,7 +475,14 @@ namespace SalonManagementSystem.Controllers
                     {
                         id = r["StaffId"],
                         name = r["StaffName"],
-                        status = r["StaffStatus"]
+                        phone = r["StaffPhone"],
+                        email = r["StaffEmail"],
+                        salary = r["StaffSalary"],
+                        speciality = r["StaffSpecialilty"],
+                        status = r["StaffStatus"],
+                        joiningDate = r["JoiningDate"],
+                        username = r["UserName"] != DBNull.Value ? r["UserName"].ToString() : "N/A",
+                        password = r["UserPassword"] != DBNull.Value ? r["UserPassword"].ToString() : "N/A"
                     });
                 }
             }
