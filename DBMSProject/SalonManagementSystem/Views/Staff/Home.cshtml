@@ -286,6 +286,65 @@
         @@media (max-width: 768px) {
             .timeline-item { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
+
+        /* ── Staff Action Hub Grid ── */
+        .action-hub-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .action-hub-card {
+            background: rgba(19, 25, 36, 0.6);
+            border: 1px solid var(--border-gold);
+            border-radius: 16px;
+            padding: 18px;
+            text-decoration: none;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .action-hub-card:hover {
+            background: rgba(212, 175, 55, 0.12);
+            border-color: var(--gold-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .action-hub-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .action-hub-info h5 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .action-hub-info p {
+            font-size: 0.76rem;
+            color: var(--text-body);
+        }
+
+        @@media (max-width: 992px) {
+            .action-hub-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @@media (max-width: 576px) {
+            .action-hub-grid { grid-template-columns: 1fr; }
+        }
     </style>
 }
 
@@ -308,6 +367,38 @@
             <i class="fa-solid fa-plus"></i> New Booking
         </a>
     </div>
+</div>
+
+<!-- ── Staff Quick Action Hub Grid ── -->
+<div class="action-hub-grid">
+    <a href="/Staff/BookAppointment" class="action-hub-card">
+        <div class="action-hub-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+        <div class="action-hub-info">
+            <h5>Book Appointment</h5>
+            <p>Schedule client slot</p>
+        </div>
+    </a>
+    <a href="/Staff/GenerateBill" class="action-hub-card">
+        <div class="action-hub-icon" style="background:linear-gradient(135deg, #d4af37, #c2410c);"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+        <div class="action-hub-info">
+            <h5>Generate Bill</h5>
+            <p>Create client receipt</p>
+        </div>
+    </a>
+    <a href="/Staff/Attendance" class="action-hub-card">
+        <div class="action-hub-icon" style="background:linear-gradient(135deg, #0d9488, #16a34a);"><i class="fa-solid fa-clock"></i></div>
+        <div class="action-hub-info">
+            <h5>Mark Attendance</h5>
+            <p>Clock in / out shift</p>
+        </div>
+    </a>
+    <a href="/Staff/GenerateBill" class="action-hub-card">
+        <div class="action-hub-icon" style="background:linear-gradient(135deg, #7c3aed, #0d9488);"><i class="fa-solid fa-list"></i></div>
+        <div class="action-hub-info">
+            <h5>Services Price List</h5>
+            <p>View active catalog</p>
+        </div>
+    </a>
 </div>
 
 <!-- ── Staff KPI Metric Cards Grid ── -->
