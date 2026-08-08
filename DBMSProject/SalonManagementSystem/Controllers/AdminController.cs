@@ -392,28 +392,63 @@ namespace SalonManagementSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddStaff(string name, string phone, string email, string address, decimal salary, string speciality)
+        public IActionResult AddStaff(string name, string phone, string email, string address, decimal salary, string speciality, string username, string password)
         {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.Error = "Staff Name, Username, and Password are required.";
+                return View();
+            }
+
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand(
-                @"INSERT INTO staff 
-        (UsId, StaffName, StaffPhone, StaffEmail, StaffAddress, StaffSalary, StaffSpecialilty, JoiningDate, StaffStatus)
-        VALUES ((SELECT TOP 1 UserID FROM users WHERE UserRole = 'Staff'), @n, @p, @e, @a, @s, @sp, GETDATE(), 1)", conn);
+                // 1. Create or retrieve Staff User Login Credentials in 'users' table
+                int staffUserId = 0;
+                SqlCommand checkUserCmd = new SqlCommand("SELECT UserID FROM users WHERE UserName = @uname", conn);
+                checkUserCmd.Parameters.AddWithValue("@uname", username.Trim());
+                object? existingId = checkUserCmd.ExecuteScalar();
 
-                cmd.Parameters.AddWithValue("@n", name);
-                cmd.Parameters.AddWithValue("@p", phone);
-                cmd.Parameters.AddWithValue("@e", email);
-                cmd.Parameters.AddWithValue("@a", address);
+                if (existingId != null && existingId != DBNull.Value)
+                {
+                    staffUserId = Convert.ToInt32(existingId);
+                    // Update password and role if already exists
+                    SqlCommand updateCredCmd = new SqlCommand("UPDATE users SET UserPassword = @pass, UserRole = 'Staff' WHERE UserID = @uid", conn);
+                    updateCredCmd.Parameters.AddWithValue("@pass", password.Trim());
+                    updateCredCmd.Parameters.AddWithValue("@uid", staffUserId);
+                    updateCredCmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    SqlCommand insertCredCmd = new SqlCommand(@"
+                        INSERT INTO users (UserName, UserPassword, UserRole) 
+                        VALUES (@uname, @pass, 'Staff');
+                        SELECT SCOPE_IDENTITY();", conn);
+                    insertCredCmd.Parameters.AddWithValue("@uname", username.Trim());
+                    insertCredCmd.Parameters.AddWithValue("@pass", password.Trim());
+                    staffUserId = Convert.ToInt32(insertCredCmd.ExecuteScalar());
+                }
+
+                // 2. Insert Staff Record into 'staff' table linked to 'UsId'
+                SqlCommand cmd = new SqlCommand(@"
+                    INSERT INTO staff 
+                    (UsId, StaffName, StaffPhone, StaffEmail, StaffAddress, StaffSalary, StaffSpecialilty, JoiningDate, StaffStatus)
+                    VALUES (@usId, @n, @p, @e, @a, @s, @sp, GETDATE(), 1)", conn);
+
+                cmd.Parameters.AddWithValue("@usId", staffUserId);
+                cmd.Parameters.AddWithValue("@n", name.Trim());
+                cmd.Parameters.AddWithValue("@p", string.IsNullOrWhiteSpace(phone) ? "N/A" : phone.Trim());
+                cmd.Parameters.AddWithValue("@e", string.IsNullOrWhiteSpace(email) ? "N/A" : email.Trim());
+                cmd.Parameters.AddWithValue("@a", string.IsNullOrWhiteSpace(address) ? "N/A" : address.Trim());
                 cmd.Parameters.AddWithValue("@s", salary);
-                cmd.Parameters.AddWithValue("@sp", speciality);
+                cmd.Parameters.AddWithValue("@sp", string.IsNullOrWhiteSpace(speciality) ? "Hair & Beauty Specialist" : speciality.Trim());
 
                 cmd.ExecuteNonQuery();
             }
 
-            return RedirectToAction("Home");
+            TempData["SuccessMessage"] = $"Staff '{name}' created successfully! Credentials ({username}) activated for Staff Login.";
+            return RedirectToAction("UpdateStaff");
         }
 
 
