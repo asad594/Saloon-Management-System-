@@ -13,14 +13,13 @@ namespace SalonManagementSystem.Controllers
             _connection = config.GetConnectionString("SalonDB") ?? string.Empty;
         }
 
+        /// <summary>
+        /// Unified Login Portal Index View. Auto-detects Admin, Staff, or User credentials on submission.
+        /// </summary>
         public IActionResult Index(string? role = null)
         {
             EnsureDatabaseSeeded();
             var model = new Login();
-            if (!string.IsNullOrWhiteSpace(role))
-            {
-                model.UserRole = role;
-            }
             return View(model);
         }
 
