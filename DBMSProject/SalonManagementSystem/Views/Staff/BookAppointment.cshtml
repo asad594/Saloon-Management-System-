@@ -316,11 +316,19 @@
             <span class="addon-chip-item" onclick="this.classList.toggle('active')">+ VIP Botanical Oil</span>
         </div>
 
-        <div class="pricing-box">
-            <span style="font-weight:700; color:#e2e8f0; font-size:1.02rem;">Estimated Total Price:</span>
-            <span style="font-family:var(--font-display); font-size:1.6rem; font-weight:800; color:var(--gold-primary);">
-                PKR <span id="total">0</span>
-            </span>
+        <div class="pricing-box" style="flex-direction:column; align-items:stretch; gap:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-weight:700; color:#e2e8f0; font-size:1.02rem;">Estimated Total Price:</span>
+                <span style="font-family:var(--font-display); font-size:1.75rem; font-weight:800; color:var(--gold-primary);">
+                    PKR <span id="total">0</span>
+                </span>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:4px;">
+                <input type="text" id="voucherCode" placeholder="Enter VIP Voucher (e.g. VIP15)" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid rgba(212,175,55,0.25); border-radius:8px; padding:8px 12px; color:#fff; font-size:0.82rem;" />
+                <button type="button" onclick="applyVoucher()" style="background:var(--teal-primary); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-weight:700; font-size:0.8rem; cursor:pointer;">Apply</button>
+            </div>
+            <div id="voucherMsg" style="font-size:0.78rem; color:#2dd4bf; display:none;"><i class="fa-solid fa-circle-check"></i> VIP 15% Voucher Applied!</div>
         </div>
 
         <button type="submit" class="btn-submit-booking">
@@ -331,13 +339,24 @@
 
 @section Scripts {
     <script>
+        let basePrice = 0;
         document.getElementById("serviceSelect").addEventListener("change", function () {
             var serviceId = this.value;
             fetch('/Staff/GetServicePrice?serviceId=' + serviceId)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("total").innerText = Number(data).toLocaleString();
+                    basePrice = Number(data);
+                    document.getElementById("total").innerText = basePrice.toLocaleString();
                 });
         });
+
+        function applyVoucher() {
+            const code = document.getElementById("voucherCode").value.trim();
+            if (code.toUpperCase() === 'VIP15') {
+                const discounted = Math.round(basePrice * 0.85);
+                document.getElementById("total").innerText = discounted.toLocaleString();
+                document.getElementById("voucherMsg").style.display = 'block';
+            }
+        }
     </script>
 }
