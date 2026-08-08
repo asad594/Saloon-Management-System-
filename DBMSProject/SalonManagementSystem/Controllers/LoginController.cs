@@ -86,11 +86,11 @@ namespace SalonManagementSystem.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register(string? role = "User")
+        public IActionResult Register()
         {
             var model = new RegisterViewModel
             {
-                Role = string.Equals(role, "Staff", StringComparison.OrdinalIgnoreCase) ? "Staff" : "User"
+                Role = "User"
             };
             return View(model);
         }
@@ -106,7 +106,8 @@ namespace SalonManagementSystem.Controllers
 
             EnsureDatabaseSeeded();
 
-            string assignedRole = string.Equals(m.Role, "Staff", StringComparison.OrdinalIgnoreCase) ? "Staff" : "User";
+            // Client registration is strictly scoped to User role
+            string assignedRole = "User";
 
             using (SqlConnection conn = new SqlConnection(_connection))
             {
