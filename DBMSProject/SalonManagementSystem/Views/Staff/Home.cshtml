@@ -1,73 +1,203 @@
-﻿@model SalonManagementSystem.Models.DashboardModel
+@model SalonManagementSystem.Models.DashboardModel
 @{
     Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    var userName = Context.Session.GetString("UserName") ?? "Specialist";
 }
 
-<h2>Dashboard</h2>
-<h1>TEST PAGE</h1>
-<div class="cards">
+@section Styles {
+    <style>
+        /* ── Staff Hero Welcome Banner ── */
+        .staff-hero-banner {
+            background: linear-gradient(135deg, rgba(19, 25, 36, 0.95) 0%, rgba(11, 14, 20, 0.98) 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    <div class="card blue">
-        <h3>@Model.TodayAppointments</h3>
-        <p>Today's Appointments</p>
+        .staff-hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -5%;
+            width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .staff-hero-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -50%; left: -10%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-profile-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 2;
+        }
+
+        .hero-avatar-badge {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 800;
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+        }
+
+        .hero-text-content h1 {
+            font-family: var(--font-display);
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-text-content p {
+            font-size: 0.9rem;
+            color: var(--text-body);
+        }
+
+        .hero-clock-widget {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 2;
+        }
+
+        .clock-time {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+        }
+
+        .clock-date {
+            font-size: 0.78rem;
+            color: var(--teal-light);
+        }
+
+        .btn-action-hero {
+            background: linear-gradient(90deg, var(--teal-primary), var(--gold-primary));
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .btn-action-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+            color: #ffffff;
+        }
+
+        @@media (max-width: 992px) {
+            .staff-hero-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 24px; }
+            .hero-clock-widget { width: 100%; justify-content: space-between; }
+        }
+    </style>
+}
+
+<!-- ── Staff Hero Welcome Banner ── -->
+<div class="staff-hero-banner">
+    <div class="hero-profile-group">
+        <div class="hero-avatar-badge">@userName.Substring(0, 1)</div>
+        <div class="hero-text-content">
+            <h1>Welcome Back, @userName <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold-primary); font-size:1.4rem;"></i></h1>
+            <p>StylOnyx Executive Studio &bull; Master Specialist Workstation</p>
+        </div>
     </div>
 
-    <div class="card pink">
-        <h3>@Model.TotalAppointments</h3>
-        <p>Total Scheduled</p>
+    <div class="hero-clock-widget">
+        <div>
+            <div class="clock-time" id="liveClockTime">12:00:00 PM</div>
+            <div class="clock-date" id="liveClockDate">Saturday, August 8, 2026</div>
+        </div>
+        <a href="/Staff/BookAppointment" class="btn-action-hero">
+            <i class="fa-solid fa-plus"></i> New Booking
+        </a>
     </div>
-
-    <div class="card orange">
-        <h3>@Model.TodaySales</h3>
-        <p>Today's Sales</p>
-    </div>
-
-    <div class="card green">
-        <h3>@Model.StaffAvailable</h3>
-        <p>Staff Available</p>
-    </div>
-
-    <div class="card purple">
-        <h3>@Model.StaffUnavailable</h3>
-        <p>Staff Not Available</p>
-    </div>
-
-    <div class="card teal">
-        <h3>@Model.TotalServices</h3>
-        <p>Total Services</p>
-    </div>
-
-
-    
 </div>
+
+<!-- Placeholder KPI Cards (will be redesigned in Commit 3) -->
+<div class="cards">
+    <div class="card blue"><h3>@Model.TodayAppointments</h3><p>Today's Appointments</p></div>
+    <div class="card pink"><h3>@Model.TotalAppointments</h3><p>Total Scheduled</p></div>
+    <div class="card orange"><h3>@Model.TodaySales</h3><p>Today's Sales</p></div>
+    <div class="card green"><h3>@Model.StaffAvailable</h3><p>Staff Available</p></div>
+    <div class="card purple"><h3>@Model.StaffUnavailable</h3><p>Staff Not Available</p></div>
+    <div class="card teal"><h3>@Model.TotalServices</h3><p>Total Services</p></div>
+</div>
+
 <div>
-    <h3 style="margin-top:40px;">Today's Appointments Chart</h3>
+    <h3 style="margin-top:40px; color:#fff;">Today's Appointments Chart</h3>
     <canvas id="appointmentChart" height="100"></canvas>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function updateLiveClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            const clockTimeEl = document.getElementById('liveClockTime');
+            const clockDateEl = document.getElementById('liveClockDate');
+            if (clockTimeEl) clockTimeEl.innerText = timeStr;
+            if (clockDateEl) clockDateEl.innerText = dateStr;
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
 
-<script>
-    fetch('/Staff/GetTodayAppointmentsChart')
-    .then(res => res.json())
-    .then(data => {
-
-        const labels = data.map(x => x.time);
-        const values = data.map(x => x.total);
-
-        const ctx = document.getElementById('appointmentChart').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Appointments Today',
-                    data: values,
-                    borderWidth: 1
-                }]
-            }
+        fetch('/Staff/GetTodayAppointmentsChart')
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(x => x.time);
+            const values = data.map(x => x.total);
+            const ctx = document.getElementById('appointmentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Appointments Today',
+                        data: values,
+                        backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                        borderColor: '#2dd4bf',
+                        borderWidth: 1
+                    }]
+                }
+            });
         });
-
-    });
-</script>
+    </script>
+}
