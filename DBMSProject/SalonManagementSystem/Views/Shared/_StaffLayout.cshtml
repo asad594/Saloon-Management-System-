@@ -1,60 +1,308 @@
 @{
     Layout = null;
     var currentPage = ViewContext.RouteData.Values["action"]?.ToString();
+    var userName = Context.Session.GetString("UserName") ?? "Staff Member";
 }
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Staff Dashboard - StylOnyx</title>
+    <title>StylOnyx Staff Portal | Executive Salon & Spa Studio</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
     <link rel="stylesheet" href="~/css/site.css" />
+    
     <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: linear-gradient(135deg, #131924, #0b0e14); min-height: 100vh; color: #ffffff; }
-        .sidebar { 
-            width: 250px; 
-            height: 100vh; 
-            background: linear-gradient(180deg, #131924, #0b0e14); 
-            border-right: 1px solid rgba(212, 175, 55, 0.25);
-            color: white; 
-            padding: 20px 14px; 
-            position: fixed; 
+        :root {
+            --bg-deep-dark: #0b0e14;
+            --bg-card-dark: #131924;
+            --gold-primary: #d4af37;
+            --gold-accent: #f2ca50;
+            --gold-light: #fef08a;
+            --teal-primary: #0d9488;
+            --teal-glow: #14b8a6;
+            --teal-light: #2dd4bf;
+            --text-heading: #ffffff;
+            --text-body: #94a3b8;
+            --text-muted: #64748b;
+            --border-gold: rgba(212, 175, 55, 0.25);
+            --font-display: 'Playfair Display', serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-deep-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.1) 0px, transparent 50%);
+            font-family: var(--font-sans);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* ── Sidebar Container ── */
+        .sidebar {
+            width: 270px;
+            height: 100vh;
+            position: fixed;
             top: 0; bottom: 0; left: 0;
             z-index: 100;
-            overflow-y: auto;
+            background: linear-gradient(180deg, #131924 0%, #0b0e14 100%);
+            border-right: 1px solid var(--border-gold);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand .brand-logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.25rem;
+            box-shadow: 0 0 18px rgba(13, 148, 136, 0.4);
+        }
+
+        .sidebar-brand .brand-text {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .sidebar-brand .brand-text span {
+            color: var(--gold-primary);
+        }
+
+        .nav-menu {
+            flex: 1;
+            overflow-y: auto !important;
+            min-height: 0;
+            padding: 20px 14px;
             scrollbar-width: thin;
-            scrollbar-color: #d4af37 rgba(15, 23, 42, 0.6);
-            box-sizing: border-box;
+            scrollbar-color: var(--gold-primary) rgba(15, 23, 42, 0.6);
+        }
+
+        .nav-menu::-webkit-scrollbar { width: 5px; }
+        .nav-menu::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        .nav-menu::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gold-primary), var(--teal-primary)); border-radius: 10px; }
+
+        .nav-section-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--gold-primary);
+            margin: 16px 12px 8px 12px;
+        }
+
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 12px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item-link i {
+            font-size: 1.05rem;
+            color: var(--teal-light);
             transition: transform 0.3s ease;
         }
-        .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        .sidebar::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #d4af37, #0d9488); border-radius: 10px; }
-        .sidebar h2 { text-align: center; margin-bottom: 24px; color: #d4af37; font-family: 'Playfair Display', serif; }
-        .sidebar a { display: flex; align-items: center; gap: 10px; padding: 12px 16px; margin: 6px 0; border-radius: 10px; text-decoration: none; color: #e2e8f0; font-weight: 600; transition: 0.3s; }
-        .sidebar a:hover, .sidebar a.active { background: rgba(212, 175, 55, 0.18); color: #d4af37 !important; border: 1px solid rgba(212, 175, 55, 0.3); }
-        
-        .mobile-header {
-            display: none;
+
+        .nav-item-link:hover, .nav-item-link.active {
+            background: rgba(212, 175, 55, 0.14);
+            color: var(--gold-accent) !important;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+        }
+
+        .nav-item-link:hover i, .nav-item-link.active i {
+            color: var(--gold-primary);
+            transform: scale(1.15);
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+            background: rgba(11, 14, 20, 0.6);
+        }
+
+        .staff-profile-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .staff-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .staff-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .staff-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .staff-role-tag {
+            font-size: 0.72rem;
+            color: var(--teal-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        /* ── Main Layout Wrapper ── */
+        .main-wrapper {
+            margin-left: 270px;
+            width: calc(100% - 270px);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Executive Header Bar */
+        .top-executive-bar {
+            height: 70px;
+            background: rgba(19, 25, 36, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-gold);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 90;
-            background: #131924;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
-            padding: 12px 16px;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
         }
 
+        .header-title-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title-badge h2 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .shift-status-badge {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-header-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-gold);
+            color: #ffffff;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-header-action:hover {
+            background: var(--gold-primary);
+            color: #0b0e14;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        /* Mobile Drawer & Overlay */
         .mobile-toggle-btn {
+            display: none;
             background: transparent;
-            border: 1px solid #d4af37;
-            color: #d4af37;
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             font-size: 1.1rem;
             cursor: pointer;
         }
@@ -63,60 +311,118 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
             z-index: 95;
         }
         .sidebar-overlay.active { display: block; }
 
-        .main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); box-sizing: border-box; }
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .card { padding: 25px; border-radius: 15px; color: white; font-size: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
-        .card h3 { margin: 0; font-size: 28px; }
-        .card p { margin: 5px 0 0; }
-        .blue { background: linear-gradient(135deg, #1e293b, #0f172a); } 
-        .pink { background: linear-gradient(135deg, #be123c, #881337); } 
-        .orange { background: linear-gradient(135deg, #c2410c, #7c2d12); }
-        .green { background: linear-gradient(135deg, #15803d, #14532d); } 
-        .purple { background: linear-gradient(135deg, #6b21a8, #581c87); } 
-        .teal { background: linear-gradient(135deg, #0f766e, #115e59); }
-        .form-control { display: block; width: 100%; box-sizing: border-box; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; }
-        button, .btn { background: linear-gradient(90deg, #0d9488, #d4af37); color: #fff; border: none; padding: 12px 20px; border-radius: 8px; text-decoration: none; cursor: pointer; font-weight: 700; }
-
         @@media (max-width: 992px) {
-            body { flex-direction: column; }
             .sidebar { transform: translateX(-100%); }
             .sidebar.mobile-open { transform: translateX(0); }
-            .mobile-header { display: flex; }
-            .main { margin-left: 0; width: 100%; padding: 16px; }
+            .main-wrapper { margin-left: 0; width: 100%; }
+            .top-executive-bar { padding: 0 16px; }
+            .mobile-toggle-btn { display: flex; align-items: center; justify-content: center; }
+            .main-content { padding: 18px 14px; }
         }
     </style>
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    <div class="mobile-header">
-        <button class="mobile-toggle-btn" id="staffMobileBtn"><i class="fa-solid fa-bars"></i></button>
-        <span style="font-weight:700; color:#d4af37;">StylOnyx Staff</span>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ── Sidebar Drawer ── -->
+    <aside class="sidebar" id="staffSidebar">
+        <div>
+            <div class="sidebar-brand">
+                <div class="brand-logo-icon"><i class="fa-solid fa-scissors"></i></div>
+                <div class="brand-text">Styl<span>Onyx</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-label">Staff Portal</div>
+
+                <a href="/Staff/Home" class="nav-item-link @(currentPage == "Home" ? "active" : "")">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/Staff/BookAppointment" class="nav-item-link @(currentPage == "BookAppointment" ? "active" : "")">
+                    <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+                </a>
+                <a href="/Staff/GenerateBill" class="nav-item-link @(currentPage == "GenerateBill" ? "active" : "")">
+                    <i class="fa-solid fa-receipt"></i> Generate Bill
+                </a>
+                <a href="/Staff/Attendance" class="nav-item-link @(currentPage == "Attendance" ? "active" : "")">
+                    <i class="fa-solid fa-user-clock"></i> Attendance
+                </a>
+
+                <div class="nav-section-label" style="margin-top:24px;">Account</div>
+                <a href="/Home/Index" class="nav-item-link">
+                    <i class="fa-solid fa-globe"></i> Main Landing Page
+                </a>
+                <a href="/Login/Logout" class="nav-item-link" style="color: #fca5a5;">
+                    <i class="fa-solid fa-right-from-bracket" style="color: #f87171;"></i> Logout
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="staff-profile-pill">
+                <div class="staff-avatar">@userName.Substring(0, 1)</div>
+                <div class="staff-info">
+                    <div class="staff-name">@userName</div>
+                    <div class="staff-role-tag"><span class="status-dot"></span> Active Specialist</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── Main Executive Content Area ── -->
+    <div class="main-wrapper">
+        <header class="top-executive-bar">
+            <div class="header-title-badge">
+                <button class="mobile-toggle-btn" id="mobileMenuBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2>StylOnyx Staff Hub</h2>
+            </div>
+
+            <div class="header-actions">
+                <span class="shift-status-badge">
+                    <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> On Shift
+                </span>
+                <a href="/Staff/BookAppointment" class="btn-header-action" title="Quick Appointment">
+                    <i class="fa-solid fa-plus"></i>
+                </a>
+                <a href="/Login/Logout" class="btn-header-action" title="Logout">
+                    <i class="fa-solid fa-power-off"></i>
+                </a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            @RenderBody()
+        </main>
     </div>
-    <div class="sidebar-overlay" id="staffOverlay"></div>
-    <div class="sidebar" id="staffSidebar">
-        <h2>StylOnyx Staff</h2>
-        <a href="/Staff/Home" class="@(currentPage == "Home" ? "active" : "")"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="/Staff/BookAppointment" class="@(currentPage == "BookAppointment" ? "active" : "")"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>
-        <a href="/Staff/GenerateBill" class="@(currentPage == "GenerateBill" ? "active" : "")"><i class="fa-solid fa-receipt"></i> Generate Bill</a>
-        <a href="/Staff/Attendance" class="@(currentPage == "Attendance" ? "active" : "")"><i class="fa-solid fa-clock"></i> Attendance</a>
-        <a href="/Login/Logout" style="margin-top:20px; color:#fca5a5;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-    </div>
-    <main class="main">
-        @RenderBody()
-    </main>
+
+    <!-- SweetAlert2 & JS Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const btn = document.getElementById('staffMobileBtn');
-        const sidebar = document.getElementById('staffSidebar');
-        const overlay = document.getElementById('staffOverlay');
-        if (btn && sidebar && overlay) {
-            btn.onclick = () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('active'); };
-            overlay.onclick = () => { sidebar.classList.remove('mobile-open'); overlay.classList.remove('active'); };
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const staffSidebar = document.getElementById('staffSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (mobileMenuBtn && staffSidebar && sidebarOverlay) {
+            mobileMenuBtn.addEventListener('click', () => {
+                staffSidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                staffSidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
+            });
         }
+
         @if (TempData["SuccessMessage"] != null)
         {
             <text>
@@ -127,10 +433,12 @@
                 timer: 3000,
                 showConfirmButton: false,
                 background: '#131924',
-                color: '#fff'
+                color: '#ffffff',
+                confirmButtonColor: '#d4af37'
             });
             </text>
         }
     </script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
