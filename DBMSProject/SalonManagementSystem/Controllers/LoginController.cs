@@ -57,6 +57,9 @@ namespace SalonManagementSystem.Controllers
 
                 int userId = Convert.ToInt32(reader["UserID"]);
                 string role = reader["UserRole"].ToString() ?? "User";
+                string userName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString()! : inputUser;
+                reader.Close();
+
                 // If role is Staff, fetch exact StaffName if available
                 if (role.Equals("Staff", StringComparison.OrdinalIgnoreCase))
                 {
