@@ -30,15 +30,6 @@
             pointer-events: none;
         }
 
-        .staff-hero-banner::after {
-            content: '';
-            position: absolute;
-            bottom: -50%; left: -10%;
-            width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
         .hero-profile-group {
             display: flex;
             align-items: center;
@@ -47,8 +38,7 @@
         }
 
         .hero-avatar-badge {
-            width: 64px;
-            height: 64px;
+            width: 64px; height: 64px;
             border-radius: 20px;
             background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
             display: flex;
@@ -168,8 +158,7 @@
         }
 
         .kpi-icon-badge {
-            width: 52px;
-            height: 52px;
+            width: 52px; height: 52px;
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -182,42 +171,6 @@
         .icon-sales { background: rgba(212, 175, 55, 0.15); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3); }
         .icon-scheduled { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
         .icon-services { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
-
-        @@media (max-width: 992px) {
-            .staff-kpi-grid { grid-template-columns: repeat(2, 1fr        /* ── Chart Panel Card ── */
-        .staff-chart-card {
-            background: rgba(19, 25, 36, 0.75);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--border-gold);
-            border-radius: 20px;
-            padding: 28px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            margin-bottom: 32px;
-        }
-
-        .chart-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .chart-card-title {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .chart-card-subtitle {
-            font-size: 0.82rem;
-            color: var(--text-body);
-        }
 
         /* ── Shift Schedule Timeline ── */
         .timeline-card {
@@ -262,16 +215,8 @@
             gap: 6px;
         }
 
-        .client-info h4 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .client-info p {
-            font-size: 0.8rem;
-            color: var(--text-body);
-        }
+        .client-info h4 { font-size: 0.95rem; font-weight: 700; color: #ffffff; }
+        .client-info p { font-size: 0.8rem; color: var(--text-body); }
 
         .service-tag-pill {
             background: rgba(20, 184, 166, 0.15);
@@ -281,10 +226,6 @@
             border-radius: 50px;
             font-size: 0.75rem;
             font-weight: 700;
-        }
-
-        @@media (max-width: 768px) {
-            .timeline-item { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
 
         /* ── Staff Action Hub Grid ── */
@@ -316,8 +257,7 @@
         }
 
         .action-hub-icon {
-            width: 44px;
-            height: 44px;
+            width: 44px; height: 44px;
             border-radius: 12px;
             background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
             display: flex;
@@ -328,22 +268,50 @@
             flex-shrink: 0;
         }
 
-        .action-hub-info h5 {
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 2px;
+        .action-hub-info h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
+        .action-hub-info p { font-size: 0.76rem; color: var(--text-body); }
+
+        /* ── Chart Panel Card ── */
+        .staff-chart-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            margin-bottom: 32px;
         }
 
-        .action-hub-info p {
-            font-size: 0.76rem;
-            color: var(--text-body);
+        .chart-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
+
+        .chart-card-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card-subtitle { font-size: 0.82rem; color: var(--text-body); }
 
         @@media (max-width: 992px) {
-            .action-hub-grid { grid-template-columns: repeat(2, 1fr); }
+            .staff-hero-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 24px; }
+            .hero-clock-widget { width: 100%; justify-content: space-between; }
+            .staff-kpi-grid, .action-hub-grid { grid-template-columns: repeat(2, 1fr); }
         }
+
         @@media (max-width: 576px) {
-            .action-hub-grid { grid-template-columns: 1fr; }
+            .staff-kpi-grid, .action-hub-grid { grid-template-columns: 1fr; }
+            .timeline-item { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
     </style>
 }
