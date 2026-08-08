@@ -15,6 +15,59 @@ namespace SalonManagementSystem.Controllers
             _connection = config.GetConnectionString("SalonDB");
         }
 
+        private void EnsureStaffPortalTables()
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand cmd1 = new SqlCommand(@"
+                    IF OBJECT_ID('StaffNotes', 'U') IS NULL
+                    BEGIN
+                        CREATE TABLE StaffNotes (
+                            NoteId INT IDENTITY(1,1) PRIMARY KEY,
+                            ClientId INT NOT NULL,
+                            StaffId INT NOT NULL,
+                            Note NVARCHAR(MAX) NOT NULL,
+                            CreatedDate DATETIME DEFAULT GETDATE()
+                        );
+                    END", conn);
+                cmd1.ExecuteNonQuery();
+
+                SqlCommand cmd2 = new SqlCommand(@"
+                    IF OBJECT_ID('StaffLeaveRequests', 'U') IS NULL
+                    BEGIN
+                        CREATE TABLE StaffLeaveRequests (
+                            LeaveId INT IDENTITY(1,1) PRIMARY KEY,
+                            StaffId INT NOT NULL,
+                            LeaveDate DATE NOT NULL,
+                            Reason NVARCHAR(500) NOT NULL,
+                            Status NVARCHAR(50) DEFAULT 'Pending',
+                            RequestedOn DATETIME DEFAULT GETDATE()
+                        );
+                    END", conn);
+                cmd2.ExecuteNonQuery();
+            }
+        }
+
+        private int GetLoggedInStaffId(SqlConnection conn)
+        {
+            int userId = HttpContext.Session.GetInt32("UserID") ?? 0;
+            if (userId <= 0) return 0;
+
+            SqlCommand cmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE UsId = @uid", conn);
+            cmd.Parameters.AddWithValue("@uid", userId);
+            object? res = cmd.ExecuteScalar();
+            if (res != null && res != DBNull.Value)
+            {
+                return Convert.ToInt32(res);
+            }
+
+            SqlCommand fallbackCmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE StaffStatus = 1", conn);
+            object? fb = fallbackCmd.ExecuteScalar();
+            return fb != null && fb != DBNull.Value ? Convert.ToInt32(fb) : 1;
+        }
+
 
 
         public IActionResult Home()
