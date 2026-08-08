@@ -184,11 +184,39 @@
         .icon-services { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
 
         @@media (max-width: 992px) {
-            .staff-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .staff-kpi-grid { grid-template-columns: repeat(2, 1fr        /* ── Chart Panel Card ── */
+        .staff-chart-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            margin-bottom: 32px;
         }
 
-        @@media (max-width: 576px) {
-            .staff-kpi-grid { grid-template-columns: 1fr; }
+        .chart-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .chart-card-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-body);
         }
     </style>
 }
@@ -249,9 +277,17 @@
     </div>
 </div>
 
-<div>
-    <h3 style="margin-top:40px; color:#fff;">Today's Appointments Chart</h3>
-    <canvas id="appointmentChart" height="100"></canvas>
+<!-- ── Appointments Analytics Chart Container ── -->
+<div class="staff-chart-card">
+    <div class="chart-card-header">
+        <div>
+            <div class="chart-card-title"><i class="fa-solid fa-chart-line" style="color:var(--gold-primary);"></i> Shift Appointment Analytics</div>
+            <div class="chart-card-subtitle">Real-time hourly breakdown of booked services today</div>
+        </div>
+    </div>
+    <div style="position: relative; height: 280px; width: 100%;">
+        <canvas id="appointmentChart"></canvas>
+    </div>
 </div>
 
 @section Scripts {
@@ -275,6 +311,11 @@
             const labels = data.map(x => x.time);
             const values = data.map(x => x.total);
             const ctx = document.getElementById('appointmentChart').getContext('2d');
+
+            const tealGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            tealGradient.addColorStop(0, 'rgba(20, 184, 166, 0.85)');
+            tealGradient.addColorStop(1, 'rgba(212, 175, 55, 0.2)');
+
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -282,10 +323,28 @@
                     datasets: [{
                         label: 'Appointments Today',
                         data: values,
-                        backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                        backgroundColor: tealGradient,
                         borderColor: '#2dd4bf',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderRadius: 8
                     }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', stepSize: 1 }
+                        }
+                    }
                 }
             });
         });
