@@ -10,6 +10,9 @@ namespace SalonManagementSystem.Controllers
     {
         private readonly string _connection;
 
+        /// <summary>
+        /// Staff Controller providing personal dashboard, appointment tracking, earnings breakdown, client history with notes, and leave requests.
+        /// </summary>
         public StaffController(IConfiguration config)
         {
             _connection = config.GetConnectionString("SalonDB");
