@@ -4,59 +4,196 @@
     Layout = "~/Views/Shared/_StaffLayout.cshtml";
 }
 
+@section Styles {
+    <style>
+        .invoice-card-container {
+            max-width: 720px;
+            margin: 20px auto;
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .invoice-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+        }
+
+        .invoice-brand {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .invoice-brand span { color: var(--gold-primary); }
+
+        .invoice-status-pill {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .invoice-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .detail-item strong {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gold-primary);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .detail-item span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .action-btns-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-action-outline {
+            flex: 1;
+            padding: 13px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-gold);
+            border-radius: 50px;
+            color: #ffffff;
+            font-weight: 700;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action-outline:hover {
+            background: var(--gold-primary);
+            color: #0b0e14;
+        }
+
+        @@media (max-width: 600px) {
+            .invoice-details-grid { grid-template-columns: 1fr; }
+            .action-btns-row { flex-direction: column; }
+        }
+    </style>
+}
+
 @if (Model is BillViewModel bill)
 {
-    <div style="max-width:650px; margin:20px auto; background:linear-gradient(145deg, #131924 0%, #0e1219 100%); padding:32px; border-radius:20px; border:1px solid rgba(212,175,55,0.3); box-shadow:0 12px 36px rgba(0,0,0,0.4); box-sizing:border-box;">
-        <h2 style="font-family:'Playfair Display', serif; color:#ffffff; font-size:1.7rem; margin-bottom:6px; text-align:center;">
-            <i class="fa-solid fa-circle-check" style="color:#2dd4bf; margin-right:8px;"></i> Bill Generated Successfully
-        </h2>
-        <p style="text-align:center; color:#94a3b8; font-size:0.88rem; margin-bottom:24px;">StylOnyx Executive Salon & Spa Receipt</p>
-        <hr style="border:0; border-top:1px solid rgba(212,175,55,0.2); margin-bottom:20px;" />
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; font-size:0.95rem;">
-            <div><strong style="color:#d4af37;">Client Name:</strong> <span style="color:#fff;">@bill.ClientName</span></div>
-            <div><strong style="color:#d4af37;">Phone Number:</strong> <span style="color:#fff;">@bill.Phone</span></div>
-            <div><strong style="color:#d4af37;">Assigned Staff:</strong> <span style="color:#fff;">@bill.StaffName</span></div>
-            <div><strong style="color:#d4af37;">Service booked:</strong> <span style="color:#2dd4bf; font-weight:700;">@bill.ServiceName</span></div>
-            <div><strong style="color:#d4af37;">Date:</strong> <span style="color:#fff;">@bill.AppDate.ToString("yyyy-MM-dd")</span></div>
-            <div><strong style="color:#d4af37;">Time Slot:</strong> <span style="color:#fff;">@bill.AppTime</span></div>
+    <div class="invoice-card-container">
+        <div class="invoice-header">
+            <div>
+                <div class="invoice-brand">Styl<span>Onyx</span> Executive Salon</div>
+                <p style="color:var(--text-body); font-size:0.82rem;">Official Client Digital Receipt & Invoice</p>
+            </div>
+            <span class="invoice-status-pill"><i class="fa-solid fa-circle-check"></i> Paid & Finalized</span>
         </div>
 
-        <div style="background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.3); padding:16px; border-radius:14px; text-align:center; margin-bottom:24px;">
-            <span style="font-size:0.9rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;">Total Bill Amount</span>
-            <span style="font-family:'Playfair Display', serif; font-size:1.8rem; font-weight:800; color:#d4af37;">PKR @bill.Total.ToString("N0")</span>
+        <div class="invoice-details-grid">
+            <div class="detail-item">
+                <strong>Client Full Name</strong>
+                <span>@bill.ClientName</span>
+            </div>
+            <div class="detail-item">
+                <strong>Contact Phone</strong>
+                <span>@bill.Phone</span>
+            </div>
+            <div class="detail-item">
+                <strong>Assigned Staff</strong>
+                <span>@bill.StaffName</span>
+            </div>
+            <div class="detail-item">
+                <strong>Treatment Service</strong>
+                <span style="color:var(--teal-light);">@bill.ServiceName</span>
+            </div>
+            <div class="detail-item">
+                <strong>Appointment Date</strong>
+                <span>@bill.AppDate.ToString("MMMM dd, yyyy")</span>
+            </div>
+            <div class="detail-item">
+                <strong>Time Slot</strong>
+                <span>@bill.AppTime</span>
+            </div>
         </div>
 
-        <a class="btn" href="/Staff/BookAppointment" style="display:block; text-align:center; padding:14px; background:linear-gradient(90deg, #0d9488, #d4af37); border-radius:50px; text-decoration:none; font-weight:800; font-size:1.02rem;">
-            <i class="fa-solid fa-calendar-plus"></i> Book Another Appointment
-        </a>
+        <div style="background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.3); padding:20px; border-radius:16px; text-align:center; margin-bottom:24px;">
+            <span style="font-size:0.82rem; color:var(--text-body); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;">Grand Total Paid Amount</span>
+            <span style="font-family:var(--font-display); font-size:2rem; font-weight:800; color:var(--gold-primary);">PKR @bill.Total.ToString("N0")</span>
+        </div>
+
+        <div class="action-btns-row">
+            <a href="/Staff/BookAppointment" class="btn-submit-booking" style="flex:1; text-decoration:none;">
+                <i class="fa-solid fa-plus-circle"></i> Book Another Appointment
+            </a>
+            <button type="button" onclick="window.print()" class="btn-action-outline">
+                <i class="fa-solid fa-print"></i> Print Receipt
+            </button>
+        </div>
     </div>
 }
 else if (Model is List<SalonService> services)
 {
-    <div style="max-width:800px; margin:20px auto; background:linear-gradient(145deg, #131924 0%, #0e1219 100%); padding:28px; border-radius:20px; border:1px solid rgba(212,175,55,0.25); box-sizing:border-box; overflow-x:auto;">
-        <h2 style="font-family:'Playfair Display', serif; color:#fff; font-size:1.6rem; margin-bottom:16px;">Available Salon Services</h2>
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr>
-                    <th style="text-align:left; padding:12px; border-bottom:1px solid rgba(212,175,55,0.2); color:#d4af37;">Service Name</th>
-                    <th style="text-align:right; padding:12px; border-bottom:1px solid rgba(212,175,55,0.2); color:#d4af37;">Price (PKR)</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var service in services)
-            {
-                <tr>
-                    <td style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.06); font-weight:600; color:#fff;">@service.ServiceName</td>
-                    <td style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.06); text-align:right; color:#2dd4bf; font-weight:700;">PKR @service.ServicePrice.ToString("N0")</td>
-                </tr>
-            }
-            </tbody>
-        </table>
-        <p style="margin-top:20px; color:#94a3b8; font-size:0.88rem;">To generate a bill, use <strong>Book Appointment</strong> and select a service.</p>
+    <div class="invoice-card-container" style="max-width:850px;">
+        <div class="invoice-header">
+            <div>
+                <div class="invoice-brand">Styl<span>Onyx</span> Service Catalog</div>
+                <p style="color:var(--text-body); font-size:0.82rem;">Official Treatment Price List</p>
+            </div>
+            <a href="/Staff/BookAppointment" class="btn-action-hero" style="padding:8px 18px; font-size:0.8rem;">
+                <i class="fa-solid fa-plus"></i> Book Now
+            </a>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left; padding:12px 16px; border-bottom:1px solid rgba(212,175,55,0.25); color:var(--gold-primary); font-size:0.8rem; text-transform:uppercase;">Treatment Service</th>
+                        <th style="text-align:right; padding:12px 16px; border-bottom:1px solid rgba(212,175,55,0.25); color:var(--gold-primary); font-size:0.8rem; text-transform:uppercase;">Standard Price (PKR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var service in services)
+                {
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:14px 16px; font-weight:600; color:#ffffff;">@service.ServiceName</td>
+                        <td style="padding:14px 16px; text-align:right; color:var(--teal-light); font-weight:700;">PKR @service.ServicePrice.ToString("N0")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
     </div>
-}
-else
-{
-    <div style="background:#131924; padding:30px; border-radius:15px; border:1px solid rgba(212,175,55,0.2); text-align:center; color:#94a3b8;">No bill data available.</div>
 }
