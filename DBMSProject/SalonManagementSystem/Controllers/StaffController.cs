@@ -167,6 +167,72 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("MyAppointments");
         }
 
+        public IActionResult MyEarnings()
+        {
+            EnsureStaffPortalTables();
+            var model = new StaffEarningsViewModel();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int staffId = GetLoggedInStaffId(conn);
+
+                // Today's Earnings
+                SqlCommand cmdToday = new SqlCommand(@"
+                    SELECT ISNULL(SUM(b.TotalAmount), 0)
+                    FROM bills b
+                    INNER JOIN appointments a ON b.AppointId = a.AppId
+                    WHERE (a.App_Booked_For = @staffId OR @staffId = 0) AND CAST(b.BillDate AS DATE) = CAST(GETDATE() AS DATE)", conn);
+                cmdToday.Parameters.AddWithValue("@staffId", staffId);
+                model.TodayEarnings = Convert.ToDecimal(cmdToday.ExecuteScalar());
+
+                // Week's Earnings
+                SqlCommand cmdWeek = new SqlCommand(@"
+                    SELECT ISNULL(SUM(b.TotalAmount), 0)
+                    FROM bills b
+                    INNER JOIN appointments a ON b.AppointId = a.AppId
+                    WHERE (a.App_Booked_For = @staffId OR @staffId = 0) AND b.BillDate >= DATEADD(day, -7, GETDATE())", conn);
+                cmdWeek.Parameters.AddWithValue("@staffId", staffId);
+                model.WeekEarnings = Convert.ToDecimal(cmdWeek.ExecuteScalar());
+
+                // Month's Earnings
+                SqlCommand cmdMonth = new SqlCommand(@"
+                    SELECT ISNULL(SUM(b.TotalAmount), 0)
+                    FROM bills b
+                    INNER JOIN appointments a ON b.AppointId = a.AppId
+                    WHERE (a.App_Booked_For = @staffId OR @staffId = 0) AND MONTH(b.BillDate) = MONTH(GETDATE()) AND YEAR(b.BillDate) = YEAR(GETDATE())", conn);
+                cmdMonth.Parameters.AddWithValue("@staffId", staffId);
+                model.MonthEarnings = Convert.ToDecimal(cmdMonth.ExecuteScalar());
+
+                // Earnings Itemized List
+                SqlCommand cmdHistory = new SqlCommand(@"
+                    SELECT b.BillId, c.ClientName, ISNULL(s.ServiceName, 'Styling Service') AS ServiceName, b.TotalAmount, b.BillDate
+                    FROM bills b
+                    INNER JOIN appointments a ON b.AppointId = a.AppId
+                    LEFT JOIN clients c ON b.ClId = c.ClientId
+                    LEFT JOIN appointmentservices aps ON a.AppId = aps.ApId
+                    LEFT JOIN salonservices s ON aps.SeId = s.ServiceId
+                    WHERE a.App_Booked_For = @staffId OR @staffId = 0
+                    ORDER BY b.BillDate DESC", conn);
+                cmdHistory.Parameters.AddWithValue("@staffId", staffId);
+
+                using SqlDataReader reader = cmdHistory.ExecuteReader();
+                while (reader.Read())
+                {
+                    model.EarningsHistory.Add(new StaffEarningsItem
+                    {
+                        BillId = Convert.ToInt32(reader["BillId"]),
+                        ClientName = reader["ClientName"] != DBNull.Value ? reader["ClientName"].ToString()! : "VIP Client",
+                        ServiceName = reader["ServiceName"].ToString()!,
+                        TotalAmount = Convert.ToDecimal(reader["TotalAmount"]),
+                        BillDate = Convert.ToDateTime(reader["BillDate"])
+                    });
+                }
+            }
+
+            return View(model);
+        }
+
 
 
 
