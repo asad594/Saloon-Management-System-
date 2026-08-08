@@ -36,6 +36,34 @@ body {
   }
 }
 
+/* ── Staff Portal Animations & Micro-Interactions ── */
+@@keyframes cardFadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.staff-hero-banner, .staff-kpi-card, .staff-chart-card, .timeline-card, .booking-card-container, .invoice-card-container, .attendance-card-container {
+  animation: cardFadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.btn-action-hero, .btn-submit-booking, .btn-attendance-submit {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-action-hero::after, .btn-submit-booking::after, .btn-attendance-submit::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-action-hero:hover::after, .btn-submit-booking:hover::after, .btn-attendance-submit:hover::after {
+  left: 100%;
+}
+
 
 
 
