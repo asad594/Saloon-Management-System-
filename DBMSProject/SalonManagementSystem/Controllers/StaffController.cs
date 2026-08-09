@@ -755,6 +755,12 @@ VALUES
                     return RedirectToAction("Attendance");
                 }
 
+                string staffName = "Specialist";
+                SqlCommand nameCmd = new SqlCommand("SELECT TOP 1 StaffName FROM staff WHERE StaffId = @sid", conn);
+                nameCmd.Parameters.AddWithValue("@sid", staffId);
+                object? sNameObj = nameCmd.ExecuteScalar();
+                if (sNameObj != null && sNameObj != DBNull.Value) staffName = sNameObj.ToString()!;
+
                 if (Type == "CheckIn")
                 {
                     SqlCommand checkCmd = new SqlCommand(
@@ -764,7 +770,7 @@ VALUES
 
                     if (activeShiftCount > 0)
                     {
-                        TempData["ErrorMessage"] = "You already have an active shift checked in today!";
+                        TempData["ErrorMessage"] = $"{staffName}, you already have an active shift checked in today!";
                         return RedirectToAction("Attendance");
                     }
 
@@ -773,7 +779,7 @@ VALUES
                     cmd.Parameters.AddWithValue("@sid", staffId);
                     cmd.ExecuteNonQuery();
 
-                    TempData["SuccessMessage"] = "Shift Arrival (Check-In) logged successfully!";
+                    TempData["SuccessMessage"] = $"Shift Arrival (Check-In) logged successfully for {staffName}!";
                 }
                 else if (Type == "CheckOut")
                 {
@@ -786,11 +792,11 @@ VALUES
 
                     if (rows > 0)
                     {
-                        TempData["SuccessMessage"] = "Shift Departure (Check-Out) logged successfully!";
+                        TempData["SuccessMessage"] = $"Shift Departure (Check-Out) logged successfully for {staffName}!";
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "No active check-in shift found to check out.";
+                        TempData["ErrorMessage"] = $"No active check-in shift found for {staffName} to check out.";
                     }
                 }
             }
