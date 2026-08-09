@@ -258,22 +258,22 @@
                     <th>Client Name</th>
                     <th>Phone</th>
                     <th>Service</th>
-                    <th>Staff Member</th>
-                    <th>Time Paid</th>
-                    <th style="text-align: right;">Amount (PKR)</th>
+                    <th>Staff Specialist</th>
+                    <th>Time</th>
+                    <th>Total Amount</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var bill in Model.CurrentDayBills)
                 {
                     <tr>
-                        <td>#@bill.BillId</td>
-                        <td style="font-weight: 600;">@bill.ClientName</td>
-                        <td style="color: var(--text-muted);">@bill.Phone</td>
-                        <td><span style="color: var(--teal-light); font-weight: 600;">@bill.ServiceName</span></td>
-                        <td>@bill.StaffName</td>
-                        <td><i class="fa-regular fa-clock" style="color: var(--gold-primary);"></i> @bill.BillDate.ToString("hh:mm tt")</td>
-                        <td style="text-align: right;" class="price-badge">PKR @bill.TotalAmount.ToString("N0")</td>
+                        <td style="font-weight: 700; color: var(--gold-primary);">#@bill.BillId</td>
+                        <td style="font-weight: 600;"><i class="fa-solid fa-user" style="color:var(--teal-light); margin-right:6px;"></i> @bill.ClientName</td>
+                        <td style="color: var(--text-body);">@bill.Phone</td>
+                        <td><span style="background:rgba(20,184,166,0.15); border:1px solid rgba(20,184,166,0.3); color:var(--teal-light); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600;">@bill.ServiceName</span></td>
+                        <td><i class="fa-solid fa-user-gear" style="color:var(--gold-primary); margin-right:6px;"></i> @bill.StaffName</td>
+                        <td style="color: var(--text-body);"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> @bill.BillDate.ToString("hh:mm tt")</td>
+                        <td class="price-badge" style="font-weight:800; font-size:0.98rem;">PKR @bill.TotalAmount.ToString("N0")</td>
                     </tr>
                 }
             </tbody>
