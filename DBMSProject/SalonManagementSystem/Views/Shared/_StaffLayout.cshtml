@@ -126,14 +126,34 @@
             flex: 1;
             overflow-y: auto !important;
             min-height: 0;
-            padding: 20px 14px;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             scrollbar-width: thin;
-            scrollbar-color: var(--gold-primary) rgba(15, 23, 42, 0.6);
+            scrollbar-color: #d4af37 rgba(255, 255, 255, 0.05);
         }
 
-        .nav-menu::-webkit-scrollbar { width: 5px; }
-        .nav-menu::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        .nav-menu::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gold-primary), var(--teal-primary)); border-radius: 10px; }
+        /* Custom Scrollbar matching Admin Portal */
+        .nav-menu::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .nav-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #d4af37 0%, #0d9488 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .nav-menu::-webkit-scrollbar-thumb:hover {
+            background: #f2ca50;
+        }
 
         .nav-section-label {
             font-size: 0.72rem;
