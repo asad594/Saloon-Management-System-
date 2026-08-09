@@ -578,7 +578,8 @@
 
     function setRole(role) {
         currentRole = role;
-        document.getElementById('userRoleInput').value = role;
+        const userRoleInput = document.getElementById('userRoleInput');
+        if (userRoleInput) userRoleInput.value = role;
 
         const tabUser = document.getElementById('tabUser');
         const tabStaff = document.getElementById('tabStaff');
@@ -587,19 +588,17 @@
         const loginSubtitleText = document.getElementById('loginSubtitleText');
 
         if (role === 'Staff') {
-            tabStaff.className = 'role-tab-btn active staff-active';
-            tabUser.className = 'role-tab-btn';
-            btnText.textContent = 'Log In as Staff';
-            loginSubtitleText.textContent = 'Access staff roster, client orders & shift management';
-            registerLink.href = '/Login/Register?role=Staff';
-            registerLink.textContent = 'Register as Staff';
+            if (tabStaff) tabStaff.className = 'role-tab-btn active staff-active';
+            if (tabUser) tabUser.className = 'role-tab-btn';
+            if (btnText) btnText.textContent = 'Log In as Staff';
+            if (loginSubtitleText) loginSubtitleText.textContent = 'Access staff roster, client orders & shift management';
+            if (registerLink) { registerLink.href = '/Login/Register?role=Staff'; registerLink.textContent = 'Register as Staff'; }
         } else {
-            tabUser.className = 'role-tab-btn active';
-            tabStaff.className = 'role-tab-btn';
-            btnText.textContent = 'Log In as User';
-            loginSubtitleText.textContent = 'Access your VIP salon bookings, appointments & rewards';
-            registerLink.href = '/Login/Register?role=User';
-            registerLink.textContent = 'Register as User';
+            if (tabUser) tabUser.className = 'role-tab-btn active';
+            if (tabStaff) tabStaff.className = 'role-tab-btn';
+            if (btnText) btnText.textContent = 'Log In as User';
+            if (loginSubtitleText) loginSubtitleText.textContent = 'Access your VIP salon bookings, appointments & rewards';
+            if (registerLink) { registerLink.href = '/Login/Register?role=User'; registerLink.textContent = 'Register as User'; }
         }
     }
 
@@ -613,11 +612,14 @@
     const eyeIcon = document.getElementById('eyeIcon');
     const userInput = document.getElementById('usernameInput');
 
-    togglePwBtn.addEventListener('click', () => {
-        const isPw = pwInput.type === 'password';
-        pwInput.type = isPw ? 'text' : 'password';
-        eyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-    });
+    if (togglePwBtn && pwInput && eyeIcon) {
+        togglePwBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const isPw = pwInput.type === 'password';
+            pwInput.type = isPw ? 'text' : 'password';
+            eyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+        });
+    }
 
     // Loading State
     const submitBtn = document.getElementById('submitBtn');
