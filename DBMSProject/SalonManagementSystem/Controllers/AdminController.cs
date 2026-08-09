@@ -961,5 +961,72 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("ManageAdmins");
         }
 
+        public IActionResult StaffAttendance(DateTime? searchDate)
+        {
+            DateTime filterDate = searchDate.HasValue ? searchDate.Value.Date : DateTime.Today;
+            List<StaffAttendanceAdminViewModel> list = new List<StaffAttendanceAdminViewModel>();
+
+            int totalPresentToday = 0;
+            int activeShiftsCount = 0;
+            int completedShiftsCount = 0;
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT a.AttendanceId, s.StaffId, s.StaffName, s.StaffSpecialilty,
+                           a.CheckIn, a.CheckOut,
+                           DATEDIFF(MINUTE, a.CheckIn, ISNULL(a.CheckOut, GETDATE())) AS WorkingMinutes
+                    FROM attendance a
+                    INNER JOIN staff s ON a.StaffId = s.StaffId
+                    WHERE CAST(a.CheckIn AS DATE) = @filterDate
+                    ORDER BY a.CheckIn DESC", conn);
+                cmd.Parameters.AddWithValue("@filterDate", filterDate);
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    DateTime checkIn = Convert.ToDateTime(reader["CheckIn"]);
+                    DateTime? checkOut = reader["CheckOut"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["CheckOut"]);
+                    int workMins = Convert.ToInt32(reader["WorkingMinutes"]);
+                    bool isActive = !checkOut.HasValue;
+
+                    totalPresentToday++;
+                    if (isActive) activeShiftsCount++; else completedShiftsCount++;
+
+                    int hours = workMins / 60;
+                    int mins = workMins % 60;
+                    string durationStr = isActive 
+                        ? $"{hours}h {mins}m (In Progress)" 
+                        : $"{hours}h {mins}m";
+
+                    list.Add(new StaffAttendanceAdminViewModel
+                    {
+                        AttendanceId = Convert.ToInt32(reader["AttendanceId"]),
+                        StaffId = Convert.ToInt32(reader["StaffId"]),
+                        StaffName = reader["StaffName"].ToString() ?? "Staff Specialist",
+                        Speciality = reader["StaffSpecialilty"] != DBNull.Value ? reader["StaffSpecialilty"].ToString()! : "Specialist",
+                        SelectedDate = filterDate,
+                        FormattedDate = filterDate.ToString("dd MMMM yyyy"),
+                        DayOfWeekName = filterDate.ToString("dddd"),
+                        CheckInTime = checkIn.ToString("hh:mm tt"),
+                        CheckOutTime = checkOut.HasValue ? checkOut.Value.ToString("hh:mm tt") : "Shift In Progress",
+                        WorkingDuration = durationStr,
+                        IsActiveShift = isActive,
+                        StatusBadge = isActive ? "Shift Active" : "Shift Completed"
+                    });
+                }
+            }
+
+            ViewBag.FilterDate = filterDate.ToString("yyyy-MM-dd");
+            ViewBag.DisplayDate = filterDate.ToString("dddd, MMMM dd, yyyy");
+            ViewBag.TotalPresent = totalPresentToday;
+            ViewBag.ActiveShifts = activeShiftsCount;
+            ViewBag.CompletedShifts = completedShiftsCount;
+
+            return View(list);
+        }
+
     }
 }
