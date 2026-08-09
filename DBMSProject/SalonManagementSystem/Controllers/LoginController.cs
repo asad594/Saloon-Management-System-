@@ -213,18 +213,6 @@ namespace SalonManagementSystem.Controllers
                     END", conn);
                 alterCmd.ExecuteNonQuery();
 
-                // Seed Default User (user / user123) with Role = User
-                SqlCommand seedUserCmd = new SqlCommand(@"
-                    IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'user')
-                    BEGIN
-                        INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('user', 'User', 'user123');
-                    END
-                    ELSE
-                    BEGIN
-                        UPDATE users SET UserRole = 'User' WHERE UserName = 'user';
-                    END", conn);
-                seedUserCmd.ExecuteNonQuery();
-
                 // Seed Default Admin (admin / admin123) with Role = Admin
                 SqlCommand seedAdminCmd = new SqlCommand(@"
                     IF NOT EXISTS (SELECT 1 FROM users WHERE UserName = 'admin')
