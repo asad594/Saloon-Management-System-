@@ -134,10 +134,42 @@ namespace SalonManagementSystem.Controllers
                     WHERE (a.App_Booked_For = @staffId OR @staffId = 0) AND CAST(b.BillDate AS DATE) = CAST(GETDATE() AS DATE)", conn);
                 cmdOwnEarnings.Parameters.AddWithValue("@staffId", staffId);
                 model.OwnTodayEarnings = Convert.ToDecimal(cmdOwnEarnings.ExecuteScalar());
+
+                // ── Real Today Appointments Timeline Query ──
+                var todayTimeline = new List<dynamic>();
+                SqlCommand cmdTimeline = new SqlCommand(@"
+                    SELECT a.AppId, c.ClientName, a.AppTime, a.AppStatus,
+                           ISNULL((SELECT TOP 1 s.ServiceName 
+                                   FROM salonservices s 
+                                   INNER JOIN appointmentservices aps ON s.ServiceId = aps.SeId 
+                                   WHERE aps.ApId = a.AppId), 'Salon Consultation') AS ServiceName
+                    FROM appointments a
+                    INNER JOIN clients c ON a.CId = c.ClientId
+                    WHERE (a.App_Booked_For = @staffId OR @staffId = 0) AND a.AppDate = CAST(GETDATE() AS DATE)
+                    ORDER BY a.AppTime ASC", conn);
+                cmdTimeline.Parameters.AddWithValue("@staffId", staffId);
+                using (var reader = cmdTimeline.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var appTimeSpan = reader["AppTime"] != DBNull.Value ? (TimeSpan)reader["AppTime"] : TimeSpan.Zero;
+                        string timeStr = DateTime.Today.Add(appTimeSpan).ToString("hh:mm tt");
+                        int status = reader["AppStatus"] != DBNull.Value ? Convert.ToInt32(reader["AppStatus"]) : 1;
+                        string statusStr = status == 3 ? "Completed" : (status == 4 ? "Confirmed" : "Scheduled");
+
+                        todayTimeline.Add(new {
+                            AppId = Convert.ToInt32(reader["AppId"]),
+                            ClientName = reader["ClientName"].ToString() ?? "Client",
+                            AppTimeStr = timeStr,
+                            ServiceName = reader["ServiceName"].ToString() ?? "Salon Service",
+                            Status = statusStr
+                        });
+                    }
+                }
+                ViewBag.TodayTimeline = todayTimeline;
             }
 
             return View(model);
-
         }
 
         public IActionResult MyAppointments()
