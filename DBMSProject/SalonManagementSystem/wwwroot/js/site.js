@@ -1,4 +1,27 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+        const toggleBtn = e.target.closest('.field-icon-right-btn, [data-toggle-password], #togglePwBtn, #toggleRegPwBtn, #toggleAddStaffPwBtn, #toggleAdminPwBtn');
+        if (!toggleBtn) return;
+        
+        e.preventDefault();
+        const wrapper = toggleBtn.closest('.field-input-wrapper, .form-input-wrapper');
+        if (!wrapper) return;
 
-// Write your JavaScript code.
+        const input = wrapper.querySelector('input');
+        const icon = toggleBtn.querySelector('i');
+
+        if (input) {
+            const isPw = input.type === 'password';
+            input.type = isPw ? 'text' : 'password';
+            if (icon) {
+                if (isPw) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        }
+    });
+});
