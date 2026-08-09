@@ -259,8 +259,11 @@
             <div class="form-group-custom">
                 <label class="form-label-custom">Password</label>
                 <div class="form-input-wrapper">
-                    <input name="password" type="password" placeholder="Set security password..." required />
+                    <input name="password" id="adminPwInput" type="password" placeholder="Set security password..." required style="padding-right:44px;" />
                     <i class="fa-solid fa-lock"></i>
+                    <button type="button" id="toggleAdminPwBtn" title="Show/Hide password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#d4af37; cursor:pointer; font-size:0.95rem;">
+                        <i class="fa-solid fa-eye" id="adminEyeIcon"></i>
+                    </button>
                 </div>
             </div>
 
@@ -325,6 +328,19 @@
 
 @section Scripts {
     <script>
+        const adminPwInput = document.getElementById('adminPwInput');
+        const toggleAdminPwBtn = document.getElementById('toggleAdminPwBtn');
+        const adminEyeIcon = document.getElementById('adminEyeIcon');
+
+        if (toggleAdminPwBtn && adminPwInput && adminEyeIcon) {
+            toggleAdminPwBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const isPw = adminPwInput.type === 'password';
+                adminPwInput.type = isPw ? 'text' : 'password';
+                adminEyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            });
+        }
+
         function confirmDelete(url) {
             Swal.fire({
                 title: 'Delete Admin Account?',
