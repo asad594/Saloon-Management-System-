@@ -1030,5 +1030,98 @@ namespace SalonManagementSystem.Controllers
             return View(list);
         }
 
+        public IActionResult ManageLeaveRequests()
+        {
+            List<StaffLeaveItem> list = new List<StaffLeaveItem>();
+            int pendingCount = 0;
+            int approvedCount = 0;
+            int rejectedCount = 0;
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand tableCheck = new SqlCommand(@"
+                    IF OBJECT_ID('StaffLeaveRequests', 'U') IS NULL
+                    BEGIN
+                        CREATE TABLE StaffLeaveRequests (
+                            LeaveId INT IDENTITY(1,1) PRIMARY KEY,
+                            StaffId INT NOT NULL,
+                            LeaveDate DATETIME NOT NULL,
+                            Reason NVARCHAR(500) NOT NULL,
+                            Status NVARCHAR(50) DEFAULT 'Pending',
+                            RequestedOn DATETIME DEFAULT GETDATE()
+                        );
+                    END", conn);
+                tableCheck.ExecuteNonQuery();
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT l.LeaveId, l.StaffId, 
+                           ISNULL(s.StaffName, 'Staff Specialist') AS StaffName,
+                           ISNULL(s.StaffSpecialilty, 'Salon Specialist') AS Speciality,
+                           l.LeaveDate, l.Reason, ISNULL(l.Status, 'Pending') AS Status, l.RequestedOn
+                    FROM StaffLeaveRequests l
+                    LEFT JOIN staff s ON l.StaffId = s.StaffId
+                    ORDER BY CASE WHEN l.Status = 'Pending' THEN 0 ELSE 1 END, l.RequestedOn DESC", conn);
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    string status = reader["Status"].ToString()!;
+                    if (status == "Pending") pendingCount++;
+                    else if (status == "Approved") approvedCount++;
+                    else if (status == "Rejected") rejectedCount++;
+
+                    list.Add(new StaffLeaveItem
+                    {
+                        LeaveId = Convert.ToInt32(reader["LeaveId"]),
+                        StaffId = Convert.ToInt32(reader["StaffId"]),
+                        StaffName = reader["StaffName"].ToString()!,
+                        Speciality = reader["Speciality"].ToString()!,
+                        LeaveDate = Convert.ToDateTime(reader["LeaveDate"]),
+                        Reason = reader["Reason"].ToString()!,
+                        Status = status,
+                        RequestedOn = Convert.ToDateTime(reader["RequestedOn"])
+                    });
+                }
+            }
+
+            ViewBag.PendingCount = pendingCount;
+            ViewBag.ApprovedCount = approvedCount;
+            ViewBag.RejectedCount = rejectedCount;
+
+            return View(list);
+        }
+
+        [HttpPost]
+        public IActionResult ApproveLeave(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("UPDATE StaffLeaveRequests SET Status = 'Approved' WHERE LeaveId = @id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Staff leave request approved successfully!";
+            return RedirectToAction("ManageLeaveRequests");
+        }
+
+        [HttpPost]
+        public IActionResult RejectLeave(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("UPDATE StaffLeaveRequests SET Status = 'Rejected' WHERE LeaveId = @id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Staff leave request rejected.";
+            return RedirectToAction("ManageLeaveRequests");
+        }
+
     }
 }

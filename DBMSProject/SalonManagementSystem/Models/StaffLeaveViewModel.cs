@@ -6,6 +6,9 @@ namespace SalonManagementSystem.Models
     public class StaffLeaveItem
     {
         public int LeaveId { get; set; }
+        public int StaffId { get; set; }
+        public string StaffName { get; set; } = string.Empty;
+        public string Speciality { get; set; } = string.Empty;
         public DateTime LeaveDate { get; set; }
         public string Reason { get; set; } = string.Empty;
         public string Status { get; set; } = "Pending";

@@ -1,0 +1,414 @@
+@model List<SalonManagementSystem.Models.StaffLeaveItem>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Staff Leave Applications - Admin Portal";
+    int pendingCount = ViewBag.PendingCount ?? 0;
+    int approvedCount = ViewBag.ApprovedCount ?? 0;
+    int rejectedCount = ViewBag.RejectedCount ?? 0;
+}
+
+@section Styles {
+    <style>
+        .leave-admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ── Header Banner Card ── */
+        .leave-header-banner {
+            background: linear-gradient(135deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px 32px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leave-header-banner::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -5%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 2;
+        }
+
+        .header-badge-icon {
+            width: 52px; height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #d4af37 0%, #0d9488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+        }
+
+        .header-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-title-group p {
+            font-size: 0.88rem;
+            color: var(--text-body);
+        }
+
+        /* ── KPI Summary Grid ── */
+        .kpi-leave-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .kpi-leave-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 18px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-lbl {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-body);
+        }
+
+        .kpi-icon-badge {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* ── Data Table Panel ── */
+        .leave-table-card {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            overflow-x: auto;
+        }
+
+        .table-custom-leave {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table-custom-leave th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #d4af37;
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .table-custom-leave tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .table-custom-leave tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+        }
+
+        .table-custom-leave td {
+            padding: 16px 18px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .table-custom-leave td:first-child { border-radius: 12px 0 0 12px; }
+        .table-custom-leave td:last-child { border-radius: 0 12px 12px 0; }
+
+        .btn-action-approve {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            border: none;
+            color: #ffffff;
+            padding: 7px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45);
+        }
+
+        .btn-action-reject {
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            border: none;
+            color: #ffffff;
+            padding: 7px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-reject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(244, 63, 94, 0.45);
+        }
+
+        .badge-pending {
+            background: rgba(212, 175, 55, 0.18);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: #d4af37;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-approved {
+            background: rgba(34, 197, 94, 0.18);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #4ade80;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-rejected {
+            background: rgba(244, 63, 94, 0.18);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            color: #fca5a5;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+}
+
+<div class="leave-admin-container">
+
+    <!-- ── Header Banner Card ── -->
+    <div class="leave-header-banner">
+        <div class="header-title-group">
+            <div class="header-badge-icon">
+                <i class="fa-solid fa-plane-arrival"></i>
+            </div>
+            <div>
+                <h2>Staff Leave Applications & Time-Off</h2>
+                <p>StylOnyx Executive Studio &bull; Review, Approve & Reject Staff Leave Requests</p>
+            </div>
+        </div>
+        <div>
+            @if (pendingCount > 0)
+            {
+                <span style="background:rgba(212,175,55,0.18); border:1px solid rgba(212,175,55,0.4); color:#d4af37; padding:8px 18px; border-radius:50px; font-size:0.85rem; font-weight:700;">
+                    <i class="fa-solid fa-bell fa-bounce"></i> @pendingCount Pending Leave Request(s)
+                </span>
+            }
+            else
+            {
+                <span style="background:rgba(34,197,94,0.18); border:1px solid rgba(34,197,94,0.4); color:#4ade80; padding:8px 18px; border-radius:50px; font-size:0.85rem; font-weight:700;">
+                    <i class="fa-solid fa-circle-check"></i> All Requests Processed
+                </span>
+            }
+        </div>
+    </div>
+
+    <!-- ── KPI Summary Cards ── -->
+    <div class="kpi-leave-grid">
+        <div class="kpi-leave-card">
+            <div>
+                <div class="kpi-num">@pendingCount</div>
+                <div class="kpi-lbl">Pending Review</div>
+            </div>
+            <div class="kpi-icon-badge" style="background:rgba(212,175,55,0.18); color:#d4af37; border:1px solid rgba(212,175,55,0.3);">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+        </div>
+
+        <div class="kpi-leave-card">
+            <div>
+                <div class="kpi-num">@approvedCount</div>
+                <div class="kpi-lbl">Approved Leaves</div>
+            </div>
+            <div class="kpi-icon-badge" style="background:rgba(34,197,94,0.18); color:#4ade80; border:1px solid rgba(34,197,94,0.3);">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+
+        <div class="kpi-leave-card">
+            <div>
+                <div class="kpi-num">@rejectedCount</div>
+                <div class="kpi-lbl">Rejected Requests</div>
+            </div>
+            <div class="kpi-icon-badge" style="background:rgba(244,63,94,0.18); color:#fca5a5; border:1px solid rgba(244,63,94,0.3);">
+                <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Leave Applications Data Table ── -->
+    <div class="leave-table-card">
+        <div style="margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <h3 style="font-family:'Playfair Display', serif; font-size:1.35rem; color:#ffffff;">
+                Submitted Staff Leave Requests
+            </h3>
+            <p style="font-size:0.82rem; color:var(--text-body);">View staff leave reasons, requested dates, and take management actions</p>
+        </div>
+
+        <table class="table-custom-leave">
+            <thead>
+                <tr>
+                    <th>Staff Specialist</th>
+                    <th>Speciality</th>
+                    <th>Requested Leave Date</th>
+                    <th>Reason / Staff Message</th>
+                    <th>Submitted On</th>
+                    <th>Approval Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div style="font-weight:700; color:#ffffff; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-user-gear" style="color:#d4af37;"></i>
+                                    @item.StaffName
+                                </div>
+                            </td>
+                            <td>
+                                <span style="color:var(--teal-light); font-weight:600; font-size:0.85rem;">@item.Speciality</span>
+                            </td>
+                            <td>
+                                <span style="color:#ffffff; font-weight:700;"><i class="fa-regular fa-calendar-days" style="color:#d4af37; margin-right:4px;"></i> @item.LeaveDate.ToString("dd MMMM yyyy")</span>
+                            </td>
+                            <td>
+                                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:8px 12px; font-size:0.86rem; color:#e2e8f0; max-width:300px;">
+                                    <i class="fa-solid fa-quote-left" style="color:#d4af37; font-size:0.75rem; margin-right:4px;"></i>
+                                    @item.Reason
+                                </div>
+                            </td>
+                            <td>
+                                <span style="font-size:0.82rem; color:var(--text-body);">@item.RequestedOn.ToString("MMM dd, yyyy")</span>
+                            </td>
+                            <td>
+                                @if (item.Status == "Approved")
+                                {
+                                    <span class="badge-approved"><i class="fa-solid fa-check-double"></i> Approved</span>
+                                }
+                                else if (item.Status == "Rejected")
+                                {
+                                    <span class="badge-rejected"><i class="fa-solid fa-xmark"></i> Rejected</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-pending"><i class="fa-solid fa-clock"></i> Pending Review</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Status == "Pending")
+                                {
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <form method="post" action="/Admin/ApproveLeave" style="display:inline;">
+                                            <input type="hidden" name="id" value="@item.LeaveId" />
+                                            <button type="submit" class="btn-action-approve" title="Approve Staff Leave">
+                                                <i class="fa-solid fa-check"></i> Approve
+                                            </button>
+                                        </form>
+                                        <form method="post" action="/Admin/RejectLeave" style="display:inline;">
+                                            <input type="hidden" name="id" value="@item.LeaveId" />
+                                            <button type="submit" class="btn-action-reject" title="Reject Staff Leave">
+                                                <i class="fa-solid fa-xmark"></i> Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span style="font-size:0.8rem; color:var(--text-body); font-style:italic;">No action needed</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:44px 20px; color:var(--text-body);">
+                            <i class="fa-solid fa-plane-slash" style="font-size:2.4rem; color:#d4af37; margin-bottom:12px; display:block;"></i>
+                            <div style="font-weight:700; font-size:1.05rem; color:#ffffff; margin-bottom:4px;">No Staff Leave Requests Logged Yet</div>
+                            <p style="font-size:0.85rem; max-width:400px; margin:0 auto;">When staff members submit leave requests from their Staff Hub, they will appear here for Admin approval.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

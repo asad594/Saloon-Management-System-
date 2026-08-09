@@ -489,6 +489,9 @@
                 <a href="/Admin/StaffAttendance" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "StaffAttendance" ? "active" : "")">
                     <i class="fa-solid fa-calendar-days"></i> Staff Attendance Log
                 </a>
+                <a href="/Admin/ManageLeaveRequests" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageLeaveRequests" ? "active" : "")">
+                    <i class="fa-solid fa-plane-arrival"></i> Staff Leave Requests
+                </a>
                 <a href="/Admin/AddStaff" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddStaff" ? "active" : "")">
                     <i class="fa-solid fa-user-plus"></i> Add Staff Specialist
                 </a>
