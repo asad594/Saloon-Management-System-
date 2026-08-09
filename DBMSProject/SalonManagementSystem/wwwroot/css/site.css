@@ -77,6 +77,15 @@ body {
     gap: 25px;
 }
 
+/* Attendance Badge & Calendar Animations */
+.badge-active-shift, .badge-completed-shift {
+    transition: all 0.25s ease;
+}
+
+.badge-active-shift:hover, .badge-completed-shift:hover {
+    transform: scale(1.04);
+}
+
 /* CARD STYLE */
 .attendance-card {
     background: #ffffff;
