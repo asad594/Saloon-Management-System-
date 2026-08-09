@@ -737,35 +737,64 @@ VALUES
 
 
         [HttpPost]
-        public IActionResult MarkAttendance(int SelectedStaffId, string Type)
+        public IActionResult MarkAttendance(int? SelectedStaffId, string Type)
         {
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                int staffId = GetLoggedInStaffId(conn);
+
+                if (staffId <= 0 && SelectedStaffId.HasValue && SelectedStaffId.Value > 0)
+                {
+                    staffId = SelectedStaffId.Value;
+                }
+
+                if (staffId <= 0)
+                {
+                    TempData["ErrorMessage"] = "Staff profile not found for logged-in account!";
+                    return RedirectToAction("Attendance");
+                }
 
                 if (Type == "CheckIn")
                 {
-                    // Insert new record
+                    SqlCommand checkCmd = new SqlCommand(
+                        "SELECT COUNT(*) FROM attendance WHERE StaffId = @sid AND CheckOut IS NULL AND CAST(CheckIn AS DATE) = CAST(GETDATE() AS DATE)", conn);
+                    checkCmd.Parameters.AddWithValue("@sid", staffId);
+                    int activeShiftCount = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                    if (activeShiftCount > 0)
+                    {
+                        TempData["ErrorMessage"] = "You already have an active shift checked in today!";
+                        return RedirectToAction("Attendance");
+                    }
+
                     SqlCommand cmd = new SqlCommand(
                         "INSERT INTO attendance (StaffId, CheckIn) VALUES (@sid, GETDATE())", conn);
-
-                    cmd.Parameters.AddWithValue("@sid", SelectedStaffId);
+                    cmd.Parameters.AddWithValue("@sid", staffId);
                     cmd.ExecuteNonQuery();
+
+                    TempData["SuccessMessage"] = "Shift Arrival (Check-In) logged successfully!";
                 }
                 else if (Type == "CheckOut")
                 {
-                    // Update existing record
                     SqlCommand cmd = new SqlCommand(
                         @"UPDATE attendance 
-                  SET CheckOut = GETDATE()
-                  WHERE StaffId=@sid AND CheckOut IS NULL", conn);
+                          SET CheckOut = GETDATE()
+                          WHERE StaffId = @sid AND CheckOut IS NULL", conn);
+                    cmd.Parameters.AddWithValue("@sid", staffId);
+                    int rows = cmd.ExecuteNonQuery();
 
-                    cmd.Parameters.AddWithValue("@sid", SelectedStaffId);
-                    cmd.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        TempData["SuccessMessage"] = "Shift Departure (Check-Out) logged successfully!";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "No active check-in shift found to check out.";
+                    }
                 }
             }
 
-            // 🔥 THIS IS IMPORTANT
             return RedirectToAction("Attendance");
         }
 
