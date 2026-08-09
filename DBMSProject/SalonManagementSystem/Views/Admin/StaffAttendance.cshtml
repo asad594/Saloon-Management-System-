@@ -1,0 +1,469 @@
+@model List<SalonManagementSystem.Models.StaffAttendanceAdminViewModel>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string displayDate = ViewBag.DisplayDate ?? DateTime.Today.ToString("dddd, MMMM dd, yyyy");
+    string filterDateStr = ViewBag.FilterDate ?? DateTime.Today.ToString("yyyy-MM-dd");
+    int totalPresent = ViewBag.TotalPresent ?? 0;
+    int activeShifts = ViewBag.ActiveShifts ?? 0;
+    int completedShifts = ViewBag.CompletedShifts ?? 0;
+}
+
+@section Styles {
+    <style>
+        .attendance-admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ── Header Banner Card ── */
+        .admin-attendance-header {
+            background: linear-gradient(135deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px 32px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-attendance-header::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -5%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 2;
+        }
+
+        .header-badge-icon {
+            width: 52px; height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #d4af37 0%, #0d9488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+        }
+
+        .header-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header-title-group p {
+            font-size: 0.88rem;
+            color: var(--text-body);
+        }
+
+        /* ── Date Filter Card ── */
+        .filter-card-container {
+            background: rgba(19, 25, 36, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 22px 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .filter-form-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .calendar-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .calendar-input-custom {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #ffffff !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            color-scheme: dark;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .calendar-input-custom:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.25);
+        }
+
+        .btn-filter-submit {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            border: none;
+            border-radius: 50px;
+            color: #ffffff;
+            padding: 10px 22px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35);
+            transition: all 0.25s ease;
+        }
+
+        .btn-filter-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.45);
+        }
+
+        .btn-date-quick {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50px;
+            color: var(--text-body);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-date-quick:hover {
+            background: rgba(212, 175, 55, 0.15);
+            color: #ffffff;
+            border-color: #d4af37;
+        }
+
+        /* ── Metric KPI Cards ── */
+        .attendance-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .attendance-kpi-card {
+            background: rgba(19, 25, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-gold);
+            border-radius: 18px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-lbl {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-body);
+        }
+
+        .kpi-badge {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* ── Attendance Data Table ── */
+        .table-card-container {
+            background: linear-gradient(145deg, #131924 0%, #0e1219 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            overflow-x: auto;
+        }
+
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .attendance-table-custom {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .attendance-table-custom th {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #d4af37;
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .attendance-table-custom tbody tr {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .attendance-table-custom tbody tr:hover {
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .attendance-table-custom td {
+            padding: 16px 18px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .attendance-table-custom td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 700;
+        }
+
+        .attendance-table-custom td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .badge-active-shift {
+            background: rgba(34, 197, 94, 0.18);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #4ade80;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-completed-shift {
+            background: rgba(20, 184, 166, 0.18);
+            border: 1px solid rgba(20, 184, 166, 0.4);
+            color: #2dd4bf;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @@media (max-width: 900px) {
+            .attendance-kpi-grid { grid-template-columns: 1fr; }
+            .filter-card-container { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+}
+
+<div class="attendance-admin-container">
+
+    <!-- ── Header Banner Card ── -->
+    <div class="admin-attendance-header">
+        <div class="header-title-group">
+            <div class="header-badge-icon">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div>
+                <h2>Staff Shift Attendance Log</h2>
+                <p>StylOnyx Executive Studio &bull; Day-wise Staff Check-in & Check-out Records</p>
+            </div>
+        </div>
+        <div>
+            <span style="background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); color:#d4af37; padding:8px 16px; border-radius:50px; font-size:0.85rem; font-weight:700;">
+                <i class="fa-solid fa-clock"></i> Live Roster Audit
+            </span>
+        </div>
+    </div>
+
+    <!-- ── Date Filter Controls Card ── -->
+    <div class="filter-card-container">
+        <form method="get" action="/Admin/StaffAttendance" class="filter-form-group" id="attendanceFilterForm">
+            <label style="font-size:0.88rem; font-weight:700; color:#f1f5f9; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-calendar-day" style="color:#d4af37;"></i> Select Date:
+            </label>
+            <div class="calendar-input-wrapper">
+                <input type="date" name="searchDate" value="@filterDateStr" class="calendar-input-custom" onchange="document.getElementById('attendanceFilterForm').submit();" />
+            </div>
+            <button type="submit" class="btn-filter-submit">
+                <i class="fa-solid fa-filter"></i> Fetch Attendance
+            </button>
+        </form>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" class="btn-date-quick">
+                <i class="fa-solid fa-chevron-left"></i> Yesterday
+            </a>
+            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.ToString("yyyy-MM-dd")" class="btn-date-quick" style="border-color:#d4af37; color:#d4af37;">
+                <i class="fa-solid fa-calendar"></i> Today
+            </a>
+            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn-date-quick">
+                Tomorrow <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── KPI Summary Cards ── -->
+    <div class="attendance-kpi-grid">
+        <div class="attendance-kpi-card">
+            <div>
+                <div class="kpi-num">@totalPresent</div>
+                <div class="kpi-lbl">Total Staff Present</div>
+            </div>
+            <div class="kpi-badge" style="background:rgba(212,175,55,0.18); color:#d4af37; border:1px solid rgba(212,175,55,0.3);">
+                <i class="fa-solid fa-users-check"></i>
+            </div>
+        </div>
+
+        <div class="attendance-kpi-card">
+            <div>
+                <div class="kpi-num">@activeShifts</div>
+                <div class="kpi-lbl">Active Shifts On-Clock</div>
+            </div>
+            <div class="kpi-badge" style="background:rgba(34,197,94,0.18); color:#4ade80; border:1px solid rgba(34,197,94,0.3);">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+        </div>
+
+        <div class="attendance-kpi-card">
+            <div>
+                <div class="kpi-num">@completedShifts</div>
+                <div class="kpi-lbl">Completed Shift Logs</div>
+            </div>
+            <div class="kpi-badge" style="background:rgba(20,184,166,0.18); color:#2dd4bf; border:1px solid rgba(20,184,166,0.3);">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Day-wise Attendance Data Table ── -->
+    <div class="table-card-container">
+        <div class="table-card-header">
+            <div>
+                <h3 style="font-family:'Playfair Display', serif; font-size:1.35rem; color:#ffffff; margin-bottom:4px;">
+                    Attendance Records for <span style="color:#d4af37;">@displayDate</span>
+                </h3>
+                <p style="font-size:0.82rem; color:var(--text-body);">Showing all staff check-in and check-out logs for the selected calendar date</p>
+            </div>
+        </div>
+
+        <table class="attendance-table-custom">
+            <thead>
+                <tr>
+                    <th>Date & Day</th>
+                    <th>Staff Specialist</th>
+                    <th>Speciality / Role</th>
+                    <th>Check-In Time</th>
+                    <th>Check-Out Time</th>
+                    <th>Shift Duration</th>
+                    <th>Shift Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div style="font-weight:700; color:#ffffff;">@item.FormattedDate</div>
+                                <div style="font-size:0.78rem; color:var(--text-body);">@item.DayOfWeekName</div>
+                            </td>
+                            <td>
+                                <div style="font-weight:700; color:#ffffff; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-user-gear" style="color:#d4af37;"></i>
+                                    @item.StaffName
+                                </div>
+                            </td>
+                            <td>
+                                <span style="color:var(--teal-light); font-weight:600; font-size:0.85rem;">@item.Speciality</span>
+                            </td>
+                            <td>
+                                <span style="color:#4ade80; font-weight:700;"><i class="fa-regular fa-clock"></i> @item.CheckInTime</span>
+                            </td>
+                            <td>
+                                @if (item.IsActiveShift)
+                                {
+                                    <span style="color:#d4af37; font-weight:700;"><i class="fa-solid fa-spinner fa-spin"></i> Shift In Progress</span>
+                                }
+                                else
+                                {
+                                    <span style="color:#94a3b8; font-weight:600;"><i class="fa-solid fa-right-from-bracket"></i> @item.CheckOutTime</span>
+                                }
+                            </td>
+                            <td>
+                                <span style="color:#e2e8f0; font-weight:600;">@item.WorkingDuration</span>
+                            </td>
+                            <td>
+                                @if (item.IsActiveShift)
+                                {
+                                    <span class="badge-active-shift"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Active Shift</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-completed-shift"><i class="fa-solid fa-check-double"></i> Shift Completed</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:36px; color:var(--text-body);">
+                            <i class="fa-solid fa-folder-open" style="font-size:2.4rem; color:#d4af37; margin-bottom:12px; display:block;"></i>
+                            <div style="font-weight:700; font-size:1.05rem; color:#ffffff; margin-bottom:4px;">No Attendance Records Logged for @displayDate</div>
+                            <p style="font-size:0.85rem; max-width:400px; margin:0 auto;">Use the date filter above to select another calendar day or view today's active staff roster.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
