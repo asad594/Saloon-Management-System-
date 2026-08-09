@@ -48,6 +48,27 @@
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
+            color-scheme: dark;
+        }
+
+        /* ── Dark Theme Dropdown Select & Option Styling ── */
+        select {
+            color-scheme: dark;
+            background-color: var(--bg-card-dark);
+            color: #ffffff;
+        }
+
+        select option {
+            background-color: #131924 !important;
+            color: #ffffff !important;
+            padding: 10px 14px;
+        }
+
+        select option:hover,
+        select option:focus,
+        select option:checked {
+            background-color: var(--teal-primary) !important;
+            color: #ffffff !important;
         }
 
         /* ── Sidebar Container ── */
