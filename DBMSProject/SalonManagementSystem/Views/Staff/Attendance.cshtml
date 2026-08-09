@@ -275,7 +275,7 @@
         </div>
 
         <button type="submit" class="btn-attendance-submit">
-            <i class="fa-solid fa-user-check"></i> Mark Attendance Now
+            <i class="fa-solid fa-user-check"></i> @(ViewBag.HasActiveShift == true ? "Clock Out Shift Now" : "Clock In Shift Now")
         </button>
     </form>
 
