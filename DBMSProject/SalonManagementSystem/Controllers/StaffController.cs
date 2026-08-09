@@ -859,17 +859,39 @@ VALUES
         public IActionResult Attendance()
         {
             List<AttendanceViewModel> list = new List<AttendanceViewModel>();
+            int currentStaffId = 0;
+            string currentStaffName = HttpContext.Session.GetString("UserName") ?? "Staff Specialist";
+            string currentSpeciality = "Salon Specialist";
+            bool hasActiveShift = false;
 
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                currentStaffId = GetLoggedInStaffId(conn);
+
+                if (currentStaffId > 0)
+                {
+                    SqlCommand sCmd = new SqlCommand("SELECT TOP 1 StaffName, StaffSpecialilty FROM staff WHERE StaffId = @sid", conn);
+                    sCmd.Parameters.AddWithValue("@sid", currentStaffId);
+                    using var sReader = sCmd.ExecuteReader();
+                    if (sReader.Read())
+                    {
+                        currentStaffName = sReader["StaffName"].ToString() ?? currentStaffName;
+                        currentSpeciality = sReader["StaffSpecialilty"].ToString() ?? currentSpeciality;
+                    }
+                    sReader.Close();
+
+                    SqlCommand activeCheck = new SqlCommand("SELECT COUNT(*) FROM attendance WHERE StaffId = @sid AND CheckOut IS NULL AND CAST(CheckIn AS DATE) = CAST(GETDATE() AS DATE)", conn);
+                    activeCheck.Parameters.AddWithValue("@sid", currentStaffId);
+                    hasActiveShift = Convert.ToInt32(activeCheck.ExecuteScalar()) > 0;
+                }
 
                 string query = @"
-            SELECT s.StaffName, a.CheckIn, a.CheckOut
-            FROM attendance a
-            JOIN staff s ON a.StaffId = s.StaffId
-            WHERE CAST(a.CheckIn AS DATE) = CAST(GETDATE() AS DATE)
-        ";
+                    SELECT s.StaffName, a.CheckIn, a.CheckOut
+                    FROM attendance a
+                    JOIN staff s ON a.StaffId = s.StaffId
+                    WHERE CAST(a.CheckIn AS DATE) = CAST(GETDATE() AS DATE)
+                    ORDER BY a.AttendanceId DESC";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -879,33 +901,16 @@ VALUES
                     list.Add(new AttendanceViewModel
                     {
                         StaffName = reader["StaffName"].ToString(),
-                        CheckIn = reader["CheckIn"].ToString(),
-                        CheckOut = reader["CheckOut"] == DBNull.Value ? null : reader["CheckOut"].ToString()
+                        CheckIn = reader["CheckIn"] != DBNull.Value ? Convert.ToDateTime(reader["CheckIn"]).ToString("hh:mm tt") : "N/A",
+                        CheckOut = reader["CheckOut"] == DBNull.Value ? null : Convert.ToDateTime(reader["CheckOut"]).ToString("hh:mm tt")
                     });
                 }
             }
 
-            // 🔥 ALSO LOAD DROPDOWN
-            using (SqlConnection conn = new SqlConnection(_connection))
-            {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand("SELECT StaffId, StaffName FROM staff", conn);
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                var staffList = new List<dynamic>();
-
-                while (reader.Read())
-                {
-                    staffList.Add(new
-                    {
-                        Value = reader["StaffId"],
-                        Text = reader["StaffName"]
-                    });
-                }
-
-                ViewBag.StaffList = staffList;
-            }
+            ViewBag.CurrentStaffId = currentStaffId;
+            ViewBag.CurrentStaffName = currentStaffName;
+            ViewBag.CurrentStaffSpeciality = currentSpeciality;
+            ViewBag.HasActiveShift = hasActiveShift;
 
             return View(list);
         }
