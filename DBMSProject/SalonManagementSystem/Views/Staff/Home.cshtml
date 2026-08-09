@@ -429,7 +429,18 @@
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="service-tag-pill">@item.Status</span>
+                    @if (item.Status == "Completed")
+                    {
+                        <span class="service-tag-pill" style="background:rgba(34,197,94,0.18); color:#4ade80; border-color:rgba(34,197,94,0.35);"><i class="fa-solid fa-check-double"></i> Completed</span>
+                    }
+                    else if (item.Status == "Confirmed")
+                    {
+                        <span class="service-tag-pill" style="background:rgba(20,184,166,0.18); color:var(--teal-light); border-color:rgba(20,184,166,0.35);"><i class="fa-solid fa-calendar-check"></i> Confirmed</span>
+                    }
+                    else
+                    {
+                        <span class="service-tag-pill" style="background:rgba(212,175,55,0.18); color:var(--gold-primary); border-color:rgba(212,175,55,0.35);"><i class="fa-regular fa-clock"></i> Scheduled</span>
+                    }
                     <a href="/Staff/GenerateBill" class="btn-action-hero" style="padding:6px 14px; font-size:0.78rem;">Generate Bill</a>
                 </div>
             </div>
