@@ -56,19 +56,37 @@ namespace SalonManagementSystem.Controllers
         private int GetLoggedInStaffId(SqlConnection conn)
         {
             int userId = HttpContext.Session.GetInt32("UserID") ?? 0;
-            if (userId <= 0) return 0;
+            string userName = HttpContext.Session.GetString("UserName") ?? string.Empty;
 
-            SqlCommand cmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE UsId = @uid", conn);
-            cmd.Parameters.AddWithValue("@uid", userId);
-            object? res = cmd.ExecuteScalar();
-            if (res != null && res != DBNull.Value)
+            if (userId > 0)
             {
-                return Convert.ToInt32(res);
+                SqlCommand cmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE UsId = @uid", conn);
+                cmd.Parameters.AddWithValue("@uid", userId);
+                object? res = cmd.ExecuteScalar();
+                if (res != null && res != DBNull.Value)
+                {
+                    return Convert.ToInt32(res);
+                }
             }
 
-            SqlCommand fallbackCmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE StaffStatus = 1", conn);
+            if (!string.IsNullOrWhiteSpace(userName))
+            {
+                SqlCommand nameCmd = new SqlCommand(@"
+                    SELECT TOP 1 s.StaffId 
+                    FROM staff s 
+                    INNER JOIN users u ON s.UsId = u.UserID 
+                    WHERE u.UserName = @uname OR s.StaffName = @uname", conn);
+                nameCmd.Parameters.AddWithValue("@uname", userName.Trim());
+                object? nRes = nameCmd.ExecuteScalar();
+                if (nRes != null && nRes != DBNull.Value)
+                {
+                    return Convert.ToInt32(nRes);
+                }
+            }
+
+            SqlCommand fallbackCmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE StaffStatus = 1 ORDER BY StaffId ASC", conn);
             object? fb = fallbackCmd.ExecuteScalar();
-            return fb != null && fb != DBNull.Value ? Convert.ToInt32(fb) : 1;
+            return fb != null && fb != DBNull.Value ? Convert.ToInt32(fb) : 0;
         }
 
 
