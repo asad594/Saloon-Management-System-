@@ -336,13 +336,18 @@
         </form>
 
         <div style="display:flex; align-items:center; gap:8px;">
-            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" class="btn-date-quick" title="View Yesterday's Logs">
+            @{
+                string yesterdayStr = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+                string todayStr = DateTime.Today.ToString("yyyy-MM-dd");
+                string tomorrowStr = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+            }
+            <a href="/Admin/StaffAttendance?searchDate=@yesterdayStr" class="btn-date-quick" style="@(filterDateStr == yesterdayStr ? "background:rgba(212,175,55,0.25); border-color:#d4af37; color:#ffffff;" : "")" title="View Yesterday's Logs">
                 <i class="fa-solid fa-chevron-left"></i> Yesterday
             </a>
-            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.ToString("yyyy-MM-dd")" class="btn-date-quick" style="border-color:#d4af37; color:#d4af37;" title="View Today's Logs">
+            <a href="/Admin/StaffAttendance?searchDate=@todayStr" class="btn-date-quick" style="@(filterDateStr == todayStr ? "background:rgba(212,175,55,0.25); border-color:#d4af37; color:#ffffff;" : "")" title="View Today's Logs">
                 <i class="fa-solid fa-calendar-check"></i> Today
             </a>
-            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn-date-quick" title="View Tomorrow's Schedule">
+            <a href="/Admin/StaffAttendance?searchDate=@tomorrowStr" class="btn-date-quick" style="@(filterDateStr == tomorrowStr ? "background:rgba(212,175,55,0.25); border-color:#d4af37; color:#ffffff;" : "")" title="View Tomorrow's Schedule">
                 Tomorrow <i class="fa-solid fa-chevron-right"></i>
             </a>
         </div>
