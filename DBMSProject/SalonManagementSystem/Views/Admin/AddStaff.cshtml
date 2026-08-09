@@ -217,8 +217,11 @@
                 <div class="form-group-custom" style="margin-bottom:0;">
                     <label class="form-label-custom">Staff Login Password</label>
                     <div class="form-input-wrapper">
-                        <input name="password" type="password" placeholder="••••••••" required />
+                        <input name="password" id="addStaffPwInput" type="password" placeholder="••••••••" required style="padding-right:44px;" />
                         <i class="fa-solid fa-lock"></i>
+                        <button type="button" id="toggleAddStaffPwBtn" title="Show/Hide password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#d4af37; cursor:pointer; font-size:1rem;">
+                            <i class="fa-solid fa-eye" id="addStaffEyeIcon"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -230,3 +233,20 @@
         </button>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        const addStaffPwInput = document.getElementById('addStaffPwInput');
+        const toggleAddStaffPwBtn = document.getElementById('toggleAddStaffPwBtn');
+        const addStaffEyeIcon = document.getElementById('addStaffEyeIcon');
+
+        if (toggleAddStaffPwBtn && addStaffPwInput && addStaffEyeIcon) {
+            toggleAddStaffPwBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const isPw = addStaffPwInput.type === 'password';
+                addStaffPwInput.type = isPw ? 'text' : 'password';
+                addStaffEyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            });
+        }
+    </script>
+}
