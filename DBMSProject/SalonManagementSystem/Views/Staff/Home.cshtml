@@ -416,7 +416,25 @@
         </a>
     </div>
 
-    <!-- Dynamic DB Timeline Items render here -->
+    @if (ViewBag.TodayTimeline != null && ((IEnumerable<dynamic>)ViewBag.TodayTimeline).Any())
+    {
+        foreach (var item in ViewBag.TodayTimeline)
+        {
+            <div class="timeline-item">
+                <div style="display:flex; align-items:center; gap:16px;">
+                    <div class="time-badge"><i class="fa-regular fa-clock"></i> @item.AppTimeStr</div>
+                    <div class="client-info">
+                        <h4>@item.ClientName &bull; <span style="color:var(--teal-light); font-size:0.82rem;">Station</span></h4>
+                        <p>@item.ServiceName</p>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="service-tag-pill">@item.Status</span>
+                    <a href="/Staff/GenerateBill" class="btn-action-hero" style="padding:6px 14px; font-size:0.78rem;">Generate Bill</a>
+                </div>
+            </div>
+        }
+    }
 </div>
 
 <!-- ── Appointments Analytics Chart Container ── -->
