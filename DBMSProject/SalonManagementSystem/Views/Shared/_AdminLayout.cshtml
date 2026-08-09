@@ -37,6 +37,25 @@
             background-color: var(--bg-deep-dark);
             color: var(--text-heading);
             overflow-x: hidden;
+            color-scheme: dark;
+        }
+
+        /* ── Dark Theme Dropdown Select & Option Styling for Admin ── */
+        select, .form-select, .form-control {
+            color-scheme: dark;
+        }
+
+        select option, .form-select option, .form-control option {
+            background-color: #131924 !important;
+            color: #ffffff !important;
+            padding: 10px 14px;
+        }
+
+        select option:hover,
+        select option:focus,
+        select option:checked {
+            background-color: #d4af37 !important;
+            color: #0b0e14 !important;
         }
 
         .admin-wrapper {
