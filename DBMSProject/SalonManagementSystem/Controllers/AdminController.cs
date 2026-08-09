@@ -1000,8 +1000,8 @@ namespace SalonManagementSystem.Controllers
                     int hours = workMins / 60;
                     int mins = workMins % 60;
                     string durationStr = isActive 
-                        ? $"{hours}h {mins}m (In Progress)" 
-                        : $"{hours}h {mins}m";
+                        ? (hours > 0 ? $"{hours} hrs {mins} mins (Active)" : $"{mins} mins (Active)")
+                        : (hours > 0 ? $"{hours} hrs {mins} mins" : $"{mins} mins");
 
                     list.Add(new StaffAttendanceAdminViewModel
                     {
