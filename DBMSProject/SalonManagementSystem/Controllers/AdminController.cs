@@ -975,7 +975,9 @@ namespace SalonManagementSystem.Controllers
                 conn.Open();
 
                 SqlCommand cmd = new SqlCommand(@"
-                    SELECT a.AttendanceId, s.StaffId, s.StaffName, s.StaffSpecialilty,
+                    SELECT a.AttendanceId, s.StaffId, 
+                           ISNULL(s.StaffName, 'Staff Specialist') AS StaffName, 
+                           ISNULL(s.StaffSpecialilty, 'Salon Specialist') AS StaffSpecialilty,
                            a.CheckIn, a.CheckOut,
                            DATEDIFF(MINUTE, a.CheckIn, ISNULL(a.CheckOut, GETDATE())) AS WorkingMinutes
                     FROM attendance a
