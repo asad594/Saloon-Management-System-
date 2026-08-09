@@ -377,9 +377,12 @@
                     <div class="form-field-group">
                         <label class="field-label">Password</label>
                         <div class="field-input-wrapper">
-                            <input type="password" name="Password" class="form-control-custom"
+                            <input type="password" id="regPasswordInput" name="Password" class="form-control-custom"
                                    placeholder="Create password" required />
                             <i class="fa-solid fa-lock field-icon-left"></i>
+                            <button type="button" class="field-icon-right-btn" id="toggleRegPwBtn" title="Show/Hide password" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-body); cursor:pointer; font-size:1.05rem;">
+                                <i class="fa-solid fa-eye" id="regEyeIcon"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -410,7 +413,9 @@
 
 <script>
     function setRegisterRole(role) {
-        document.getElementById('regRoleInput').value = role;
+        const regRoleInput = document.getElementById('regRoleInput');
+        if (regRoleInput) regRoleInput.value = role;
+
         const tabUser = document.getElementById('regTabUser');
         const tabStaff = document.getElementById('regTabStaff');
         const subtitle = document.getElementById('regSubtitle');
@@ -418,19 +423,33 @@
         const loginBackLink = document.getElementById('loginBackLink');
 
         if (role === 'Staff') {
-            tabStaff.className = 'role-tab-btn active staff-active';
-            tabUser.className = 'role-tab-btn';
-            subtitle.textContent = 'Register as a Staff Member / Salon Specialist';
-            btnText.textContent = 'Register as Staff Specialist';
-            loginBackLink.href = '/Login/Index?role=Staff';
+            if (tabStaff) tabStaff.className = 'role-tab-btn active staff-active';
+            if (tabUser) tabUser.className = 'role-tab-btn';
+            if (subtitle) subtitle.textContent = 'Register as a Staff Member / Salon Specialist';
+            if (btnText) btnText.textContent = 'Register as Staff Specialist';
+            if (loginBackLink) loginBackLink.href = '/Login/Index?role=Staff';
         } else {
-            tabUser.className = 'role-tab-btn active';
-            tabStaff.className = 'role-tab-btn';
-            subtitle.textContent = 'Register as a VIP User / Client';
-            btnText.textContent = 'Register as VIP User';
-            loginBackLink.href = '/Login/Index?role=User';
+            if (tabUser) tabUser.className = 'role-tab-btn active';
+            if (tabStaff) tabStaff.className = 'role-tab-btn';
+            if (subtitle) subtitle.textContent = 'Register as a VIP User / Client';
+            if (btnText) btnText.textContent = 'Register as VIP User';
+            if (loginBackLink) loginBackLink.href = '/Login/Index?role=User';
         }
     }
 
     setRegisterRole('@defaultRole');
+
+    // Register Password Toggle
+    const regPwInput = document.getElementById('regPasswordInput');
+    const toggleRegPwBtn = document.getElementById('toggleRegPwBtn');
+    const regEyeIcon = document.getElementById('regEyeIcon');
+
+    if (toggleRegPwBtn && regPwInput && regEyeIcon) {
+        toggleRegPwBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const isPw = regPwInput.type === 'password';
+            regPwInput.type = isPw ? 'text' : 'password';
+            regEyeIcon.className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+        });
+    }
 </script>
