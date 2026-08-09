@@ -460,10 +460,15 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" style="text-align:center; padding:36px; color:var(--text-body);">
-                            <i class="fa-solid fa-folder-open" style="font-size:2.4rem; color:#d4af37; margin-bottom:12px; display:block;"></i>
-                            <div style="font-weight:700; font-size:1.05rem; color:#ffffff; margin-bottom:4px;">No Attendance Records Logged for @displayDate</div>
-                            <p style="font-size:0.85rem; max-width:400px; margin:0 auto;">Use the date filter above to select another calendar day or view today's active staff roster.</p>
+                        <td colspan="7" style="text-align:center; padding:44px 20px; color:var(--text-body);">
+                            <div style="width:60px; height:60px; border-radius:50%; background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 14px auto;">
+                                <i class="fa-solid fa-calendar-xmark" style="font-size:1.6rem; color:#d4af37;"></i>
+                            </div>
+                            <div style="font-weight:700; font-size:1.1rem; color:#ffffff; margin-bottom:6px;">No Attendance Records Found for @displayDate</div>
+                            <p style="font-size:0.85rem; max-width:440px; margin:0 auto 16px auto; color:var(--text-body);">No staff members checked in or completed shifts on this calendar day. Select another date using the calendar filter above.</p>
+                            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.ToString("yyyy-MM-dd")" class="btn-filter-submit" style="text-decoration:none;">
+                                <i class="fa-solid fa-calendar-day"></i> Reset to Today
+                            </a>
                         </td>
                     </tr>
                 }
