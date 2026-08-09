@@ -325,7 +325,7 @@
     <div class="filter-card-container">
         <form method="get" action="/Admin/StaffAttendance" class="filter-form-group" id="attendanceFilterForm">
             <label style="font-size:0.88rem; font-weight:700; color:#f1f5f9; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-calendar-day" style="color:#d4af37;"></i> Select Date:
+                <i class="fa-solid fa-calendar-day" style="color:#d4af37;"></i> Select Calendar Date:
             </label>
             <div class="calendar-input-wrapper">
                 <input type="date" name="searchDate" value="@filterDateStr" class="calendar-input-custom" onchange="document.getElementById('attendanceFilterForm').submit();" />
@@ -336,13 +336,13 @@
         </form>
 
         <div style="display:flex; align-items:center; gap:8px;">
-            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" class="btn-date-quick">
+            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" class="btn-date-quick" title="View Yesterday's Logs">
                 <i class="fa-solid fa-chevron-left"></i> Yesterday
             </a>
-            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.ToString("yyyy-MM-dd")" class="btn-date-quick" style="border-color:#d4af37; color:#d4af37;">
-                <i class="fa-solid fa-calendar"></i> Today
+            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.ToString("yyyy-MM-dd")" class="btn-date-quick" style="border-color:#d4af37; color:#d4af37;" title="View Today's Logs">
+                <i class="fa-solid fa-calendar-check"></i> Today
             </a>
-            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn-date-quick">
+            <a href="/Admin/StaffAttendance?searchDate=@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn-date-quick" title="View Tomorrow's Schedule">
                 Tomorrow <i class="fa-solid fa-chevron-right"></i>
             </a>
         </div>
