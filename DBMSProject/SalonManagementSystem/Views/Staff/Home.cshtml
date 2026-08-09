@@ -435,6 +435,17 @@
             </div>
         }
     }
+    else
+    {
+        <div style="text-align:center; padding:36px 20px; background:rgba(255,255,255,0.02); border:1px dashed rgba(212,175,55,0.25); border-radius:16px;">
+            <i class="fa-solid fa-calendar-xmark" style="font-size:2.4rem; color:var(--gold-primary); margin-bottom:12px; display:block;"></i>
+            <div style="font-weight:700; font-size:1.05rem; color:#ffffff; margin-bottom:4px;">No Client Appointments Scheduled Today</div>
+            <p style="font-size:0.85rem; color:var(--text-body); margin-bottom:16px;">There are no active shift appointments booked for your station today.</p>
+            <a href="/Staff/BookAppointment" class="btn-action-hero" style="font-size:0.82rem; padding:8px 20px;">
+                <i class="fa-solid fa-plus"></i> Schedule New Client Appointment
+            </a>
+        </div>
+    }
 </div>
 
 <!-- ── Appointments Analytics Chart Container ── -->
