@@ -202,6 +202,22 @@
 }
 
 <div class="attendance-card-container">
+    <!-- Alert Banners -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background:rgba(34,197,94,0.18); border:1px solid rgba(34,197,94,0.4); border-radius:14px; padding:12px 18px; color:#4ade80; font-size:0.9rem; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="background:rgba(244,63,94,0.18); border:1px solid rgba(244,63,94,0.4); border-radius:14px; padding:12px 18px; color:#fca5a5; font-size:0.9rem; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>@TempData["ErrorMessage"]</span>
+        </div>
+    }
+
     <!-- Header -->
     <div class="attendance-hero-header">
         <div class="attendance-title-group">
@@ -212,32 +228,43 @@
             </div>
         </div>
 
-        <div class="shift-timer-box">
-            <i class="fa-solid fa-circle" style="font-size:0.5rem; color:#4ade80;"></i> Shift Active
+        <div class="shift-timer-box" style="@(ViewBag.HasActiveShift == true ? "" : "background:rgba(212,175,55,0.12); border-color:rgba(212,175,55,0.3); color:var(--gold-primary);")">
+            <i class="fa-solid fa-circle" style="font-size:0.5rem; color:@(ViewBag.HasActiveShift == true ? "#4ade80" : "#d4af37");"></i> 
+            @(ViewBag.HasActiveShift == true ? "Shift Active (Checked In)" : "Shift Off-Clock")
         </div>
     </div>
 
     <!-- Attendance Form -->
     <form method="post" asp-action="MarkAttendance" class="form-attendance-custom">
+        <input type="hidden" name="SelectedStaffId" value="@ViewBag.CurrentStaffId" />
+
         <div class="form-grid-2col">
+            <!-- Logged In Staff Profile Card -->
             <div class="form-group-custom">
-                <label class="form-label-custom">Select Staff Specialist</label>
-                <select name="SelectedStaffId" class="form-input-custom" required>
-                    @if (ViewBag.StaffList != null)
-                    {
-                        foreach (var s in ViewBag.StaffList)
-                        {
-                            <option value="@s.Value">@s.Text</option>
-                        }
-                    }
-                </select>
+                <label class="form-label-custom">Logged-In Staff Specialist</label>
+                <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-id-badge" style="color:var(--gold-primary); font-size:1.2rem;"></i>
+                    <div>
+                        <div style="font-weight:700; color:#ffffff; font-size:0.95rem;">@ViewBag.CurrentStaffName</div>
+                        <div style="font-size:0.78rem; color:var(--teal-light);">@ViewBag.CurrentStaffSpeciality</div>
+                    </div>
+                </div>
             </div>
 
+            <!-- Action Type Select -->
             <div class="form-group-custom">
                 <label class="form-label-custom">Attendance Action Type</label>
                 <select name="Type" class="form-input-custom" required>
-                    <option value="CheckIn">🌅 Shift Arrival (Check-In)</option>
-                    <option value="CheckOut">🌇 Shift Departure (Check-Out)</option>
+                    @if (ViewBag.HasActiveShift == true)
+                    {
+                        <option value="CheckOut" selected>🌇 Shift Departure (Check-Out)</option>
+                        <option value="CheckIn">🌅 Shift Arrival (Check-In)</option>
+                    }
+                    else
+                    {
+                        <option value="CheckIn" selected>🌅 Shift Arrival (Check-In)</option>
+                        <option value="CheckOut">🌇 Shift Departure (Check-Out)</option>
+                    }
                 </select>
             </div>
         </div>
