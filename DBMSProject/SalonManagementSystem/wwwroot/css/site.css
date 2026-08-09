@@ -118,6 +118,17 @@ select {
     color-scheme: dark;
     background-color: #131924;
     color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px 12px;
+}
+
+select optgroup {
+    background-color: #0b0e14 !important;
+    color: #d4af37 !important;
+    font-weight: 700;
 }
 
 select option {
