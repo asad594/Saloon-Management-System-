@@ -126,6 +126,14 @@ select option {
     padding: 10px 14px;
 }
 
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+    background-color: #0d9488 !important;
+    color: #ffffff !important;
+}
+
 .form-control {
     padding: 10px 12px;
     border-radius: 10px;
