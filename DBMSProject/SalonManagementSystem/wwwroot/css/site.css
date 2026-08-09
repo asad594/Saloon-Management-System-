@@ -113,13 +113,26 @@ body {
         color: #555;
     }
 
-/* DROPDOWN STYLE */
+/* DROPDOWN & OPTION STYLING */
+select {
+    color-scheme: dark;
+    background-color: #131924;
+    color: #ffffff;
+}
+
+select option {
+    background-color: #131924 !important;
+    color: #ffffff !important;
+    padding: 10px 14px;
+}
+
 .form-control {
     padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid #ddd;
     font-size: 14px;
     transition: 0.3s;
+    color-scheme: dark;
 }
 
     .form-control:focus {
