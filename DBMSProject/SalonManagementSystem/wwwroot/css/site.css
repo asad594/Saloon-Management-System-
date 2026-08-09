@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  color-scheme: dark;
 }
 
 @media (min-width: 768px) {
@@ -19,6 +20,7 @@ html {
 
 body {
   margin-bottom: 0;
+  color-scheme: dark;
 }
 
 /* Global Mobile Touch Target Utilities */
