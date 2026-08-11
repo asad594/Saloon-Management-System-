@@ -263,6 +263,47 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("Profile");
         }
 
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Please provide valid current and new password details.";
+                return RedirectToAction("Profile");
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand checkCmd = new SqlCommand("SELECT UserPassword FROM users WHERE UserID = @uid", conn);
+                checkCmd.Parameters.AddWithValue("@uid", userId);
+                object? currentPassObj = checkCmd.ExecuteScalar();
+
+                string currentPassInDb = currentPassObj != null && currentPassObj != DBNull.Value ? currentPassObj.ToString()! : string.Empty;
+
+                if (!currentPassInDb.Equals(model.CurrentPassword.Trim()))
+                {
+                    TempData["ErrorMessage"] = "Current password is incorrect.";
+                    return RedirectToAction("Profile");
+                }
+
+                SqlCommand updateCmd = new SqlCommand("UPDATE users SET UserPassword = @newPass WHERE UserID = @uid", conn);
+                updateCmd.Parameters.AddWithValue("@newPass", model.NewPassword.Trim());
+                updateCmd.Parameters.AddWithValue("@uid", userId);
+                updateCmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Password changed successfully!";
+            return RedirectToAction("Profile");
+        }
+
+
 
 
     }
