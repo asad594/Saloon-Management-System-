@@ -548,8 +548,10 @@ namespace SalonManagementSystem.Controllers
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                int currentStaffId = GetLoggedInStaffId(conn);
 
                 // ✅ LOAD SERVICES
+
                 SqlCommand cmd = new SqlCommand(
                     "SELECT ServiceId, ServiceName FROM salonservices", conn);
 
