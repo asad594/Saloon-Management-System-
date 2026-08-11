@@ -378,6 +378,58 @@ namespace SalonManagementSystem.Controllers
             return View(staffList);
         }
 
+        [HttpGet]
+        public IActionResult BookAppointment(int? serviceId = null, int? staffId = null)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            BookAppointmentViewModel model = new BookAppointmentViewModel
+            {
+                SelectedServiceId = serviceId ?? 0,
+                SelectedStaffId = staffId ?? 0,
+                AppDate = DateTime.Today
+            };
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                // Fetch Available Services
+                SqlCommand sCmd = new SqlCommand("SELECT ServiceId, ServiceName, ServicePrice, ServiceTime FROM salonservices WHERE ServiceStatus = 1 ORDER BY ServiceName ASC", conn);
+                using var sr = sCmd.ExecuteReader();
+                while (sr.Read())
+                {
+                    model.AvailableServices.Add(new SalonService
+                    {
+                        ServiceId = Convert.ToInt32(sr["ServiceId"]),
+                        ServiceName = sr["ServiceName"].ToString()!,
+                        ServicePrice = Convert.ToDecimal(sr["ServicePrice"]),
+                        ServiceTime = sr["ServiceTime"] != DBNull.Value ? (TimeSpan)sr["ServiceTime"] : TimeSpan.FromMinutes(30)
+                    });
+                }
+                sr.Close();
+
+                // Fetch Available Active Staff
+                SqlCommand stCmd = new SqlCommand("SELECT StaffId, StaffName, ISNULL(StaffSpecialilty, 'Specialist') AS Speciality FROM staff WHERE StaffStatus = 1 ORDER BY StaffName ASC", conn);
+                using var str = stCmd.ExecuteReader();
+                while (str.Read())
+                {
+                    model.AvailableStaff.Add(new
+                    {
+                        StaffId = Convert.ToInt32(str["StaffId"]),
+                        StaffName = str["StaffName"].ToString()!,
+                        Speciality = str["Speciality"].ToString()!
+                    });
+                }
+            }
+
+            return View(model);
+        }
+
+
 
 
 
