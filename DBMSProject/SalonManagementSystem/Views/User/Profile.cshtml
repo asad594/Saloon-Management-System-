@@ -1,0 +1,199 @@
+@model SalonManagementSystem.Models.UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_UserLayout";
+}
+
+<style>
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+    }
+
+    @@media (max-width: 992px) {
+        .profile-grid { grid-template-columns: 1fr; }
+    }
+
+    .profile-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header-title {
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 16px;
+    }
+
+    .card-header-title i {
+        color: var(--gold-primary);
+    }
+
+    .avatar-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .large-avatar {
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--gold-primary), var(--teal-primary));
+        color: #ffffff;
+        font-size: 2.2rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid var(--gold-primary);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-body);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        background: rgba(11, 14, 20, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: var(--gold-primary);
+        box-shadow: 0 0 14px rgba(212, 175, 55, 0.25);
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-accent));
+        color: #0b0e14;
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+    }
+</style>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; font-weight: 600;">
+        <i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="profile-grid">
+    <!-- Personal Information Card -->
+    <div class="profile-card">
+        <div class="card-header-title">
+            <i class="fa-solid fa-user-pen"></i> Personal Profile Details
+        </div>
+
+        <div class="avatar-header">
+            <div class="large-avatar">@Model.FullName.Substring(0, 1).ToUpper()</div>
+            <div>
+                <h3 style="color:#ffffff; font-size:1.2rem; font-weight:700;">@Model.FullName</h3>
+                <span style="color:var(--gold-accent); font-size:0.85rem; font-weight:600;"><i class="fa-solid fa-crown"></i> StylOnyx Member</span>
+            </div>
+        </div>
+
+        <form asp-action="Profile" method="post">
+            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" asp-for="ClientId" />
+
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control-custom" placeholder="Enter your full name" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input asp-for="Phone" class="form-control-custom" placeholder="0300-0000000" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Username (Read-Only)</label>
+                <input asp-for="UserName" class="form-control-custom" readonly style="opacity: 0.7; cursor: not-allowed;" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input asp-for="Email" class="form-control-custom" placeholder="user@salon.com" />
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fa-solid fa-floppy-disk"></i> Update Profile Information
+            </button>
+        </form>
+    </div>
+
+    <!-- Security & Password Card -->
+    <div class="profile-card">
+        <div class="card-header-title">
+            <i class="fa-solid fa-shield-halved"></i> Password & Security
+        </div>
+
+        <p style="color:var(--text-body); font-size:0.9rem; margin-bottom:24px;">
+            Keep your account secure by updating your password regularly. Password must be at least 4 characters long.
+        </p>
+
+        <form asp-action="ChangePassword" method="post">
+            <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <input type="password" name="CurrentPassword" class="form-control-custom" placeholder="••••••••" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" name="NewPassword" class="form-control-custom" placeholder="••••••••" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" name="ConfirmPassword" class="form-control-custom" placeholder="••••••••" required />
+            </div>
+
+            <button type="submit" class="btn-save" style="background: linear-gradient(135deg, var(--teal-primary), var(--teal-glow)); color: #ffffff;">
+                <i class="fa-solid fa-key"></i> Change Password
+            </button>
+        </form>
+    </div>
+</div>
