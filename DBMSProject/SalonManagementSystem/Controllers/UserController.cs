@@ -615,6 +615,108 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("MyAppointments");
         }
 
+        [HttpGet]
+        public IActionResult MyAppointments()
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            List<UserAppointmentViewModel> upcomingList = new List<UserAppointmentViewModel>();
+            List<UserAppointmentViewModel> historyList = new List<UserAppointmentViewModel>();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                string query = @"
+                    SELECT a.AppId, a.AppDate, a.AppTime, a.AppStatus, 
+                           s.StaffId, ISNULL(s.StaffName, 'Assigned Stylist') AS StaffName, ISNULL(s.StaffSpecialilty, 'Specialist') AS StaffSpecialilty,
+                           srv.ServiceId, ISNULL(srv.ServiceName, 'Salon Service') AS ServiceName, ISNULL(srv.ServicePrice, 0) AS ServicePrice,
+                           act.StatusType,
+                           r.ReviewId, r.Rating, r.Comment
+                    FROM appointments a
+                    LEFT JOIN staff s ON a.App_Booked_For = s.StaffId
+                    LEFT JOIN appointmentservices aps ON a.AppId = aps.ApId
+                    LEFT JOIN salonservices srv ON aps.SeId = srv.ServiceId
+                    LEFT JOIN activestatus act ON a.AppStatus = act.StatusId
+                    LEFT JOIN Reviews r ON a.AppId = r.AppointmentId AND r.UserId = @uid
+                    WHERE a.CId = @cid
+                    ORDER BY a.AppDate DESC, a.AppTime DESC";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@cid", clientId);
+                    cmd.Parameters.AddWithValue("@uid", userId);
+                    using var reader = cmd.ExecuteReader();
+
+                    DateTime now = DateTime.Now;
+
+                    while (reader.Read())
+                    {
+                        int appId = Convert.ToInt32(reader["AppId"]);
+                        DateTime appDate = Convert.ToDateTime(reader["AppDate"]);
+                        TimeSpan appTime = (TimeSpan)reader["AppTime"];
+                        int status = Convert.ToInt32(reader["AppStatus"]);
+                        string statusType = reader["StatusType"] != DBNull.Value ? reader["StatusType"].ToString()! : "Scheduled";
+
+                        DateTime appDateTime = appDate.Date + appTime;
+                        bool canModify = (status == 1 || status == 3) && (appDateTime - now).TotalHours >= 2;
+
+                        bool hasReviewed = reader["ReviewId"] != DBNull.Value;
+                        int? rating = hasReviewed ? Convert.ToInt32(reader["Rating"]) : (int?)null;
+                        string? comment = hasReviewed ? reader["Comment"]?.ToString() : null;
+
+                        string badgeClass = status switch
+                        {
+                            3 => "badge-scheduled",
+                            4 => "badge-completed",
+                            5 => "badge-cancelled",
+                            _ => "badge-pending"
+                        };
+
+                        var item = new UserAppointmentViewModel
+                        {
+                            AppId = appId,
+                            StaffId = reader["StaffId"] != DBNull.Value ? Convert.ToInt32(reader["StaffId"]) : 0,
+                            StaffName = reader["StaffName"].ToString()!,
+                            StaffSpeciality = reader["StaffSpecialilty"].ToString()!,
+                            ServiceId = reader["ServiceId"] != DBNull.Value ? Convert.ToInt32(reader["ServiceId"]) : 0,
+                            ServiceName = reader["ServiceName"].ToString()!,
+                            ServicePrice = Convert.ToDecimal(reader["ServicePrice"]),
+                            AppDate = appDate,
+                            AppTime = appTime,
+                            DisplayTime = DateTime.Today.Add(appTime).ToString("hh:mm tt"),
+                            AppStatus = status,
+                            StatusName = statusType,
+                            StatusBadgeClass = badgeClass,
+                            CanCancelOrReschedule = canModify,
+                            HasBeenReviewed = hasReviewed,
+                            Rating = rating,
+                            Comment = comment
+                        };
+
+                        if ((status == 1 || status == 3) && appDateTime >= now)
+                        {
+                            upcomingList.Add(item);
+                        }
+                        else
+                        {
+                            historyList.Add(item);
+                        }
+                    }
+                }
+            }
+
+            ViewBag.UpcomingAppointments = upcomingList;
+            ViewBag.HistoryAppointments = historyList;
+
+            return View();
+        }
+
+
 
 
 
