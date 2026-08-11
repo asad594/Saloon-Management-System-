@@ -529,6 +529,93 @@ namespace SalonManagementSystem.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult BookAppointment(BookAppointmentViewModel model)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (model.SelectedServiceId <= 0)
+            {
+                TempData["ErrorMessage"] = "Please select a valid service to book.";
+                return RedirectToAction("BookAppointment", new { serviceId = model.SelectedServiceId, staffId = model.SelectedStaffId });
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                // If no staff explicitly selected, assign first available active staff
+                int assignedStaffId = model.SelectedStaffId;
+                if (assignedStaffId <= 0)
+                {
+                    SqlCommand defaultStaffCmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE StaffStatus = 1 ORDER BY StaffId ASC", conn);
+                    object? resStaff = defaultStaffCmd.ExecuteScalar();
+                    if (resStaff != null && resStaff != DBNull.Value)
+                    {
+                        assignedStaffId = Convert.ToInt32(resStaff);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "No active staff members are available for booking at this time.";
+                        return RedirectToAction("BookAppointment");
+                    }
+                }
+
+                // Verify Double-Booking / Leave
+                var availableSlots = CalculateAvailableTimeSlots(conn, assignedStaffId, model.AppDate);
+                var targetSlot = availableSlots.FirstOrDefault(s => s.Time == model.AppTime);
+
+                if (targetSlot == null || !targetSlot.IsAvailable)
+                {
+                    TempData["ErrorMessage"] = $"The selected time slot is unavailable ({targetSlot?.Reason ?? "Slot unavailable"}). Please select another slot.";
+                    return RedirectToAction("BookAppointment", new { serviceId = model.SelectedServiceId, staffId = assignedStaffId });
+                }
+
+                // Insert into appointments table (Status 3 = Scheduled)
+                SqlCommand appCmd = new SqlCommand(@"
+                    INSERT INTO appointments (CId, AppDate, AppTime, App_Booked_For, App_Booked_By, AppStatus)
+                    OUTPUT INSERTED.AppId
+                    VALUES (@cid, @d, @t, @bf, @bb, 3)", conn);
+
+                appCmd.Parameters.AddWithValue("@cid", clientId);
+                appCmd.Parameters.AddWithValue("@d", model.AppDate.Date);
+                appCmd.Parameters.AddWithValue("@t", model.AppTime);
+                appCmd.Parameters.AddWithValue("@bf", assignedStaffId);
+                appCmd.Parameters.AddWithValue("@bb", assignedStaffId); // Booked for/by staff link
+
+                int newAppId = Convert.ToInt32(appCmd.ExecuteScalar());
+
+                // Insert into appointmentservices table
+                SqlCommand appServCmd = new SqlCommand(@"
+                    INSERT INTO appointmentservices (ApId, SeId) 
+                    VALUES (@appId, @serviceId)", conn);
+                appServCmd.Parameters.AddWithValue("@appId", newAppId);
+                appServCmd.Parameters.AddWithValue("@serviceId", model.SelectedServiceId);
+                appServCmd.ExecuteNonQuery();
+
+                // Activity Log
+                try
+                {
+                    SqlCommand logCmd = new SqlCommand(@"
+                        IF OBJECT_ID('dbo.UserActivityLog', 'U') IS NOT NULL
+                        INSERT INTO UserActivityLog (UserId, UserRole, ActionType, LogMessage)
+                        VALUES (@uid, 'User', 'BOOK_APPOINTMENT', @msg)", conn);
+                    logCmd.Parameters.AddWithValue("@uid", userId);
+                    logCmd.Parameters.AddWithValue("@msg", $"Appointment #{newAppId} booked for {model.AppDate.ToString("yyyy-MM-dd")} at {targetSlot.DisplayTime}");
+                    logCmd.ExecuteNonQuery();
+                }
+                catch { }
+            }
+
+            TempData["SuccessMessage"] = "Appointment booked successfully! We look forward to welcoming you.";
+            return RedirectToAction("MyAppointments");
+        }
+
+
 
 
 
