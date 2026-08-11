@@ -1,0 +1,124 @@
+@model List<dynamic>
+@{
+    ViewData["Title"] = "My Reviews & Feedback";
+    Layout = "_UserLayout";
+}
+
+<style>
+    .header-banner {
+        background: linear-gradient(135deg, rgba(19, 25, 36, 0.95), rgba(212, 175, 55, 0.15));
+        border: 1px solid var(--border-gold);
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 28px;
+    }
+
+    .header-banner h1 {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+    }
+
+    .review-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        transition: all 0.35s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .review-card:hover {
+        border-color: var(--border-gold);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .stars-wrapper {
+        color: var(--gold-primary);
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+
+    .review-comment {
+        color: #ffffff;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        font-style: italic;
+        margin-bottom: 16px;
+    }
+
+    .review-meta {
+        font-size: 0.82rem;
+        color: var(--text-body);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="header-banner">
+    <h1>My Service Reviews & Feedback</h1>
+    <p style="color:var(--text-body);">Your rating history and reviews for completed salon and spa sessions.</p>
+</div>
+
+@if (Model.Any())
+{
+    <div class="reviews-grid">
+        @foreach (var r in Model)
+        {
+            <div class="review-card">
+                <div>
+                    <div class="stars-wrapper">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= r.Rating)
+                            {
+                                <i class="fa-solid fa-star"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-regular fa-star" style="color:var(--text-muted);"></i>
+                            }
+                        }
+                    </div>
+
+                    <p class="review-comment">"@r.Comment"</p>
+                </div>
+
+                <div class="review-meta">
+                    <div>
+                        <strong style="color:#ffffff;">@r.ServiceName</strong> <br/>
+                        <span style="color:var(--gold-accent);">Stylist: @r.StaffName</span>
+                    </div>
+                    <div style="color:var(--text-muted); font-size:0.75rem;">
+                        @r.CreatedDate
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div style="background:var(--bg-card-dark); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:48px; color:var(--text-body);">
+        <i class="fa-solid fa-star" style="font-size:3rem; color:var(--gold-primary); margin-bottom:16px;"></i>
+        <h3>No Reviews Submitted Yet</h3>
+        <p style="margin-top:6px;">Once you complete an appointment, you can rate and review your experience here!</p>
+        <a href="/User/MyAppointments" class="btn-action-gold" style="margin-top:20px; padding:12px 28px; display:inline-block; border-radius:12px; font-weight:700; text-decoration:none; color:#0b0e14; background:var(--gold-primary);">
+            View My Appointments
+        </a>
+    </div>
+}
