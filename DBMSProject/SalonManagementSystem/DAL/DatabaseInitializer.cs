@@ -229,6 +229,25 @@ namespace SalonManagementSystem.DAL
                     );
                 END
 
+                IF OBJECT_ID('dbo.Reviews', 'U') IS NULL
+                BEGIN
+                    CREATE TABLE Reviews (
+                        ReviewId INT IDENTITY(1,1) PRIMARY KEY,
+                        AppointmentId INT NOT NULL FOREIGN KEY REFERENCES appointments(AppId) ON DELETE CASCADE,
+                        UserId INT NOT NULL FOREIGN KEY REFERENCES users(UserID),
+                        StaffId INT NOT NULL FOREIGN KEY REFERENCES staff(StaffId),
+                        Rating INT NOT NULL CHECK (Rating >= 1 AND Rating <= 5),
+                        Comment NVARCHAR(1000) NULL,
+                        CreatedDate DATETIME DEFAULT GETDATE()
+                    );
+                END
+
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('clients') AND name = 'UsId')
+                BEGIN
+                    ALTER TABLE clients ADD UsId INT NULL FOREIGN KEY REFERENCES users(UserID);
+                END
+
+
                 IF NOT EXISTS (SELECT 1 FROM activestatus WHERE StatusType = 'Active')
                 BEGIN
                     INSERT INTO activestatus (StatusType) VALUES ('Active'),('Inactive'),('Scheduled'),('Completed'),('Cancelled'),('On-Leave');
