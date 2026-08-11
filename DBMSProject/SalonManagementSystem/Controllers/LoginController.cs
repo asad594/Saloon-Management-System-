@@ -91,9 +91,10 @@ namespace SalonManagementSystem.Controllers
                 }
                 else
                 {
-                    // User / Client Role -> Redirect to main salon home landing page
-                    return RedirectToAction("Index", "Home");
+                    // User / Client Role -> Redirect to User Portal Dashboard
+                    return RedirectToAction("Index", "User");
                 }
+
             }
         }
 
