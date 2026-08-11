@@ -1,0 +1,198 @@
+@model List<SalonManagementSystem.Models.SalonService>
+@{
+    ViewData["Title"] = "Browse Services";
+    Layout = "_UserLayout";
+}
+
+<style>
+    .header-banner {
+        background: linear-gradient(135deg, rgba(19, 25, 36, 0.95), rgba(212, 175, 55, 0.15));
+        border: 1px solid var(--border-gold);
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .header-banner h1 {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .search-box {
+        position: relative;
+        width: 320px;
+    }
+
+    .search-input {
+        width: 100%;
+        background: rgba(11, 14, 20, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 12px 18px 12px 42px;
+        color: #ffffff;
+        font-size: 0.9rem;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--gold-primary);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px; top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold-primary);
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .service-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.35s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-card:hover {
+        border-color: var(--border-gold);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .service-icon-wrapper {
+        width: 50px; height: 50px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(13, 148, 136, 0.2), rgba(212, 175, 55, 0.2));
+        color: var(--gold-primary);
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+    }
+
+    .service-title {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 8px;
+    }
+
+    .service-details {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 16px 0 20px 0;
+        font-size: 0.85rem;
+        color: var(--text-body);
+    }
+
+    .service-price {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--gold-accent);
+    }
+
+    .btn-book-service {
+        background: linear-gradient(135deg, var(--teal-primary), var(--teal-glow));
+        color: #ffffff;
+        font-weight: 700;
+        padding: 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+        transition: all 0.3s ease;
+    }
+
+    .btn-book-service:hover {
+        background: var(--gold-primary);
+        color: #0b0e14;
+        box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+    }
+
+    @@media (max-width: 768px) {
+        .header-banner { flex-direction: column; align-items: flex-start; }
+        .search-box { width: 100%; }
+    }
+</style>
+
+<div class="header-banner">
+    <div>
+        <h1>Browse Salon & Spa Services</h1>
+        <p style="color:var(--text-body);">Discover our signature styling, therapeutic treatments, and beauty enhancements.</p>
+    </div>
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="serviceSearch" class="search-input" placeholder="Search services by name..." onkeyup="filterServices()" />
+    </div>
+</div>
+
+<div class="services-grid" id="servicesGrid">
+    @foreach (var srv in Model)
+    {
+        <div class="service-card" data-name="@srv.ServiceName.ToLower()">
+            <div>
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-scissors"></i>
+                </div>
+                <h3 class="service-title">@srv.ServiceName</h3>
+                <p style="color:var(--text-body); font-size:0.85rem; line-height:1.5;">
+                    Premium professional treatment tailored to your style and wellness goals.
+                </p>
+
+                <div class="service-details">
+                    <span><i class="fa-regular fa-clock" style="color:var(--teal-light);"></i> @srv.ServiceTime.TotalMinutes mins</span>
+                    <span><i class="fa-solid fa-shield-halved" style="color:var(--gold-primary);"></i> Top Rated</span>
+                </div>
+            </div>
+
+            <div>
+                <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px;">
+                    <span style="font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Price</span>
+                    <span class="service-price">Rs. @srv.ServicePrice.ToString("N0")</span>
+                </div>
+                <a href="/User/BookAppointment?serviceId=@srv.ServiceId" class="btn-book-service">
+                    <i class="fa-solid fa-calendar-check"></i> Book Service
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function filterServices() {
+            const query = document.getElementById('serviceSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('#servicesGrid .service-card');
+            
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}
