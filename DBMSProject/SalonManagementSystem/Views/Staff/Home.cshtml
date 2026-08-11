@@ -459,21 +459,7 @@
     }
 </div>
 
-<!-- ── Appointments Analytics Chart Container ── -->
-<div class="staff-chart-card">
-    <div class="chart-card-header">
-        <div>
-            <div class="chart-card-title"><i class="fa-solid fa-chart-line" style="color:var(--gold-primary);"></i> Shift Appointment Analytics</div>
-            <div class="chart-card-subtitle">Real-time hourly breakdown of booked services today</div>
-        </div>
-    </div>
-    <div style="position: relative; height: 280px; width: 100%;">
-        <canvas id="appointmentChart"></canvas>
-    </div>
-</div>
-
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function updateLiveClock() {
             const now = new Date();
@@ -486,49 +472,5 @@
         }
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
-
-        fetch('/Staff/GetTodayAppointmentsChart')
-        .then(res => res.json())
-        .then(data => {
-            const labels = data.map(x => x.time);
-            const values = data.map(x => x.total);
-            const ctx = document.getElementById('appointmentChart').getContext('2d');
-
-            const tealGradient = ctx.createLinearGradient(0, 0, 0, 300);
-            tealGradient.addColorStop(0, 'rgba(20, 184, 166, 0.85)');
-            tealGradient.addColorStop(1, 'rgba(212, 175, 55, 0.2)');
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Appointments Today',
-                        data: values,
-                        backgroundColor: tealGradient,
-                        borderColor: '#2dd4bf',
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#94a3b8', stepSize: 1 }
-                        }
-                    }
-                }
-            });
-        });
     </script>
 }
