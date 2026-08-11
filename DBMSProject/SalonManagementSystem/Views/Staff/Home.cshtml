@@ -316,15 +316,22 @@
     </style>
 }
 
+@{
+    var rawStaffName = ViewBag.StaffName as string ?? ViewData["StaffName"] as string ?? Context.Session.GetString("UserName");
+    var displayStaffName = !string.IsNullOrWhiteSpace(rawStaffName) && rawStaffName != "Staff Member" ? rawStaffName : "Specialist";
+    var avatarLetter = !string.IsNullOrWhiteSpace(displayStaffName) ? displayStaffName.Trim().Substring(0, 1).ToUpper() : "S";
+}
+
 <!-- ── Staff Hero Welcome Banner ── -->
 <div class="staff-hero-banner">
     <div class="hero-profile-group">
-        <div class="hero-avatar-badge">@userName.Substring(0, 1)</div>
+        <div class="hero-avatar-badge">@avatarLetter</div>
         <div class="hero-text-content">
-            <h1>Welcome Back, @userName <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold-primary); font-size:1.4rem;"></i></h1>
+            <h1>Welcome Back, @displayStaffName <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold-primary); font-size:1.4rem;"></i></h1>
             <p>StylOnyx Executive Studio &bull; Master Specialist Workstation</p>
         </div>
     </div>
+
 
     <div class="hero-clock-widget">
         <div>
