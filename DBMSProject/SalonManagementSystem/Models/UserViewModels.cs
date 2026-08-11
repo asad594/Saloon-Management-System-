@@ -49,9 +49,14 @@ namespace SalonManagementSystem.Models
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// Multi-step booking model for appointment scheduling.
+    /// </summary>
     public class BookAppointmentViewModel
     {
+        [Required(ErrorMessage = "Please select a service")]
         public int SelectedServiceId { get; set; }
+
         public int SelectedStaffId { get; set; }
         
         [Required(ErrorMessage = "Please select an appointment date")]
@@ -64,6 +69,7 @@ namespace SalonManagementSystem.Models
         public List<dynamic> AvailableStaff { get; set; } = new List<dynamic>();
         public List<TimeSlotItem> AvailableTimeSlots { get; set; } = new List<TimeSlotItem>();
     }
+
 
     public class TimeSlotItem
     {
