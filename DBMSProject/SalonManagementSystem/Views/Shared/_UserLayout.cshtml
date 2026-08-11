@@ -1,0 +1,473 @@
+@{
+    Layout = null;
+    var currentPage = ViewContext.RouteData.Values["action"]?.ToString();
+    var userName = Context.Session.GetString("UserName") ?? "Valued Client";
+    var hasUpcomingReminder = ViewBag.HasUpcomingReminder as bool? ?? false;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StylOnyx Client Portal | Executive Salon & Spa Studio</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <link rel="stylesheet" href="~/css/site.css" />
+    
+    <style>
+        :root {
+            --bg-deep-dark: #0b0e14;
+            --bg-card-dark: #131924;
+            --gold-primary: #d4af37;
+            --gold-accent: #f2ca50;
+            --gold-light: #fef08a;
+            --teal-primary: #0d9488;
+            --teal-glow: #14b8a6;
+            --teal-light: #2dd4bf;
+            --text-heading: #ffffff;
+            --text-body: #94a3b8;
+            --text-muted: #64748b;
+            --border-gold: rgba(212, 175, 55, 0.25);
+            --font-display: 'Playfair Display', serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-deep-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.1) 0px, transparent 50%);
+            font-family: var(--font-sans);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            color-scheme: dark;
+        }
+
+        select {
+            color-scheme: dark;
+            background-color: var(--bg-card-dark);
+            color: #ffffff;
+        }
+
+        select option {
+            background-color: #131924 !important;
+            color: #ffffff !important;
+            padding: 10px 14px;
+        }
+
+        select option:hover, select option:focus, select option:checked {
+            background-color: var(--teal-primary) !important;
+            color: #ffffff !important;
+        }
+
+        .sidebar {
+            width: 270px;
+            height: 100vh;
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            z-index: 100;
+            background: linear-gradient(180deg, #131924 0%, #0b0e14 100%);
+            border-right: 1px solid var(--border-gold);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow: hidden;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand .brand-logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.25rem;
+            box-shadow: 0 0 18px rgba(13, 148, 136, 0.4);
+        }
+
+        .sidebar-brand .brand-text {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .sidebar-brand .brand-text span {
+            color: var(--gold-primary);
+        }
+
+        .nav-menu {
+            flex: 1;
+            overflow-y: auto !important;
+            min-height: 0;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-menu::-webkit-scrollbar { width: 7px; }
+        .nav-menu::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #d4af37 0%, #0d9488 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .nav-section-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--gold-primary);
+            margin: 16px 12px 8px 12px;
+        }
+
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 12px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item-link i {
+            font-size: 1.05rem;
+            color: var(--teal-light);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item-link:hover, .nav-item-link.active {
+            background: rgba(212, 175, 55, 0.14);
+            color: var(--gold-accent) !important;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+        }
+
+        .nav-item-link:hover i, .nav-item-link.active i {
+            color: var(--gold-primary);
+            transform: scale(1.15);
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+            background: rgba(11, 14, 20, 0.6);
+        }
+
+        .user-profile-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-primary), var(--teal-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role-tag {
+            font-size: 0.72rem;
+            color: var(--gold-accent);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .main-wrapper {
+            margin-left: 270px;
+            width: calc(100% - 270px);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-executive-bar {
+            height: 70px;
+            background: rgba(19, 25, 36, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-gold);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .header-title-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title-badge h2 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-header-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-gold);
+            color: #ffffff;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .btn-header-action:hover {
+            background: var(--gold-primary);
+            color: #0b0e14;
+            transform: translateY(-2px);
+        }
+
+        .notification-bell-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ef4444;
+            animation: pulse-red 2s infinite;
+        }
+
+        @@keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .main-content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        .mobile-toggle-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 95;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        @@media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; width: 100%; }
+            .top-executive-bar { padding: 0 16px; }
+            .mobile-toggle-btn { display: flex; align-items: center; justify-content: center; }
+            .main-content { padding: 18px 14px; }
+        }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ── Sidebar Drawer ── -->
+    <aside class="sidebar" id="userSidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo-icon"><i class="fa-solid fa-scissors"></i></div>
+            <div class="brand-text">Styl<span>Onyx</span></div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section-label">Client Portal</div>
+
+            <a href="/User/Index" class="nav-item-link @(currentPage == "Index" ? "active" : "")">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </a>
+            <a href="/User/BookAppointment" class="nav-item-link @(currentPage == "BookAppointment" ? "active" : "")">
+                <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+            </a>
+            <a href="/User/MyAppointments" class="nav-item-link @(currentPage == "MyAppointments" ? "active" : "")">
+                <i class="fa-solid fa-calendar-check"></i> My Appointments
+            </a>
+            <a href="/User/Services" class="nav-item-link @(currentPage == "Services" ? "active" : "")">
+                <i class="fa-solid fa-spa"></i> Browse Services
+            </a>
+            <a href="/User/Staff" class="nav-item-link @(currentPage == "Staff" ? "active" : "")">
+                <i class="fa-solid fa-user-group"></i> Our Stylists
+            </a>
+            <a href="/User/Reviews" class="nav-item-link @(currentPage == "Reviews" ? "active" : "")">
+                <i class="fa-solid fa-star"></i> My Reviews
+            </a>
+            <a href="/User/Profile" class="nav-item-link @(currentPage == "Profile" ? "active" : "")">
+                <i class="fa-solid fa-user-gear"></i> My Profile
+            </a>
+
+            <div class="nav-section-label" style="margin-top:24px;">Account</div>
+            <a href="/Home/Index" class="nav-item-link">
+                <i class="fa-solid fa-globe"></i> Main Landing Page
+            </a>
+            <a href="/Login/Logout" class="nav-item-link" style="color: #fca5a5;">
+                <i class="fa-solid fa-right-from-bracket" style="color: #f87171;"></i> Logout
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile-pill">
+                <div class="user-avatar">@userName.Substring(0, 1).ToUpper()</div>
+                <div class="user-info">
+                    <div class="user-name">@userName</div>
+                    <div class="user-role-tag"><i class="fa-solid fa-crown" style="font-size:0.65rem;"></i> Premium Client</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── Main Content Area ── -->
+    <div class="main-wrapper">
+        <header class="top-executive-bar">
+            <div class="header-title-badge">
+                <button class="mobile-toggle-btn" id="mobileMenuBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2>StylOnyx Client Hub</h2>
+            </div>
+
+            <div class="header-actions">
+                <a href="/User/MyAppointments" class="btn-header-action" title="Upcoming Reminders">
+                    <i class="fa-solid fa-bell"></i>
+                    @if (hasUpcomingReminder)
+                    {
+                        <span class="notification-bell-badge"></span>
+                    }
+                </a>
+                <a href="/User/BookAppointment" class="btn-header-action" title="Book Appointment">
+                    <i class="fa-solid fa-plus"></i>
+                </a>
+                <a href="/Login/Logout" class="btn-header-action" title="Logout">
+                    <i class="fa-solid fa-power-off"></i>
+                </a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const userSidebar = document.getElementById('userSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (mobileMenuBtn && userSidebar && sidebarOverlay) {
+            mobileMenuBtn.addEventListener('click', () => {
+                userSidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                userSidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '@TempData["SuccessMessage"]',
+                timer: 3000,
+                showConfirmButton: false,
+                background: '#131924',
+                color: '#ffffff',
+                confirmButtonColor: '#d4af37'
+            });
+            </text>
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
