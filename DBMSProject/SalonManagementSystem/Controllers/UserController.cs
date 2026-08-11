@@ -599,11 +599,12 @@ namespace SalonManagementSystem.Controllers
                     return RedirectToAction("BookAppointment", new { serviceId = model.SelectedServiceId, staffId = assignedStaffId });
                 }
 
-                // Insert into appointments table (Status 3 = Scheduled)
+                // Insert into appointments table (Status 1 = Pending)
                 SqlCommand appCmd = new SqlCommand(@"
                     INSERT INTO appointments (CId, AppDate, AppTime, App_Booked_For, App_Booked_By, AppStatus)
                     OUTPUT INSERTED.AppId
-                    VALUES (@cid, @d, @t, @bf, @bb, 3)", conn);
+                    VALUES (@cid, @d, @t, @bf, @bb, 1)", conn);
+
 
                 appCmd.Parameters.AddWithValue("@cid", clientId);
                 appCmd.Parameters.AddWithValue("@d", model.AppDate.Date);
