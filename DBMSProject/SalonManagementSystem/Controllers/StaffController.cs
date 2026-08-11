@@ -926,73 +926,7 @@ VALUES
 
 
 
-        public JsonResult GetAttendanceChart()
-        {
-            var data = new List<object>();
 
-            using (SqlConnection conn = new SqlConnection(_connection))
-            {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand(@"
-            SELECT 
-                CAST(CheckIn AS DATE) AS Date,
-                COUNT(*) AS Total
-            FROM attendance
-            GROUP BY CAST(CheckIn AS DATE)
-            ORDER BY Date
-        ", conn);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    data.Add(new
-                    {
-                        date = Convert.ToDateTime(reader["Date"]).ToString("yyyy-MM-dd"),
-                        total = (int)reader["Total"]
-                    });
-                }
-            }
-
-            return Json(data);
-        }
-
-
-
-
-        public JsonResult GetTodayAppointmentsChart()
-        {
-            var data = new List<object>();
-
-            using (SqlConnection conn = new SqlConnection(_connection))
-            {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand(@"
-            SELECT 
-                CONVERT(VARCHAR, AppTime) AS TimeSlot,
-                COUNT(*) AS Total
-            FROM appointments
-            WHERE CAST(AppDate AS DATE) = CAST(GETDATE() AS DATE)
-            GROUP BY AppTime
-            ORDER BY AppTime
-        ", conn);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    data.Add(new
-                    {
-                        time = reader["TimeSlot"].ToString(),
-                        total = (int)reader["Total"]
-                    });
-                }
-            }
-
-            return Json(data);
-        }
     }
 }
 

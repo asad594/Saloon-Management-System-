@@ -257,38 +257,7 @@ namespace SalonManagementSystem.Controllers
         
         
         
-        // ✅ WEEKLY SALES CHART
-        public JsonResult GetWeeklySales()
-        {
-            var data = new List<object>();
 
-            using (SqlConnection conn = new SqlConnection(_connection))
-            {
-                conn.Open();
-
-                SqlCommand cmd = new SqlCommand(@"
-                    SELECT 
-                        DATENAME(WEEKDAY, BillDate) AS DayName,
-                        SUM(TotalAmount) AS TotalSales
-                    FROM bills
-                    WHERE BillDate >= DATEADD(DAY, -7, GETDATE())
-                    GROUP BY DATENAME(WEEKDAY, BillDate)
-                ", conn);
-
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    data.Add(new
-                    {
-                        day = reader["DayName"].ToString(),
-                        total = Convert.ToDecimal(reader["TotalSales"])
-                    });
-                }
-            }
-
-            return Json(data);
-        }
 
 
 
