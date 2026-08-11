@@ -429,6 +429,84 @@ namespace SalonManagementSystem.Controllers
             return View(model);
         }
 
+        protected List<TimeSlotItem> CalculateAvailableTimeSlots(SqlConnection conn, int staffId, DateTime date)
+        {
+            List<TimeSlotItem> slots = new List<TimeSlotItem>();
+            TimeSpan startTime = new TimeSpan(9, 0, 0); // 09:00 AM
+            TimeSpan endTime = new TimeSpan(19, 0, 0);  // 07:00 PM
+            TimeSpan interval = TimeSpan.FromMinutes(30);
+
+            // 1. Check if Staff is on Approved Leave for this date
+            bool isOnLeave = false;
+            if (staffId > 0)
+            {
+                SqlCommand leaveCmd = new SqlCommand(@"
+                    IF OBJECT_ID('dbo.StaffLeaveRequests', 'U') IS NOT NULL
+                    BEGIN
+                        SELECT COUNT(*) FROM StaffLeaveRequests 
+                        WHERE StaffId = @sid AND CAST(LeaveDate AS DATE) = CAST(@d AS DATE) AND Status = 'Approved'
+                    END
+                    ELSE SELECT 0", conn);
+                leaveCmd.Parameters.AddWithValue("@sid", staffId);
+                leaveCmd.Parameters.AddWithValue("@d", date.Date);
+                int leaveCount = Convert.ToInt32(leaveCmd.ExecuteScalar());
+                if (leaveCount > 0) isOnLeave = true;
+            }
+
+            // 2. Fetch Existing Booked Slots
+            HashSet<TimeSpan> bookedTimes = new HashSet<TimeSpan>();
+            string appQuery = staffId > 0
+                ? "SELECT AppTime FROM appointments WHERE CAST(AppDate AS DATE) = CAST(@d AS DATE) AND App_Booked_For = @sid AND AppStatus IN (1, 3)"
+                : "SELECT AppTime FROM appointments WHERE CAST(AppDate AS DATE) = CAST(@d AS DATE) AND AppStatus IN (1, 3)";
+
+            using (SqlCommand appCmd = new SqlCommand(appQuery, conn))
+            {
+                appCmd.Parameters.AddWithValue("@d", date.Date);
+                if (staffId > 0) appCmd.Parameters.AddWithValue("@sid", staffId);
+                using var r = appCmd.ExecuteReader();
+                while (r.Read())
+                {
+                    bookedTimes.Add((TimeSpan)r["AppTime"]);
+                }
+            }
+
+            DateTime now = DateTime.Now;
+
+            for (TimeSpan current = startTime; current < endTime; current = current.Add(interval))
+            {
+                string displayTime = DateTime.Today.Add(current).ToString("hh:mm tt");
+                bool available = true;
+                string reason = "Available";
+
+                if (isOnLeave)
+                {
+                    available = false;
+                    reason = "Stylist on Leave";
+                }
+                else if (bookedTimes.Contains(current))
+                {
+                    available = false;
+                    reason = "Already Booked";
+                }
+                else if (date.Date == now.Date && current <= now.TimeOfDay)
+                {
+                    available = false;
+                    reason = "Time Past";
+                }
+
+                slots.Add(new TimeSlotItem
+                {
+                    Time = current,
+                    DisplayTime = displayTime,
+                    IsAvailable = available,
+                    Reason = reason
+                });
+            }
+
+            return slots;
+        }
+
+
 
 
 
