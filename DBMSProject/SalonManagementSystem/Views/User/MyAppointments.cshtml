@@ -1,0 +1,453 @@
+@{
+    ViewData["Title"] = "My Appointments";
+    Layout = "_UserLayout";
+    var upcoming = ViewBag.UpcomingAppointments as List<SalonManagementSystem.Models.UserAppointmentViewModel> ?? new List<SalonManagementSystem.Models.UserAppointmentViewModel>();
+    var history = ViewBag.HistoryAppointments as List<SalonManagementSystem.Models.UserAppointmentViewModel> ?? new List<SalonManagementSystem.Models.UserAppointmentViewModel>();
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .tab-container {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 12px;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-body);
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: rgba(212, 175, 55, 0.15);
+        color: var(--gold-primary);
+        border: 1px solid var(--border-gold);
+    }
+
+    .appointment-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .appointment-card:hover {
+        border-color: var(--border-gold);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .app-icon {
+        width: 52px; height: 52px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+        color: #ffffff;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .app-title {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .app-sub {
+        font-size: 0.88rem;
+        color: var(--text-body);
+        margin-top: 4px;
+    }
+
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .badge-scheduled { background: rgba(13, 148, 136, 0.2); color: var(--teal-light); border: 1px solid var(--teal-primary); }
+    .badge-completed { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+    .badge-cancelled { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    .badge-pending { background: rgba(212, 175, 55, 0.2); color: var(--gold-accent); border: 1px solid var(--gold-primary); }
+
+    .btn-action-outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: #ffffff;
+    }
+
+    .btn-action-danger {
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #f87171;
+    }
+
+    .btn-action-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+        color: #ffffff;
+    }
+
+    .btn-action-gold {
+        border-color: var(--border-gold);
+        color: var(--gold-accent);
+    }
+
+    .btn-action-gold:hover {
+        background: var(--gold-primary);
+        color: #0b0e14;
+    }
+
+    /* Modal Dialog Styling */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-card {
+        background: var(--bg-card-dark);
+        border: 1px solid var(--border-gold);
+        border-radius: 20px;
+        padding: 32px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    @@media (max-width: 768px) {
+        .appointment-card { flex-direction: column; align-items: flex-start; }
+    }
+</style>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; font-weight: 600;">
+        <i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="page-header">
+    <div>
+        <h1>My Scheduled Sessions & History</h1>
+        <p style="color:var(--text-body); margin-top:4px;">Manage your upcoming bookings or rate your completed salon experiences.</p>
+    </div>
+    <a href="/User/BookAppointment" class="btn-action-gold" style="padding:12px 24px; border-radius:12px;">
+        <i class="fa-solid fa-plus"></i> New Booking
+    </a>
+</div>
+
+<div class="tab-container">
+    <button class="tab-btn active" id="tabUpcomingBtn" onclick="switchTab('upcoming')">
+        <i class="fa-solid fa-clock"></i> Upcoming Appointments (@upcoming.Count)
+    </button>
+    <button class="tab-btn" id="tabHistoryBtn" onclick="switchTab('history')">
+        <i class="fa-solid fa-box-archive"></i> Past History (@history.Count)
+    </button>
+</div>
+
+<!-- Upcoming Section -->
+<div id="upcomingSection">
+    @if (upcoming.Any())
+    {
+        foreach (var item in upcoming)
+        {
+            <div class="appointment-card">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div class="app-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                    <div>
+                        <div class="app-title">@item.ServiceName</div>
+                        <div class="app-sub">
+                            <i class="fa-solid fa-user-ninja" style="color:var(--gold-primary);"></i> @item.StaffName (@item.StaffSpeciality)
+                        </div>
+                        <div class="app-sub" style="color:#ffffff; font-weight:600; margin-top:4px;">
+                            <i class="fa-regular fa-clock" style="color:var(--teal-light);"></i> @item.AppDate.ToString("ddd, MMM dd, yyyy") at @item.DisplayTime
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:12px;">
+                    <div>
+                        <span class="badge-status @item.StatusBadgeClass">@item.StatusName</span>
+                        <span style="color:var(--gold-accent); font-weight:800; margin-left:10px;">Rs. @item.ServicePrice.ToString("N0")</span>
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        @if (item.CanCancelOrReschedule)
+                        {
+                            <button class="btn-action-outline" onclick="openRescheduleModal(@item.AppId, @item.StaffId, '@item.AppDate.ToString("yyyy-MM-dd")')">
+                                <i class="fa-solid fa-calendar-days"></i> Reschedule
+                            </button>
+
+                            <form asp-action="CancelAppointment" method="post" onsubmit="return confirm('Are you sure you want to cancel this appointment?');" style="display:inline;">
+                                <input type="hidden" name="id" value="@item.AppId" />
+                                <button type="submit" class="btn-action-outline btn-action-danger">
+                                    <i class="fa-solid fa-xmark"></i> Cancel
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">Cutoff (< 2h)</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div style="background:var(--bg-card-dark); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:48px; color:var(--text-body);">
+            <i class="fa-solid fa-calendar-plus" style="font-size:3rem; color:var(--gold-primary); margin-bottom:16px;"></i>
+            <h3>No Upcoming Appointments</h3>
+            <p style="margin-top:6px;">You have no active sessions scheduled right now.</p>
+            <a href="/User/BookAppointment" class="btn-action-gold" style="margin-top:20px; padding:12px 28px; display:inline-block;">
+                Book Appointment Now
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Past History Section -->
+<div id="historySection" style="display:none;">
+    @if (history.Any())
+    {
+        foreach (var item in history)
+        {
+            <div class="appointment-card">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div class="app-icon" style="background:rgba(255,255,255,0.08); color:var(--text-body);"><i class="fa-solid fa-check-double"></i></div>
+                    <div>
+                        <div class="app-title">@item.ServiceName</div>
+                        <div class="app-sub">
+                            <i class="fa-solid fa-user" style="color:var(--text-muted);"></i> Stylist: @item.StaffName
+                        </div>
+                        <div class="app-sub">
+                            Date: @item.AppDate.ToString("MMM dd, yyyy") at @item.DisplayTime
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
+                    <div>
+                        <span class="badge-status @item.StatusBadgeClass">@item.StatusName</span>
+                        <span style="color:var(--gold-accent); font-weight:800; margin-left:10px;">Rs. @item.ServicePrice.ToString("N0")</span>
+                    </div>
+
+                    @if (item.AppStatus == 4) // Completed
+                    {
+                        if (item.HasBeenReviewed)
+                        {
+                            <div style="color:var(--gold-primary); font-size:0.85rem; font-weight:700;">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= (item.Rating ?? 5))
+                                    {
+                                        <i class="fa-solid fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-regular fa-star" style="color:var(--text-muted);"></i>
+                                    }
+                                }
+                                <span style="color:var(--text-body); font-weight:500; font-size:0.75rem; margin-left:6px;">(Reviewed)</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <button class="btn-action-outline btn-action-gold" onclick="openReviewModal(@item.AppId, @item.StaffId, '@item.StaffName', '@item.ServiceName')">
+                                <i class="fa-solid fa-star"></i> Rate & Review
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div style="background:var(--bg-card-dark); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:48px; color:var(--text-body);">
+            <p>No past appointment history found.</p>
+        </div>
+    }
+</div>
+
+<!-- Reschedule Modal -->
+<div class="modal-overlay" id="rescheduleModal">
+    <div class="modal-card">
+        <h3 style="font-family:var(--font-display); color:#ffffff; font-size:1.3rem; margin-bottom:16px;">
+            <i class="fa-solid fa-calendar-days" style="color:var(--gold-primary);"></i> Reschedule Appointment
+        </h3>
+        <form asp-action="RescheduleAppointment" method="post">
+            <input type="hidden" name="id" id="rescheduleAppId" />
+            <input type="hidden" id="rescheduleStaffId" />
+
+            <div style="margin-bottom:16px;">
+                <label style="color:var(--text-body); font-size:0.85rem; font-weight:700; display:block; margin-bottom:6px;">Select New Date</label>
+                <input type="date" name="newDate" id="rescheduleDate" class="form-control-custom" min="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="loadRescheduleSlots()" required />
+            </div>
+
+            <div style="margin-bottom:24px;">
+                <label style="color:var(--text-body); font-size:0.85rem; font-weight:700; display:block; margin-bottom:6px;">Select New Time Slot</label>
+                <select name="newTime" id="rescheduleSlotSelect" class="form-control-custom" required>
+                    <option value="">-- Choose Time Slot --</option>
+                </select>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px;">
+                <button type="button" class="btn-action-outline" onclick="closeRescheduleModal()">Cancel</button>
+                <button type="submit" class="btn-action-gold" style="padding:10px 20px; border-radius:8px;">Confirm Reschedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal-card">
+        <h3 style="font-family:var(--font-display); color:#ffffff; font-size:1.3rem; margin-bottom:8px;">
+            <i class="fa-solid fa-star" style="color:var(--gold-primary);"></i> Rate & Review Session
+        </h3>
+        <p id="reviewSubtitle" style="color:var(--text-body); font-size:0.85rem; margin-bottom:20px;"></p>
+
+        <form asp-action="SubmitReview" method="post">
+            <input type="hidden" name="AppointmentId" id="reviewAppId" />
+            <input type="hidden" name="StaffId" id="reviewStaffId" />
+
+            <div style="margin-bottom:20px; text-align:center;">
+                <label style="color:var(--text-body); font-size:0.85rem; font-weight:700; display:block; margin-bottom:8px;">Your Rating</label>
+                <select name="Rating" class="form-control-custom" style="width:140px; margin:0 auto; text-align:center; font-size:1.1rem;" required>
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                    <option value="3">⭐⭐⭐ (3/5)</option>
+                    <option value="2">⭐⭐ (2/5)</option>
+                    <option value="1">⭐ (1/5)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:24px;">
+                <label style="color:var(--text-body); font-size:0.85rem; font-weight:700; display:block; margin-bottom:6px;">Comments / Feedback (Optional)</label>
+                <textarea name="Comment" class="form-control-custom" rows="3" placeholder="Tell us about your experience..."></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px;">
+                <button type="button" class="btn-action-outline" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="btn-action-gold" style="padding:10px 20px; border-radius:8px;">Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function switchTab(tab) {
+            document.getElementById('tabUpcomingBtn').classList.remove('active');
+            document.getElementById('tabHistoryBtn').classList.remove('active');
+            document.getElementById('upcomingSection').style.display = 'none';
+            document.getElementById('historySection').style.display = 'none';
+
+            if (tab === 'upcoming') {
+                document.getElementById('tabUpcomingBtn').classList.add('active');
+                document.getElementById('upcomingSection').style.display = 'block';
+            } else {
+                document.getElementById('tabHistoryBtn').classList.add('active');
+                document.getElementById('historySection').style.display = 'block';
+            }
+        }
+
+        function openRescheduleModal(appId, staffId, dateStr) {
+            document.getElementById('rescheduleAppId').value = appId;
+            document.getElementById('rescheduleStaffId').value = staffId;
+            document.getElementById('rescheduleDate').value = dateStr;
+            document.getElementById('rescheduleModal').style.display = 'flex';
+            loadRescheduleSlots();
+        }
+
+        function closeRescheduleModal() {
+            document.getElementById('rescheduleModal').style.display = 'none';
+        }
+
+        function loadRescheduleSlots() {
+            const staffId = document.getElementById('rescheduleStaffId').value;
+            const date = document.getElementById('rescheduleDate').value;
+            const select = document.getElementById('rescheduleSlotSelect');
+
+            select.innerHTML = '<option value="">Loading slots...</option>';
+
+            fetch(`/User/GetAvailableTimeSlots?staffId=${staffId}&date=${date}`)
+                .then(res => res.json())
+                .then(slots => {
+                    select.innerHTML = '<option value="">-- Choose Time Slot --</option>';
+                    slots.forEach(slot => {
+                        if (slot.isAvailable) {
+                            const opt = document.createElement('option');
+                            opt.value = slot.time;
+                            opt.innerText = slot.displayTime;
+                            select.appendChild(opt);
+                        }
+                    });
+                });
+        }
+
+        function openReviewModal(appId, staffId, staffName, serviceName) {
+            document.getElementById('reviewAppId').value = appId;
+            document.getElementById('reviewStaffId').value = staffId;
+            document.getElementById('reviewSubtitle').innerText = `Share feedback for ${serviceName} with ${staffName}`;
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+    </script>
+}
