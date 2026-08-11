@@ -231,6 +231,39 @@ namespace SalonManagementSystem.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public IActionResult Profile(UserProfileViewModel model)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.FullName))
+            {
+                ViewBag.Error = "Full Name cannot be empty.";
+                return View(model);
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                SqlCommand cmd = new SqlCommand("UPDATE clients SET ClientName = @name, ClientPhone = @phone WHERE ClientId = @cid", conn);
+                cmd.Parameters.AddWithValue("@name", model.FullName.Trim());
+                cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(model.Phone) ? "03000000000" : model.Phone.Trim());
+                cmd.Parameters.AddWithValue("@cid", clientId);
+                cmd.ExecuteNonQuery();
+
+                HttpContext.Session.SetString("UserName", model.FullName.Trim());
+            }
+
+            TempData["SuccessMessage"] = "Profile details updated successfully!";
+            return RedirectToAction("Profile");
+        }
+
+
 
     }
 }
