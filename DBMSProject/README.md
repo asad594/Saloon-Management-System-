@@ -128,7 +128,9 @@ Or open `SalonManagementSystem.sln` in Visual Studio 2022 and press **F5**.
 - 💇‍♀️ **Service & Stylist Browsing**: Interactive catalog of active services and stylist roster with specialty tags.
 - 📅 **Smart Appointment Booking**: Dynamic time slot availability calculator checking staff working hours, approved leave (`StaffLeaveRequests`), and existing bookings to eliminate double-booking.
 - ⏱️ **Reschedule & Cancel Cutoff**: Integrated 2-hour cutoff rule preventing last-minute cancellations/reschedulings while sharing real-time status updates across Admin and Staff portals.
+- 👤 **Dynamic Real Staff Member Name Resolution**: Staff Hub dashboard banner, sidebar profile pill, and all staff workstation pages resolve and display the logged-in staff member's actual real name (from `staff` database records) instead of generic placeholders.
 - 📌 **Default Pending Appointment Status**: Newly booked appointments start with status `1` (`Pending`) by default; status changes to `Completed` (`4`) only when staff/admin manually updates it.
+
 - 🔔 **24-Hour Reminder Badge**: In-app animated bell notification indicator alerting users of appointments in the next 24 hours.
 
 - ⭐ **Reviews & Feedback**: Star rating (1-5) and feedback system for completed appointments backed by `Reviews` database table.
