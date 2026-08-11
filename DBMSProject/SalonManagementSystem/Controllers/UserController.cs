@@ -784,6 +784,88 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("MyAppointments");
         }
 
+        [HttpPost]
+        public IActionResult RescheduleAppointment(int id, DateTime newDate, TimeSpan newTime)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                SqlCommand cmd = new SqlCommand("SELECT AppDate, AppTime, App_Booked_For, AppStatus FROM appointments WHERE AppId = @id AND CId = @cid", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@cid", clientId);
+
+                using var r = cmd.ExecuteReader();
+                if (!r.Read())
+                {
+                    TempData["ErrorMessage"] = "Appointment record not found.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                DateTime origDate = Convert.ToDateTime(r["AppDate"]);
+                TimeSpan origTime = (TimeSpan)r["AppTime"];
+                int staffId = Convert.ToInt32(r["App_Booked_For"]);
+                int currentStatus = Convert.ToInt32(r["AppStatus"]);
+                r.Close();
+
+                DateTime origDateTime = origDate.Date + origTime;
+                DateTime now = DateTime.Now;
+
+                // 2-Hour Cutoff Rule Check
+                if ((origDateTime - now).TotalHours < 2)
+                {
+                    TempData["ErrorMessage"] = "Appointments cannot be rescheduled within 2 hours of the scheduled time.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                if (currentStatus == 4 || currentStatus == 5)
+                {
+                    TempData["ErrorMessage"] = "Completed or cancelled appointments cannot be rescheduled.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                // Check slot availability on new date
+                var slots = CalculateAvailableTimeSlots(conn, staffId, newDate);
+                var targetSlot = slots.FirstOrDefault(s => s.Time == newTime);
+
+                if (targetSlot == null || !targetSlot.IsAvailable)
+                {
+                    TempData["ErrorMessage"] = $"The selected reschedule time slot is unavailable ({targetSlot?.Reason ?? "Slot unavailable"}).";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                // Update AppDate & AppTime
+                SqlCommand updateCmd = new SqlCommand("UPDATE appointments SET AppDate = @d, AppTime = @t, AppStatus = 3 WHERE AppId = @id", conn);
+                updateCmd.Parameters.AddWithValue("@d", newDate.Date);
+                updateCmd.Parameters.AddWithValue("@t", newTime);
+                updateCmd.Parameters.AddWithValue("@id", id);
+                updateCmd.ExecuteNonQuery();
+
+                // Activity Log
+                try
+                {
+                    SqlCommand logCmd = new SqlCommand(@"
+                        IF OBJECT_ID('dbo.UserActivityLog', 'U') IS NOT NULL
+                        INSERT INTO UserActivityLog (UserId, UserRole, ActionType, LogMessage)
+                        VALUES (@uid, 'User', 'RESCHEDULE_APPOINTMENT', @msg)", conn);
+                    logCmd.Parameters.AddWithValue("@uid", userId);
+                    logCmd.Parameters.AddWithValue("@msg", $"Appointment #{id} rescheduled to {newDate.ToString("yyyy-MM-dd")} at {targetSlot.DisplayTime}");
+                    logCmd.ExecuteNonQuery();
+                }
+                catch { }
+            }
+
+            TempData["SuccessMessage"] = "Appointment rescheduled successfully!";
+            return RedirectToAction("MyAppointments");
+        }
+
+
 
 
 
