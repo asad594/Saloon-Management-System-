@@ -340,6 +340,45 @@ namespace SalonManagementSystem.Controllers
             return View(services);
         }
 
+        [HttpGet]
+        public IActionResult Staff()
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            List<dynamic> staffList = new List<dynamic>();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT StaffId, StaffName, ISNULL(StaffSpecialilty, 'Hair & Beauty Specialist') AS StaffSpecialilty, StaffPhone, StaffEmail, JoiningDate 
+                    FROM staff 
+                    WHERE StaffStatus = 1
+                    ORDER BY StaffName ASC", conn);
+
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    staffList.Add(new
+                    {
+                        StaffId = Convert.ToInt32(r["StaffId"]),
+                        StaffName = r["StaffName"].ToString()!,
+                        StaffSpeciality = r["StaffSpecialilty"].ToString()!,
+                        StaffPhone = r["StaffPhone"].ToString()!,
+                        StaffEmail = r["StaffEmail"].ToString()!,
+                        JoiningDate = r["JoiningDate"] != DBNull.Value ? Convert.ToDateTime(r["JoiningDate"]).ToString("MMM yyyy") : "N/A"
+                    });
+                }
+            }
+
+            return View(staffList);
+        }
+
+
 
 
 
