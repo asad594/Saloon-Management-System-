@@ -1,0 +1,247 @@
+@model SalonManagementSystem.Models.BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Book Appointment";
+    Layout = "_UserLayout";
+}
+
+<style>
+    .booking-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .booking-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .booking-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 20px;
+        margin-bottom: 28px;
+    }
+
+    .booking-header h1 {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .step-title {
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--gold-primary);
+        margin: 24px 0 14px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        background: rgba(11, 14, 20, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: var(--gold-primary);
+        box-shadow: 0 0 14px rgba(212, 175, 55, 0.25);
+    }
+
+    .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .slot-pill {
+        padding: 12px 8px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(11, 14, 20, 0.6);
+        color: #ffffff;
+    }
+
+    .slot-pill.available:hover {
+        border-color: var(--gold-primary);
+        background: rgba(212, 175, 55, 0.15);
+        color: var(--gold-accent);
+    }
+
+    .slot-pill.selected {
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-accent)) !important;
+        color: #0b0e14 !important;
+        border-color: var(--gold-primary) !important;
+        box-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
+    }
+
+    .slot-pill.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.04);
+        color: var(--text-muted);
+    }
+
+    .btn-confirm-booking {
+        width: 100%;
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-accent));
+        color: #0b0e14;
+        font-weight: 800;
+        font-size: 1.05rem;
+        padding: 16px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 32px;
+        box-shadow: 0 6px 24px rgba(212, 175, 55, 0.35);
+        transition: all 0.3s ease;
+    }
+
+    .btn-confirm-booking:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+    }
+</style>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; font-weight: 600;">
+        <i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="booking-wrapper">
+    <div class="booking-card">
+        <div class="booking-header">
+            <h1><i class="fa-solid fa-calendar-plus" style="color:var(--gold-primary); margin-right:10px;"></i> Book Your Session</h1>
+            <p style="color:var(--text-body); margin-top:4px;">Select your desired service, stylist, date, and preferred time slot.</p>
+        </div>
+
+        <form asp-action="BookAppointment" method="post" id="bookingForm">
+            <!-- Step 1: Select Service -->
+            <div class="step-title"><i class="fa-solid fa-1"></i> Select Salon Service</div>
+            <select asp-for="SelectedServiceId" class="form-control-custom" id="serviceSelect" required>
+                <option value="">-- Choose a Service --</option>
+                @foreach (var srv in Model.AvailableServices)
+                {
+                    <option value="@srv.ServiceId" data-price="@srv.ServicePrice" data-time="@srv.ServiceTime.TotalMinutes">
+                        @srv.ServiceName — Rs. @srv.ServicePrice.ToString("N0") (@srv.ServiceTime.TotalMinutes mins)
+                    </option>
+                }
+            </select>
+
+            <!-- Step 2: Select Staff / Stylist -->
+            <div class="step-title"><i class="fa-solid fa-2"></i> Select Master Stylist</div>
+            <select asp-for="SelectedStaffId" class="form-control-custom" id="staffSelect" onchange="fetchTimeSlots()">
+                <option value="0">⭐ Any Available Specialist</option>
+                @foreach (var staff in Model.AvailableStaff)
+                {
+                    <option value="@staff.StaffId">
+                        👤 @staff.StaffName (@staff.Speciality)
+                    </option>
+                }
+            </select>
+
+            <!-- Step 3: Pick Date -->
+            <div class="step-title"><i class="fa-solid fa-3"></i> Choose Appointment Date</div>
+            <input type="date" asp-for="AppDate" class="form-control-custom" id="datePicker" min="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="fetchTimeSlots()" required />
+
+            <!-- Step 4: Pick Available Time Slot -->
+            <div class="step-title"><i class="fa-solid fa-4"></i> Available Time Slots</div>
+            <input type="hidden" asp-for="AppTime" id="selectedTimeInput" required />
+            <div class="slots-grid" id="slotsContainer">
+                <div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--text-body);">
+                    <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px;"></i> Loading available time slots...
+                </div>
+            </div>
+
+            <!-- Booking Confirmation Button -->
+            <button type="submit" class="btn-confirm-booking" id="confirmBtn" disabled>
+                <i class="fa-solid fa-check-circle"></i> Confirm & Schedule Appointment
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTimeSlots();
+        });
+
+        function fetchTimeSlots() {
+            const staffId = document.getElementById('staffSelect').value || 0;
+            const date = document.getElementById('datePicker').value;
+            const container = document.getElementById('slotsContainer');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const selectedTimeInput = document.getElementById('selectedTimeInput');
+
+            selectedTimeInput.value = '';
+            confirmBtn.disabled = true;
+
+            if (!date) {
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--text-muted);">Please select a date.</div>`;
+                return;
+            }
+
+            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--text-body);"><i class="fa-solid fa-spinner fa-spin"></i> Checking live availability...</div>`;
+
+            fetch(`/User/GetAvailableTimeSlots?staffId=${staffId}&date=${date}`)
+                .then(res => res.json())
+                .then(slots => {
+                    container.innerHTML = '';
+                    if (!slots || slots.length === 0) {
+                        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:#f87171;">No slots available for this date.</div>`;
+                        return;
+                    }
+
+                    slots.forEach(slot => {
+                        const div = document.createElement('div');
+                        if (slot.isAvailable) {
+                            div.className = 'slot-pill available';
+                            div.innerText = slot.displayTime;
+                            div.onclick = () => selectSlot(div, slot.time);
+                        } else {
+                            div.className = 'slot-pill disabled';
+                            div.innerText = slot.displayTime;
+                            div.title = slot.reason;
+                        }
+                        container.appendChild(div);
+                    });
+                })
+                .catch(() => {
+                    container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:#f87171;">Error loading time slots. Please refresh.</div>`;
+                });
+        }
+
+        function selectSlot(element, timeVal) {
+            document.querySelectorAll('.slot-pill').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('selectedTimeInput').value = timeVal;
+            document.getElementById('confirmBtn').disabled = false;
+        }
+    </script>
+}
