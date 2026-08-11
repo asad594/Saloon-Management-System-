@@ -506,6 +506,30 @@ namespace SalonManagementSystem.Controllers
             return slots;
         }
 
+        [HttpGet]
+        public JsonResult GetAvailableTimeSlots(int staffId, string date)
+        {
+            if (!DateTime.TryParse(date, out DateTime parsedDate))
+            {
+                parsedDate = DateTime.Today;
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                var slots = CalculateAvailableTimeSlots(conn, staffId, parsedDate);
+                var result = slots.Select(s => new
+                {
+                    time = s.Time.ToString(@"hh\:mm\:ss"),
+                    displayTime = s.DisplayTime,
+                    isAvailable = s.IsAvailable,
+                    reason = s.Reason
+                });
+                return Json(result);
+            }
+        }
+
+
 
 
 
