@@ -196,5 +196,41 @@ namespace SalonManagementSystem.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            UserProfileViewModel model = new UserProfileViewModel
+            {
+                UserId = userId,
+                UserName = userName
+            };
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+                model.ClientId = clientId;
+
+                SqlCommand cmd = new SqlCommand("SELECT ClientName, ClientPhone FROM clients WHERE ClientId = @cid", conn);
+                cmd.Parameters.AddWithValue("@cid", clientId);
+                using var r = cmd.ExecuteReader();
+                if (r.Read())
+                {
+                    model.FullName = r["ClientName"].ToString()!;
+                    model.Phone = r["ClientPhone"].ToString()!;
+                }
+
+                model.Email = userName.Contains("@") ? userName : userName + "@salon.com";
+            }
+
+            return View(model);
+        }
+
+
     }
 }
