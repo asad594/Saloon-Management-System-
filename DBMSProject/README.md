@@ -121,14 +121,18 @@ Or open `SalonManagementSystem.sln` in Visual Studio 2022 and press **F5**.
 
 ---
 
-## 🏆 Version 2.0 Major Enhancements
-- 💎 **StylOnyx Branding**: Complete luxury rebranding across all executive & user views.
-- 👑 **Multi-Admin Delegation**: Ability to create, manage, and revoke additional executive administrator accounts.
-- 🧹 **One-Click Database Reset**: Clean database utility with automated lookup table preservation.
-- 📊 **Chart.js Visual Analytics**: Real-time sales and revenue tracking graphs.
-- 🛡️ **SQL Trigger Activity Audit**: Live security and authentication logging.
+## 🏆 Version 3.0 User Portal Enhancements
+- 💎 **User Portal Integration**: Dedicated Client Portal (`UserController` & `_UserLayout`) extending the exact same dark glassmorphic gold/teal design language as Admin & Staff.
+- 📊 **User Dashboard**: Live booking metrics, upcoming session highlight, recent appointment history, and recommended services.
+- 👤 **Profile & Security**: Self-service profile management (Name, Phone, Email, Avatar) and password change security modal.
+- 💇‍♀️ **Service & Stylist Browsing**: Interactive catalog of active services and stylist roster with specialty tags.
+- 📅 **Smart Appointment Booking**: Dynamic time slot availability calculator checking staff working hours, approved leave (`StaffLeaveRequests`), and existing bookings to eliminate double-booking.
+- ⏱️ **Reschedule & Cancel Cutoff**: Integrated 2-hour cutoff rule preventing last-minute cancellations/reschedulings while sharing real-time status updates across Admin and Staff portals.
+- 🔔 **24-Hour Reminder Badge**: In-app animated bell notification indicator alerting users of appointments in the next 24 hours.
+- ⭐ **Reviews & Feedback**: Star rating (1-5) and feedback system for completed appointments backed by `Reviews` database table.
 
 ---
+
 
 <div align="center">
 
