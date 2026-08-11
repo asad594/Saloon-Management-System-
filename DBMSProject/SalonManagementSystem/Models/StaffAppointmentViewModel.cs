@@ -19,10 +19,12 @@ namespace SalonManagementSystem.Models
                 {
                     1 => "Pending",
                     2 => "In Progress",
-                    3 => "Completed",
-                    4 => "No-show",
-                    _ => "Scheduled"
+                    3 => "Scheduled",
+                    4 => "Completed",
+                    5 => "Cancelled",
+                    _ => "Pending"
                 };
+
             }
         }
     }

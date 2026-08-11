@@ -262,7 +262,14 @@ namespace SalonManagementSystem.DAL
                 BEGIN
                     INSERT INTO users (UserName, UserRole, UserPassword) VALUES ('admin', 'Admin', 'admin123');
                 END
+
+                -- Ensure default status for appointments is Pending (1) if previously set to 3
+                IF OBJECT_ID('dbo.appointments', 'U') IS NOT NULL
+                BEGIN
+                    UPDATE appointments SET AppStatus = 1 WHERE AppStatus = 3;
+                END
                 ";
+
 
                 using (SqlCommand cmd = new SqlCommand(script, conn))
                 {
