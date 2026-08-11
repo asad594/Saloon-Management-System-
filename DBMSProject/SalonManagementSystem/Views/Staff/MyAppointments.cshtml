@@ -98,8 +98,10 @@
 
         .status-1 { background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); border: 1px solid rgba(212, 175, 55, 0.3); }
         .status-2 { background: rgba(20, 184, 166, 0.15); color: var(--teal-light); border: 1px solid rgba(20, 184, 166, 0.3); }
-        .status-3 { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .status-4 { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-3 { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .status-4 { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .status-5 { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
 
         .select-status-inline {
             background: rgba(11, 14, 20, 0.8);
@@ -172,9 +174,11 @@
                                 <select name="NewStatus" class="select-status-inline" onchange="this.form.submit()">
                                     <!option value="1" @(appt.AppStatus == 1 ? "selected" : "")>1. Pending</!option>
                                     <!option value="2" @(appt.AppStatus == 2 ? "selected" : "")>2. In Progress</!option>
-                                    <!option value="3" @(appt.AppStatus == 3 ? "selected" : "")>3. Completed</!option>
-                                    <!option value="4" @(appt.AppStatus == 4 ? "selected" : "")>4. No-show</!option>
+                                    <!option value="3" @(appt.AppStatus == 3 ? "selected" : "")>3. Scheduled</!option>
+                                    <!option value="4" @(appt.AppStatus == 4 ? "selected" : "")>4. Completed</!option>
+                                    <!option value="5" @(appt.AppStatus == 5 ? "selected" : "")>5. Cancelled</!option>
                                 </select>
+
                             </form>
                         </td>
                     </tr>
