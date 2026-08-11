@@ -953,11 +953,14 @@ VALUES
 
             ViewBag.CurrentStaffId = currentStaffId;
             ViewBag.CurrentStaffName = currentStaffName;
+            ViewBag.StaffName = currentStaffName;
             ViewBag.CurrentStaffSpeciality = currentSpeciality;
             ViewBag.HasActiveShift = hasActiveShift;
+            HttpContext.Session.SetString("UserName", currentStaffName);
 
             return View(list);
         }
+
 
 
 
