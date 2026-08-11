@@ -53,41 +53,75 @@ namespace SalonManagementSystem.Controllers
             }
         }
 
-        private int GetLoggedInStaffId(SqlConnection conn)
+        private void GetLoggedInStaffDetails(SqlConnection conn, out int staffId, out string staffName)
         {
+            staffId = 0;
+            staffName = string.Empty;
+
             int userId = HttpContext.Session.GetInt32("UserID") ?? 0;
-            string userName = HttpContext.Session.GetString("UserName") ?? string.Empty;
+            string sessionUserName = HttpContext.Session.GetString("UserName") ?? string.Empty;
 
             if (userId > 0)
             {
-                SqlCommand cmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE UsId = @uid", conn);
+                SqlCommand cmd = new SqlCommand("SELECT TOP 1 StaffId, StaffName FROM staff WHERE UsId = @uid", conn);
                 cmd.Parameters.AddWithValue("@uid", userId);
-                object? res = cmd.ExecuteScalar();
-                if (res != null && res != DBNull.Value)
+                using var r = cmd.ExecuteReader();
+                if (r.Read())
                 {
-                    return Convert.ToInt32(res);
+                    staffId = Convert.ToInt32(r["StaffId"]);
+                    staffName = r["StaffName"].ToString()!;
                 }
+                r.Close();
             }
 
-            if (!string.IsNullOrWhiteSpace(userName))
+            if (staffId == 0 && !string.IsNullOrWhiteSpace(sessionUserName))
             {
                 SqlCommand nameCmd = new SqlCommand(@"
-                    SELECT TOP 1 s.StaffId 
+                    SELECT TOP 1 s.StaffId, s.StaffName 
                     FROM staff s 
-                    INNER JOIN users u ON s.UsId = u.UserID 
+                    LEFT JOIN users u ON s.UsId = u.UserID 
                     WHERE u.UserName = @uname OR s.StaffName = @uname", conn);
-                nameCmd.Parameters.AddWithValue("@uname", userName.Trim());
-                object? nRes = nameCmd.ExecuteScalar();
-                if (nRes != null && nRes != DBNull.Value)
+                nameCmd.Parameters.AddWithValue("@uname", sessionUserName.Trim());
+                using var rName = nameCmd.ExecuteReader();
+                if (rName.Read())
                 {
-                    return Convert.ToInt32(nRes);
+                    staffId = Convert.ToInt32(rName["StaffId"]);
+                    staffName = rName["StaffName"].ToString()!;
                 }
+                rName.Close();
             }
 
-            SqlCommand fallbackCmd = new SqlCommand("SELECT TOP 1 StaffId FROM staff WHERE StaffStatus = 1 ORDER BY StaffId ASC", conn);
-            object? fb = fallbackCmd.ExecuteScalar();
-            return fb != null && fb != DBNull.Value ? Convert.ToInt32(fb) : 0;
+            if (staffId == 0)
+            {
+                SqlCommand fallbackCmd = new SqlCommand("SELECT TOP 1 StaffId, StaffName FROM staff WHERE StaffStatus = 1 ORDER BY StaffId ASC", conn);
+                using var rFb = fallbackCmd.ExecuteReader();
+                if (rFb.Read())
+                {
+                    staffId = Convert.ToInt32(rFb["StaffId"]);
+                    staffName = rFb["StaffName"].ToString()!;
+                }
+                rFb.Close();
+            }
+
+            if (string.IsNullOrWhiteSpace(staffName))
+            {
+                staffName = !string.IsNullOrWhiteSpace(sessionUserName) && sessionUserName != "Staff Member"
+                    ? sessionUserName
+                    : "Master Specialist";
+            }
+
+            // Sync session and ViewBag
+            HttpContext.Session.SetString("UserName", staffName);
+            ViewBag.StaffName = staffName;
+            ViewData["StaffName"] = staffName;
         }
+
+        private int GetLoggedInStaffId(SqlConnection conn)
+        {
+            GetLoggedInStaffDetails(conn, out int staffId, out _);
+            return staffId;
+        }
+
 
 
 
