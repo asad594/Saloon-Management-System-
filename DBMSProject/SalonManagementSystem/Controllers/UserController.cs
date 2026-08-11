@@ -303,6 +303,44 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("Profile");
         }
 
+        [HttpGet]
+        public IActionResult Services()
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            List<SalonService> services = new List<SalonService>();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT ServiceId, ServiceName, ServicePrice, ServiceTime, ServiceStatus 
+                    FROM salonservices 
+                    WHERE ServiceStatus = 1
+                    ORDER BY ServiceName ASC", conn);
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    services.Add(new SalonService
+                    {
+                        ServiceId = Convert.ToInt32(reader["ServiceId"]),
+                        ServiceName = reader["ServiceName"].ToString()!,
+                        ServicePrice = Convert.ToDecimal(reader["ServicePrice"]),
+                        ServiceTime = reader["ServiceTime"] != DBNull.Value ? (TimeSpan)reader["ServiceTime"] : TimeSpan.FromMinutes(30),
+                        ServiceStatus = Convert.ToInt32(reader["ServiceStatus"])
+                    });
+                }
+            }
+
+            return View(services);
+        }
+
+
 
 
 
