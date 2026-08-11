@@ -60,17 +60,24 @@ namespace SalonManagementSystem.Controllers
                 string userName = reader["UserName"] != DBNull.Value ? reader["UserName"].ToString()! : inputUser;
                 reader.Close();
 
-                // If role is Staff, fetch exact StaffName if available
+                // If role is Staff, fetch exact StaffName from database
                 if (role.Equals("Staff", StringComparison.OrdinalIgnoreCase))
                 {
-                    SqlCommand staffNameCmd = new SqlCommand("SELECT TOP 1 StaffName FROM staff WHERE UsId = @uid", conn);
+                    SqlCommand staffNameCmd = new SqlCommand(@"
+                        SELECT TOP 1 StaffName FROM staff WHERE UsId = @uid
+                        UNION ALL
+                        SELECT TOP 1 StaffName FROM staff WHERE StaffName = @uname
+                        UNION ALL
+                        SELECT TOP 1 StaffName FROM staff WHERE StaffStatus = 1", conn);
                     staffNameCmd.Parameters.AddWithValue("@uid", userId);
+                    staffNameCmd.Parameters.AddWithValue("@uname", inputUser);
                     object? sName = staffNameCmd.ExecuteScalar();
                     if (sName != null && sName != DBNull.Value && !string.IsNullOrWhiteSpace(sName.ToString()))
                     {
                         userName = sName.ToString()!;
                     }
                 }
+
 
                 HttpContext.Session.SetInt32("UserID", userId);
                 HttpContext.Session.SetString("Role", role);
