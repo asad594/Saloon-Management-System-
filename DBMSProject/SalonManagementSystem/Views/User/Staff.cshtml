@@ -1,0 +1,133 @@
+@model List<dynamic>
+@{
+    ViewData["Title"] = "Our Stylists";
+    Layout = "_UserLayout";
+}
+
+<style>
+    .header-banner {
+        background: linear-gradient(135deg, rgba(19, 25, 36, 0.95), rgba(13, 148, 136, 0.15));
+        border: 1px solid var(--border-gold);
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 28px;
+    }
+
+    .header-banner h1 {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .staff-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .staff-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 28px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.35s ease;
+        position: relative;
+    }
+
+    .staff-card:hover {
+        border-color: var(--border-gold);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .staff-avatar-large {
+        width: 84px; height: 84px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--teal-primary), var(--gold-primary));
+        color: #ffffff;
+        font-size: 2.2rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid var(--gold-primary);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+        margin-bottom: 16px;
+    }
+
+    .staff-name-title {
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .speciality-badge {
+        background: rgba(13, 148, 136, 0.15);
+        border: 1px solid var(--teal-primary);
+        color: var(--teal-light);
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+
+    .btn-book-staff {
+        width: 100%;
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-accent));
+        color: #0b0e14;
+        font-weight: 700;
+        padding: 12px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        margin-top: 16px;
+    }
+
+    .btn-book-staff:hover {
+        color: #0b0e14;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+</style>
+
+<div class="header-banner">
+    <h1>Our Master Stylists & Therapists</h1>
+    <p style="color:var(--text-body);">Book an exclusive session with our certified hair specialists, estheticians, and spa therapists.</p>
+</div>
+
+<div class="staff-grid">
+    @foreach (var staff in Model)
+    {
+        <div class="staff-card">
+            <div class="staff-avatar-large">@staff.StaffName.Substring(0, 1).ToUpper()</div>
+            <h3 class="staff-name-title">@staff.StaffName</h3>
+            <span class="speciality-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> @staff.StaffSpeciality</span>
+            
+            <p style="color:var(--text-body); font-size:0.85rem; line-height:1.5; margin-bottom:12px;">
+                Dedicated specialist focused on delivering tailored beauty and luxury care.
+            </p>
+
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">
+                <i class="fa-regular fa-calendar"></i> Member since @staff.JoiningDate
+            </div>
+
+            <a href="/User/BookAppointment?staffId=@staff.StaffId" class="btn-book-staff">
+                <i class="fa-solid fa-calendar-plus"></i> Book @staff.StaffName
+            </a>
+        </div>
+    }
+</div>
