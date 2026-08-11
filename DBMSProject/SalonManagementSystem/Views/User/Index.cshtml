@@ -1,0 +1,347 @@
+@model SalonManagementSystem.Models.UserDashboardViewModel
+@{
+    ViewData["Title"] = "User Dashboard";
+    Layout = "_UserLayout";
+}
+
+<style>
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+    }
+
+    .welcome-hero {
+        background: linear-gradient(135deg, rgba(19, 25, 36, 0.95), rgba(13, 148, 136, 0.2));
+        border: 1px solid var(--border-gold);
+        border-radius: 20px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .welcome-text h1 {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .welcome-text p {
+        color: var(--text-body);
+        font-size: 0.95rem;
+    }
+
+    .hero-btn {
+        background: linear-gradient(135deg, var(--gold-primary), var(--gold-accent));
+        color: #0b0e14;
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .hero-btn:hover {
+        transform: translateY(-2px);
+        color: #0b0e14;
+        box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+    }
+
+    .stat-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        border-color: var(--border-gold);
+        transform: translateY(-3px);
+    }
+
+    .stat-icon {
+        width: 56px; height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.gold { background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); }
+    .stat-icon.teal { background: rgba(13, 148, 136, 0.15); color: var(--teal-light); }
+    .stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+
+    .stat-info h3 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #ffffff;
+    }
+
+    .stat-info p {
+        font-size: 0.85rem;
+        color: var(--text-body);
+        font-weight: 600;
+    }
+
+    .upcoming-banner {
+        background: rgba(13, 148, 136, 0.1);
+        border: 1px solid var(--teal-primary);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .upcoming-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .upcoming-icon {
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        background: var(--teal-primary);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+    }
+
+    @@media (max-width: 992px) {
+        .content-grid { grid-template-columns: 1fr; }
+        .welcome-hero { flex-direction: column; align-items: flex-start; }
+    }
+
+    .section-card {
+        background: var(--bg-card-dark);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 24px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .custom-table th {
+        text-align: left;
+        padding: 12px 16px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--gold-primary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .custom-table td {
+        padding: 16px;
+        font-size: 0.88rem;
+        color: #e2e8f0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .badge-scheduled { background: rgba(13, 148, 136, 0.2); color: var(--teal-light); border: 1px solid var(--teal-primary); }
+    .badge-completed { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+    .badge-cancelled { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    .badge-pending { background: rgba(212, 175, 55, 0.2); color: var(--gold-accent); border: 1px solid var(--gold-primary); }
+
+    .service-mini-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+
+    .service-price-tag {
+        color: var(--gold-accent);
+        font-weight: 800;
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Welcome Hero Banner -->
+    <div class="welcome-hero">
+        <div class="welcome-text">
+            <h1>Welcome back, @Model.FullName! ✨</h1>
+            <p>Manage your luxury spa reservations, view your history, or book a new stylist session.</p>
+        </div>
+        <a href="/User/BookAppointment" class="hero-btn">
+            <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+        </a>
+    </div>
+
+    <!-- 24-Hour Upcoming Reminder Banner -->
+    @if (Model.HasUpcomingReminder && Model.UpcomingAppointment != null)
+    {
+        <div class="upcoming-banner">
+            <div class="upcoming-info">
+                <div class="upcoming-icon"><i class="fa-solid fa-bell"></i></div>
+                <div>
+                    <h4 style="color:#ffffff; font-weight:700;">Upcoming Appointment Reminder!</h4>
+                    <p style="color:var(--text-body); font-size:0.9rem; margin-top:2px;">
+                        Your appointment for <strong>@Model.UpcomingAppointment.ServiceName</strong> with 
+                        <strong>@Model.UpcomingAppointment.StaffName</strong> is scheduled for 
+                        <strong>@Model.UpcomingAppointment.AppDate.ToString("MMM dd, yyyy") at @Model.UpcomingAppointment.DisplayTime</strong>.
+                    </p>
+                </div>
+            </div>
+            <a href="/User/MyAppointments" class="btn btn-sm" style="background:var(--teal-primary); color:#ffffff; font-weight:700; border-radius:8px; padding:8px 16px;">
+                View Details
+            </a>
+        </div>
+    }
+
+    <!-- Stat Metrics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon gold"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalBookingsCount</h3>
+                <p>Total Appointments</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <h3>@Model.CompletedBookingsCount</h3>
+                <p>Completed Sessions</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon teal"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+                <h3>@Model.ActiveBookingsCount</h3>
+                <p>Active Reservations</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="content-grid">
+        <!-- Recent History Preview -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3 class="section-title">Recent Appointment History</h3>
+                <a href="/User/MyAppointments" style="color:var(--gold-primary); font-size:0.85rem; font-weight:700; text-decoration:none;">View All</a>
+            </div>
+
+            @if (Model.RecentAppointments.Any())
+            {
+                <div style="overflow-x:auto;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Stylist</th>
+                                <th>Date & Time</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.RecentAppointments)
+                            {
+                                <tr>
+                                    <td style="font-weight:700; color:#ffffff;">@item.ServiceName</td>
+                                    <td>@item.StaffName</td>
+                                    <td>@item.AppDate.ToString("MMM dd, yyyy") <br/><small style="color:var(--text-muted);">@item.DisplayTime</small></td>
+                                    <td style="color:var(--gold-accent); font-weight:700;">Rs. @item.ServicePrice.ToString("N0")</td>
+                                    <td>
+                                        <span class="badge-status @item.StatusBadgeClass">@item.StatusName</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div style="text-align:center; padding:40px; color:var(--text-body);">
+                    <i class="fa-solid fa-calendar-xmark" style="font-size:2.5rem; color:var(--gold-primary); margin-bottom:12px;"></i>
+                    <p>No appointments booked yet. Click below to schedule your first session!</p>
+                    <a href="/User/BookAppointment" class="hero-btn" style="margin-top:16px; padding:10px 20px; font-size:0.9rem;">Book Now</a>
+                </div>
+            }
+        </div>
+
+        <!-- Quick Recommended Services -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3 class="section-title">Popular Services</h3>
+                <a href="/User/Services" style="color:var(--gold-primary); font-size:0.85rem; font-weight:700; text-decoration:none;">Explore</a>
+            </div>
+
+            @foreach (var srv in Model.RecommendedServices)
+            {
+                <div class="service-mini-card">
+                    <div>
+                        <div style="font-weight:700; color:#ffffff; font-size:0.9rem;">@srv.ServiceName</div>
+                        <div style="font-size:0.75rem; color:var(--text-body);"><i class="fa-regular fa-clock"></i> @srv.ServiceTime.TotalMinutes mins</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="service-price-tag">Rs. @srv.ServicePrice.ToString("N0")</div>
+                        <a href="/User/BookAppointment?serviceId=@srv.ServiceId" style="font-size:0.75rem; color:var(--teal-light); text-decoration:none; font-weight:700;">Book -></a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
