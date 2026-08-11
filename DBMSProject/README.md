@@ -50,7 +50,7 @@
 | **Data Access Layer** | ADO.NET (`Microsoft.Data.SqlClient`) |
 | **Frontend Styling** | Custom CSS3, Glassmorphism, Google Fonts (`Playfair Display` & `Outfit`) |
 | **Icons & Alerts** | FontAwesome 6 Pro & SweetAlert2 Modals |
-| **Data Analytics** | Chart.js 4.x |
+
 
 ---
 
