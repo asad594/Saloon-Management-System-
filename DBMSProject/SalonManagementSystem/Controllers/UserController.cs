@@ -889,6 +889,118 @@ namespace SalonManagementSystem.Controllers
             return RedirectToAction("MyAppointments");
         }
 
+        [HttpPost]
+        public IActionResult SubmitReview(ReviewViewModel model)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            if (model.AppointmentId <= 0 || model.Rating < 1 || model.Rating > 5)
+            {
+                TempData["ErrorMessage"] = "Please select a valid rating between 1 and 5 stars.";
+                return RedirectToAction("MyAppointments");
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                // Verify appointment is completed (AppStatus = 4) and belongs to user
+                SqlCommand checkCmd = new SqlCommand("SELECT AppStatus, App_Booked_For FROM appointments WHERE AppId = @aid AND CId = @cid", conn);
+                checkCmd.Parameters.AddWithValue("@aid", model.AppointmentId);
+                checkCmd.Parameters.AddWithValue("@cid", clientId);
+
+                using var r = checkCmd.ExecuteReader();
+                if (!r.Read())
+                {
+                    TempData["ErrorMessage"] = "Appointment not found.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                int status = Convert.ToInt32(r["AppStatus"]);
+                int staffId = Convert.ToInt32(r["App_Booked_For"]);
+                r.Close();
+
+                if (status != 4)
+                {
+                    TempData["ErrorMessage"] = "Reviews can only be submitted for completed appointments.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                // Insert or Update Review
+                SqlCommand reviewCmd = new SqlCommand(@"
+                    IF NOT EXISTS (SELECT 1 FROM Reviews WHERE AppointmentId = @aid AND UserId = @uid)
+                    BEGIN
+                        INSERT INTO Reviews (AppointmentId, UserId, StaffId, Rating, Comment, CreatedDate)
+                        VALUES (@aid, @uid, @sid, @rating, @comment, GETDATE());
+                    END
+                    ELSE
+                    BEGIN
+                        UPDATE Reviews SET Rating = @rating, Comment = @comment WHERE AppointmentId = @aid AND UserId = @uid;
+                    END", conn);
+
+                reviewCmd.Parameters.AddWithValue("@aid", model.AppointmentId);
+                reviewCmd.Parameters.AddWithValue("@uid", userId);
+                reviewCmd.Parameters.AddWithValue("@sid", staffId);
+                reviewCmd.Parameters.AddWithValue("@rating", model.Rating);
+                reviewCmd.Parameters.AddWithValue("@comment", string.IsNullOrWhiteSpace(model.Comment) ? (object)DBNull.Value : model.Comment.Trim());
+                reviewCmd.ExecuteNonQuery();
+            }
+
+            TempData["SuccessMessage"] = "Thank you for your rating and review feedback!";
+            return RedirectToAction("MyAppointments");
+        }
+
+        [HttpGet]
+        public IActionResult Reviews()
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            List<dynamic> reviewsList = new List<dynamic>();
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+                CheckUpcomingReminders(conn, clientId);
+
+                SqlCommand cmd = new SqlCommand(@"
+                    SELECT r.ReviewId, r.Rating, r.Comment, r.CreatedDate,
+                           s.StaffName, srv.ServiceName
+                    FROM Reviews r
+                    INNER JOIN staff s ON r.StaffId = s.StaffId
+                    INNER JOIN appointments a ON r.AppointmentId = a.AppId
+                    LEFT JOIN appointmentservices aps ON a.AppId = aps.ApId
+                    LEFT JOIN salonservices srv ON aps.SeId = srv.ServiceId
+                    WHERE r.UserId = @uid
+                    ORDER BY r.CreatedDate DESC", conn);
+
+                cmd.Parameters.AddWithValue("@uid", userId);
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    reviewsList.Add(new
+                    {
+                        ReviewId = Convert.ToInt32(reader["ReviewId"]),
+                        Rating = Convert.ToInt32(reader["Rating"]),
+                        Comment = reader["Comment"] != DBNull.Value ? reader["Comment"].ToString() : "No comment left.",
+                        CreatedDate = Convert.ToDateTime(reader["CreatedDate"]).ToString("MMM dd, yyyy"),
+                        StaffName = reader["StaffName"].ToString()!,
+                        ServiceName = reader["ServiceName"] != DBNull.Value ? reader["ServiceName"].ToString()! : "Salon Service"
+                    });
+                }
+            }
+
+            return View(reviewsList);
+        }
+
+
 
 
 
