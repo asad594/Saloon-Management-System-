@@ -7,6 +7,10 @@ builder.Services.AddScoped<SalonManagementSystem.DAL.DBHelper>();
 builder.Services.AddSession();
 var app = builder.Build();
 
+// Automatically ensure non-destructive database initialization
+SalonManagementSystem.DAL.DatabaseInitializer.Initialize(builder.Configuration);
+
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
