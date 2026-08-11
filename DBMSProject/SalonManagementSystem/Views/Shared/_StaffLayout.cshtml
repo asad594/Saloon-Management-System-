@@ -1,8 +1,11 @@
 @{
     Layout = null;
     var currentPage = ViewContext.RouteData.Values["action"]?.ToString();
-    var userName = Context.Session.GetString("UserName") ?? "Staff Member";
+    var rawName = ViewBag.StaffName as string ?? ViewData["StaffName"] as string ?? Context.Session.GetString("UserName");
+    var userName = !string.IsNullOrWhiteSpace(rawName) && rawName != "Staff Member" ? rawName : "Master Specialist";
+    var avatarLetter = !string.IsNullOrWhiteSpace(userName) ? userName.Trim().Substring(0, 1).ToUpper() : "S";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -418,13 +421,14 @@
 
         <div class="sidebar-footer">
             <div class="staff-profile-pill">
-                <div class="staff-avatar">@userName.Substring(0, 1)</div>
+                <div class="staff-avatar">@avatarLetter</div>
                 <div class="staff-info">
                     <div class="staff-name">@userName</div>
                     <div class="staff-role-tag"><span class="status-dot"></span> Active Specialist</div>
                 </div>
             </div>
         </div>
+
     </aside>
 
     <!-- ── Main Executive Content Area ── -->
