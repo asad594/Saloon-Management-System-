@@ -136,14 +136,15 @@ namespace SalonManagementSystem.Controllers
                 model.OwnTodayCount = Convert.ToInt32(cmdOwnToday.ExecuteScalar());
 
                 SqlCommand cmdCompleted = new SqlCommand(
-                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND AppStatus = 3", conn);
+                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND AppStatus = 4", conn);
                 cmdCompleted.Parameters.AddWithValue("@staffId", staffId);
                 model.CompletedCount = Convert.ToInt32(cmdCompleted.ExecuteScalar());
 
                 SqlCommand cmdPending = new SqlCommand(
-                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND (AppStatus = 1 OR AppStatus IS NULL)", conn);
+                    "SELECT COUNT(*) FROM appointments WHERE (App_Booked_For = @staffId OR @staffId = 0) AND (AppStatus = 1 OR AppStatus = 3 OR AppStatus IS NULL)", conn);
                 cmdPending.Parameters.AddWithValue("@staffId", staffId);
                 model.PendingCount = Convert.ToInt32(cmdPending.ExecuteScalar());
+
 
                 SqlCommand cmdOwnEarnings = new SqlCommand(@"
                     SELECT ISNULL(SUM(b.TotalAmount), 0)
@@ -587,7 +588,8 @@ INSERT INTO appointments
 (CId, AppDate, AppTime, App_Booked_For, App_Booked_By, AppStatus)
 OUTPUT INSERTED.AppId
 VALUES
-(@c,@d,@t,@bf,@bb,3)", conn);
+(@c,@d,@t,@bf,@bb,1)", conn);
+
 
                 cmd2.Parameters.AddWithValue("@c", clientId);
                 cmd2.Parameters.AddWithValue("@d", model.AppDate.Date);
