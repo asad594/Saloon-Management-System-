@@ -64,5 +64,137 @@ namespace SalonManagementSystem.Controllers
             createCmd.Parameters.AddWithValue("@name", string.IsNullOrWhiteSpace(userName) ? "Valued Client" : userName);
             return Convert.ToInt32(createCmd.ExecuteScalar());
         }
+
+        public IActionResult Index()
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            UserDashboardViewModel model = new UserDashboardViewModel
+            {
+                UserName = userName,
+                FullName = userName
+            };
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                // Fetch Client Full Name
+                SqlCommand cNameCmd = new SqlCommand("SELECT ClientName FROM clients WHERE ClientId = @cid", conn);
+                cNameCmd.Parameters.AddWithValue("@cid", clientId);
+                object? cNameObj = cNameCmd.ExecuteScalar();
+                if (cNameObj != null && cNameObj != DBNull.Value)
+                {
+                    model.FullName = cNameObj.ToString()!;
+                }
+
+                // Booking Metrics
+                SqlCommand totalCmd = new SqlCommand("SELECT COUNT(*) FROM appointments WHERE CId = @cid", conn);
+                totalCmd.Parameters.AddWithValue("@cid", clientId);
+                model.TotalBookingsCount = (int)totalCmd.ExecuteScalar();
+
+                SqlCommand compCmd = new SqlCommand("SELECT COUNT(*) FROM appointments WHERE CId = @cid AND AppStatus = 4", conn);
+                compCmd.Parameters.AddWithValue("@cid", clientId);
+                model.CompletedBookingsCount = (int)compCmd.ExecuteScalar();
+
+                SqlCommand actCmd = new SqlCommand("SELECT COUNT(*) FROM appointments WHERE CId = @cid AND AppStatus IN (1, 3)", conn);
+                actCmd.Parameters.AddWithValue("@cid", clientId);
+                model.ActiveBookingsCount = (int)actCmd.ExecuteScalar();
+
+                // Fetch All Appointments for History Preview and Upcoming Search
+                string query = @"
+                    SELECT a.AppId, a.AppDate, a.AppTime, a.AppStatus, 
+                           s.StaffId, ISNULL(s.StaffName, 'Assigned Stylist') AS StaffName, ISNULL(s.StaffSpecialilty, 'Specialist') AS StaffSpecialilty,
+                           srv.ServiceId, ISNULL(srv.ServiceName, 'Salon Service') AS ServiceName, ISNULL(srv.ServicePrice, 0) AS ServicePrice,
+                           act.StatusType
+                    FROM appointments a
+                    LEFT JOIN staff s ON a.App_Booked_For = s.StaffId
+                    LEFT JOIN appointmentservices aps ON a.AppId = aps.ApId
+                    LEFT JOIN salonservices srv ON aps.SeId = srv.ServiceId
+                    LEFT JOIN activestatus act ON a.AppStatus = act.StatusId
+                    WHERE a.CId = @cid
+                    ORDER BY a.AppDate DESC, a.AppTime DESC";
+
+                List<UserAppointmentViewModel> allApps = new List<UserAppointmentViewModel>();
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@cid", clientId);
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        DateTime appDate = Convert.ToDateTime(r["AppDate"]);
+                        TimeSpan appTime = (TimeSpan)r["AppTime"];
+                        int status = Convert.ToInt32(r["AppStatus"]);
+                        string statusType = r["StatusType"] != DBNull.Value ? r["StatusType"].ToString()! : "Scheduled";
+
+                        string badgeClass = status switch
+                        {
+                            3 => "badge-scheduled",
+                            4 => "badge-completed",
+                            5 => "badge-cancelled",
+                            _ => "badge-pending"
+                        };
+
+                        allApps.Add(new UserAppointmentViewModel
+                        {
+                            AppId = Convert.ToInt32(r["AppId"]),
+                            StaffId = r["StaffId"] != DBNull.Value ? Convert.ToInt32(r["StaffId"]) : 0,
+                            StaffName = r["StaffName"].ToString()!,
+                            StaffSpeciality = r["StaffSpecialilty"].ToString()!,
+                            ServiceId = r["ServiceId"] != DBNull.Value ? Convert.ToInt32(r["ServiceId"]) : 0,
+                            ServiceName = r["ServiceName"].ToString()!,
+                            ServicePrice = Convert.ToDecimal(r["ServicePrice"]),
+                            AppDate = appDate,
+                            AppTime = appTime,
+                            DisplayTime = DateTime.Today.Add(appTime).ToString("hh:mm tt"),
+                            AppStatus = status,
+                            StatusName = statusType,
+                            StatusBadgeClass = badgeClass
+                        });
+                    }
+                }
+
+                model.RecentAppointments = allApps.Take(5).ToList();
+
+                // Find next upcoming appointment
+                DateTime now = DateTime.Now;
+                model.UpcomingAppointment = allApps
+                    .Where(x => (x.AppStatus == 1 || x.AppStatus == 3) && (x.AppDate.Date + x.AppTime) >= now)
+                    .OrderBy(x => x.AppDate.Date + x.AppTime)
+                    .FirstOrDefault();
+
+                if (model.UpcomingAppointment != null)
+                {
+                    DateTime appDateTime = model.UpcomingAppointment.AppDate.Date + model.UpcomingAppointment.AppTime;
+                    if ((appDateTime - now).TotalHours <= 24 && (appDateTime - now).TotalHours >= 0)
+                    {
+                        model.HasUpcomingReminder = true;
+                        ViewBag.HasUpcomingReminder = true;
+                    }
+                }
+
+                // Fetch Recommended Services
+                SqlCommand rServiceCmd = new SqlCommand("SELECT TOP 4 ServiceId, ServiceName, ServicePrice, ServiceTime, ServiceStatus FROM salonservices WHERE ServiceStatus = 1", conn);
+                using var sr = rServiceCmd.ExecuteReader();
+                while (sr.Read())
+                {
+                    model.RecommendedServices.Add(new SalonService
+                    {
+                        ServiceId = Convert.ToInt32(sr["ServiceId"]),
+                        ServiceName = sr["ServiceName"].ToString()!,
+                        ServicePrice = Convert.ToDecimal(sr["ServicePrice"]),
+                        ServiceTime = sr["ServiceTime"] != DBNull.Value ? (TimeSpan)sr["ServiceTime"] : TimeSpan.FromMinutes(30),
+                        ServiceStatus = Convert.ToInt32(sr["ServiceStatus"])
+                    });
+                }
+            }
+
+            return View(model);
+        }
+
     }
 }
