@@ -359,8 +359,10 @@ namespace SalonManagementSystem.Controllers
             using (SqlConnection conn = new SqlConnection(_connection))
             {
                 conn.Open();
+                int staffId = GetLoggedInStaffId(conn);
 
                 SqlCommand cmdClients = new SqlCommand("SELECT ClientId, ClientName, ClientPhone FROM clients ORDER BY ClientName ASC", conn);
+
                 using (SqlDataReader rClients = cmdClients.ExecuteReader())
                 {
                     while (rClients.Read())
