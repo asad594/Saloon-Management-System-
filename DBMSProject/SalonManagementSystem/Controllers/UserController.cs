@@ -716,6 +716,75 @@ namespace SalonManagementSystem.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult CancelAppointment(int id)
+        {
+            if (!EnsureUserAuthorized(out int userId, out string userName))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            using (SqlConnection conn = new SqlConnection(_connection))
+            {
+                conn.Open();
+                int clientId = GetLoggedInClientId(conn, userId, userName);
+
+                SqlCommand cmd = new SqlCommand("SELECT AppDate, AppTime, AppStatus FROM appointments WHERE AppId = @id AND CId = @cid", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@cid", clientId);
+
+                using var r = cmd.ExecuteReader();
+                if (!r.Read())
+                {
+                    TempData["ErrorMessage"] = "Appointment record not found.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                DateTime appDate = Convert.ToDateTime(r["AppDate"]);
+                TimeSpan appTime = (TimeSpan)r["AppTime"];
+                int currentStatus = Convert.ToInt32(r["AppStatus"]);
+                r.Close();
+
+                DateTime appDateTime = appDate.Date + appTime;
+                DateTime now = DateTime.Now;
+
+                // 2-Hour Cutoff Rule Check
+                if ((appDateTime - now).TotalHours < 2)
+                {
+                    TempData["ErrorMessage"] = "Appointments cannot be cancelled within 2 hours of the scheduled time. Please contact salon support.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                if (currentStatus == 4 || currentStatus == 5)
+                {
+                    TempData["ErrorMessage"] = "Completed or already cancelled appointments cannot be modified.";
+                    return RedirectToAction("MyAppointments");
+                }
+
+                // Update AppStatus to 5 (Cancelled)
+                SqlCommand updateCmd = new SqlCommand("UPDATE appointments SET AppStatus = 5 WHERE AppId = @id", conn);
+                updateCmd.Parameters.AddWithValue("@id", id);
+                updateCmd.ExecuteNonQuery();
+
+                // Activity Log
+                try
+                {
+                    SqlCommand logCmd = new SqlCommand(@"
+                        IF OBJECT_ID('dbo.UserActivityLog', 'U') IS NOT NULL
+                        INSERT INTO UserActivityLog (UserId, UserRole, ActionType, LogMessage)
+                        VALUES (@uid, 'User', 'CANCEL_APPOINTMENT', @msg)", conn);
+                    logCmd.Parameters.AddWithValue("@uid", userId);
+                    logCmd.Parameters.AddWithValue("@msg", $"Appointment #{id} cancelled by client.");
+                    logCmd.ExecuteNonQuery();
+                }
+                catch { }
+            }
+
+            TempData["SuccessMessage"] = "Appointment cancelled successfully.";
+            return RedirectToAction("MyAppointments");
+        }
+
+
 
 
 
