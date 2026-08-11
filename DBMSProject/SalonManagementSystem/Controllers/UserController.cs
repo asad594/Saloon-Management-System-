@@ -65,6 +65,28 @@ namespace SalonManagementSystem.Controllers
             return Convert.ToInt32(createCmd.ExecuteScalar());
         }
 
+        protected bool CheckUpcomingReminders(SqlConnection conn, int clientId)
+        {
+            DateTime now = DateTime.Now;
+            DateTime cutoff = now.AddHours(24);
+
+            SqlCommand cmd = new SqlCommand(@"
+                SELECT COUNT(*) FROM appointments 
+                WHERE CId = @cid 
+                  AND AppStatus IN (1, 3) 
+                  AND (CAST(AppDate AS DATETIME) + CAST(AppTime AS DATETIME)) >= @now 
+                  AND (CAST(AppDate AS DATETIME) + CAST(AppTime AS DATETIME)) <= @cutoff", conn);
+
+            cmd.Parameters.AddWithValue("@cid", clientId);
+            cmd.Parameters.AddWithValue("@now", now);
+            cmd.Parameters.AddWithValue("@cutoff", cutoff);
+
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            bool hasReminder = count > 0;
+            ViewBag.HasUpcomingReminder = hasReminder;
+            return hasReminder;
+        }
+
         public IActionResult Index()
         {
             if (!EnsureUserAuthorized(out int userId, out string userName))
@@ -82,6 +104,8 @@ namespace SalonManagementSystem.Controllers
             {
                 conn.Open();
                 int clientId = GetLoggedInClientId(conn, userId, userName);
+                CheckUpcomingReminders(conn, clientId);
+
 
                 // Fetch Client Full Name
                 SqlCommand cNameCmd = new SqlCommand("SELECT ClientName FROM clients WHERE ClientId = @cid", conn);
