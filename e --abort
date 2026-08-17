@@ -1,0 +1,7 @@
+[33m6e7efcd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m [Staff Portal Extension 7/7] Complete end-to-end Staff Portal extension audit and build verification
+[33mb85fd46[m [Staff Portal Extension 6/7] Implement Feature 5: Staff Availability & Leave Requests with StaffLeaveRequests table auto-creation
+[33m2797e20[m [Staff Portal Extension 5/7] Implement Feature 4: Client History & Staff Notes with auto-creation of StaffNotes table
+[33m7204300[m [Staff Portal Extension 4/7] Implement Feature 3: Personal Dashboard customization for logged-in specialist metrics
+[33m7b51f0e[m [Staff Portal Extension 3/7] Implement Feature 2: My Earnings view with itemized revenue breakdown and commission stats
+[33m086c41b[m [Staff Portal Extension 2/7] Implement Feature 1: My Appointments view with real-time status update controls
+[33m8555cf0[m [Staff Portal Extension 1/7] Add Staff layout sidebar navigation links and auto-creation helpers for StaffNotes & StaffLeaveRequests tables
